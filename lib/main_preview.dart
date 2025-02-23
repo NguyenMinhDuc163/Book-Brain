@@ -1,5 +1,4 @@
 import 'package:device_preview_plus/device_preview_plus.dart';
-import 'package:error_stack/error_stack.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -40,8 +39,6 @@ void main() async {
   if (savedLocale != null) {
     defaultLocale = Locale(savedLocale);
   }
-
-  await ErrorStack.init();
 
   runApp(
     EasyLocalization(

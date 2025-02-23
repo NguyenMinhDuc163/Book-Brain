@@ -1,6 +1,4 @@
 
-import 'package:error_stack/error_stack.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:book_brain/providers/provider_setup.dart';
@@ -39,9 +37,6 @@ void main() async {
   if (savedLocale != null) {
     defaultLocale = Locale(savedLocale);
   }
-
-  await ErrorStack.init();
-
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('en', 'US'), Locale('vi', 'VN')],

@@ -34,10 +34,6 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
   easy_localization: ^3.0.7+1
   fluttertoast: ^8.2.12
   flutter_screenutil: ^5.9.3
@@ -45,13 +41,17 @@ dev_dependencies:
   hive_ce_flutter: ^2.2.0
   dio: ^5.8.0+1
   firebase_messaging: ^15.2.3
-  flame_audio: ^2.11.0
   firebase_remote_config: ^5.4.1
   provider: ^6.1.2
   flutter_launcher_icons: ^0.14.3
   flutter_dotenv: ^5.2.1
-  error_stack: ^1.10.2
   device_preview_plus: ^2.2.6
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -59,6 +59,14 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
 
+
+dependency_overrides:
+  flutter_secure_storage_linux:
+    git:
+      url: https://github.com/juliansteenbakker/flutter_secure_storage.git
+      ref: v9.2.4
+      path: flutter_secure_storage_linux
+      
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 flutter_icons:
