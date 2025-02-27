@@ -35,19 +35,16 @@ jobs:
           COMMIT_MESSAGE=$(git log -1 --pretty=%B)
           COMMIT_AUTHOR=$(git log -1 --pretty="%an")
           COMMIT_DATE=$(git log -1 --pretty="%cd" --date=iso)
-
           MESSAGE="🛠 *New Build Triggered*%0A"
           MESSAGE+="%0A"
           MESSAGE+="👤 *Author:* \`$COMMIT_AUTHOR\`%0A"
           MESSAGE+="📅 *Date:* \`$COMMIT_DATE\`%0A"
           MESSAGE+="🔢 *Commit:* \`$COMMIT_HASH\`%0A"
           MESSAGE+="📝 *Message:* \`$COMMIT_MESSAGE\`%0A"
-
           curl -X POST "https://api.telegram.org/bot${{ env.TELEGRAM_BOT_TOKEN }}/sendMessage" \
                -d "chat_id=${{ env.TELEGRAM_CHAT_ID }}" \
                -d "text=$MESSAGE" \
                -d "parse_mode=MarkdownV2"
-
   build-android:
     runs-on: ubuntu-latest
 
@@ -124,7 +121,6 @@ jobs:
           cd ios
           rm -rf Pods Podfile.lock
           pod install --verbose
-
       - name: Set Xcode permissions
         run: sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
 
@@ -135,19 +131,16 @@ jobs:
         run: |
           set -e
           flutter build ios --release --no-codesign
-
       - name: Ensure Runner.app Exists
         run: |
           if [ ! -d "build/ios/iphoneos/Runner.app" ]; then
             echo "❌ Build failed: Runner.app not found!"
             exit 1
           fi
-
       - name: Zip IPA file
         run: |
           cd build/ios/iphoneos
           zip -r ../../../build/ios/${{ env.APP_NAME }}.zip Runner.app
-
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
@@ -204,19 +197,10 @@ jobs:
       - name: Send Web Build URL to Telegram
         run: |
             TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
-
-            # Thoát dấu "." trong URL để tránh lỗi MarkdownV2
-            ESCAPED_WEB_URL=$(echo "${{ env.WEB_URL }}" | sed 's/\./\\./g')
-
             MESSAGE="🚀 *Web Build Completed*%0A"
-            MESSAGE+="📅 *Date:* \\`$TIMESTAMP\\`%0A"
-            MESSAGE+="🌍 *URL:* \\[Click here\\]\\($ESCAPED_WEB_URL\\)"
-
+            MESSAGE+="📅 *Date:* \`$TIMESTAMP\`%0A"
+            MESSAGE+="🌍 *URL:* \[Click here\]\(${{ env.WEB_URL }}\)"
             curl -X POST "https://api.telegram.org/bot${{ env.TELEGRAM_BOT_TOKEN }}/sendMessage" \
                  -d "chat_id=${{ env.TELEGRAM_CHAT_ID }}" \
                  -d "text=$MESSAGE" \
                  -d "parse_mode=MarkdownV2"
-
-
-
-  
