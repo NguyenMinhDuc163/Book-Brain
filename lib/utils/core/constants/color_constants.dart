@@ -55,9 +55,6 @@ class Gradients {
   static const Gradient defaultGradientBackground = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomLeft,
-    colors: [
-      ColorPalette.secondColor,
-      ColorPalette.primaryColor,
-    ],
+    colors: [ColorPalette.secondColor, ColorPalette.primaryColor],
   );
 }

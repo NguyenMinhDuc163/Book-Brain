@@ -12,7 +12,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_ce_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
@@ -32,8 +31,6 @@ void main() async {
   /// Firebase Service
   // final firebaseService = FirebaseService();
 
-
-
   Locale defaultLocale = const Locale('en', 'US');
   String? savedLocale = LocalStorageHelper.getValue('languageCode');
   if (savedLocale != null) {
@@ -47,22 +44,17 @@ void main() async {
       fallbackLocale: const Locale('en', 'US'),
       child: MultiProvider(
         providers: ProviderSetup.getProviders(),
-        child: DevicePreview(
-          enabled: !kReleaseMode,
-          builder: (context) => MyApp(),
-        ),
+        child: DevicePreview(enabled: true, builder: (context) => MyApp()),
       ),
     ),
   );
 }
 
-
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-
     return ScreenUtilInit(
       designSize: const Size(360, 690),
       minTextAdapt: true,

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:book_brain/providers/provider_setup.dart';
@@ -9,7 +8,6 @@ import 'package:book_brain/utils/routers.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_ce_flutter/adapters.dart';
 import 'package:provider/provider.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,8 +28,6 @@ void main() async {
   /// Firebase Service
   // final firebaseService = FirebaseService();
 
-
-
   Locale defaultLocale = const Locale('en', 'US');
   String? savedLocale = LocalStorageHelper.getValue('languageCode');
   if (savedLocale != null) {
@@ -50,9 +46,8 @@ void main() async {
   );
 }
 
-
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {

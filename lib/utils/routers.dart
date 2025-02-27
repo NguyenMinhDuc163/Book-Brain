@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:book_brain/screen/login/view/login_screen.dart';
 import 'package:book_brain/utils/router_names.dart';
@@ -21,4 +19,5 @@ MaterialPageRoute<dynamic>? generateRoutes(RouteSettings settings) {
     //         ),
     //   );
   }
+  return null;
 }

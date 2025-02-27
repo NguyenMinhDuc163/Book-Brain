@@ -46,8 +46,6 @@ dependencies:
   flutter_launcher_icons: ^0.14.3
   flutter_dotenv: ^5.2.1
   device_preview_plus: ^2.2.6
-
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

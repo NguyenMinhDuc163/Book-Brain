@@ -1,4 +1,4 @@
-class Utils{
+class Utils {
   static bool isValidEmail(String email) {
     if (email.isEmpty) {
       return true;
@@ -9,10 +9,9 @@ class Utils{
   }
 
   static bool isCheckString(String str) {
-    if (str == null || str == "") {
+    if (str == "") {
       return false;
     }
     return true;
   }
-
 }
