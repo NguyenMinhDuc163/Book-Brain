@@ -205,14 +205,18 @@ jobs:
         run: |
             TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
 
+            # Thoát dấu "." trong URL để tránh lỗi MarkdownV2
+            ESCAPED_WEB_URL=$(echo "${{ env.WEB_URL }}" | sed 's/\./\\./g')
+
             MESSAGE="🚀 *Web Build Completed*%0A"
             MESSAGE+="📅 *Date:* \\`$TIMESTAMP\\`%0A"
-            MESSAGE+="🌍 *URL:* \\[Click here\\]\\(${{ env.WEB_URL//./\\. }}\\)"
+            MESSAGE+="🌍 *URL:* \\[Click here\\]\\($ESCAPED_WEB_URL\\)"
 
             curl -X POST "https://api.telegram.org/bot${{ env.TELEGRAM_BOT_TOKEN }}/sendMessage" \
                  -d "chat_id=${{ env.TELEGRAM_CHAT_ID }}" \
                  -d "text=$MESSAGE" \
                  -d "parse_mode=MarkdownV2"
+
 
 
   
