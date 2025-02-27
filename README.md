@@ -64,5 +64,5 @@
      ```
 
 ## Liên Hệ  
-Nếu gặp vấn đề khi cài đặt hoặc chạy ứng dụng, vui lòng liên hệ với chúng tôi qua Telegram: [Nhóm hỗ trợ](https://t.me/+6fX3YBx3flk2ZTI1).
+Nếu gặp vấn đề khi cài đặt hoặc chạy ứng dụng, vui lòng liên hệ với chúng tôi qua Telegram: [Nhóm hỗ trợ](https://www.youtube.com/watch?v=dQw4w9WgXcQ).
 
