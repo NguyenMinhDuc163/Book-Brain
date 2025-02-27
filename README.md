@@ -1,11 +1,11 @@
 # AI Tìm Kiếm và Đề Xuất Sách
 
 ## Nhóm phát triển
-- **Dương Anh Đức** - B21DCCN238  
-- **Nguyễn Lê Quốc Khánh** - B21DCCN454  
-- **Nguyễn Hữu Tú Minh** - B21DCCN526  
 - **Nguyễn Minh Đức** - B21DCCN249  
-
+- **Nguyễn Hữu Tú Minh** - B21DCCN526  
+- **Dương Anh Đức** - B21DCCN238
+- **Nguyễn Lê Quốc Khánh** - B21DCCN454
+  
 ## Giới Thiệu
 **AI Tìm Kiếm và Đề Xuất Sách** là một ứng dụng di động giúp người dùng tìm kiếm và đề xuất sách dựa trên sở thích đọc và lịch sử đọc sách.
 
