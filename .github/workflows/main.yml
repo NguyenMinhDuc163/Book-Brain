@@ -185,6 +185,12 @@ jobs:
       - name: Build Web with base href set to root
         run: flutter build web --release --base-href="/" -t lib/main_preview.dart
 
+      - name: Upload Web Build (Ensure artifact is available)
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: build/web
+
       - name: Deploy to GitHub Pages
         if: success()
         uses: peaceiris/actions-gh-pages@v3
@@ -197,10 +203,17 @@ jobs:
       - name: Send Web Build URL to Telegram
         run: |
             TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
+
+            # Thoát các ký tự đặc biệt trong MarkdownV2
+            ESCAPED_WEB_URL=$(echo "${{ env.WEB_URL }}" | sed 's/\./\\./g')
+
+            # Tạo tin nhắn Telegram với MarkdownV2
             MESSAGE="🚀 *Web Build Completed*%0A"
             MESSAGE+="📅 *Date:* \`$TIMESTAMP\`%0A"
-            MESSAGE+="🌍 *URL:* \[Click here\]\(${{ env.WEB_URL }}\)"
+            MESSAGE+="🌍 *URL:* \[Click here\]\($ESCAPED_WEB_URL\)"
+
+            # Gửi tin nhắn qua Telegram
             curl -X POST "https://api.telegram.org/bot${{ env.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-                 -d "chat_id=${{ env.TELEGRAM_CHAT_ID }}" \
-                 -d "text=$MESSAGE" \
-                 -d "parse_mode=MarkdownV2"
+                 --data-urlencode "chat_id=${{ env.TELEGRAM_CHAT_ID }}" \
+                 --data-urlencode "text=$MESSAGE" \
+                 --data-urlencode "parse_mode=MarkdownV2"
