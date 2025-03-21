@@ -1,0 +1,219 @@
+name: Flutter Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: ${{ secrets.FLUTTER_VERSION }}
+  JAVA_VERSION: ${{ secrets.JAVA_VERSION }}
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+  GH_PAGES_DEPLOY_TOKEN: ${{ secrets.GH_PAGES_DEPLOY_TOKEN }}
+  APP_NAME_BASE: ${{ secrets.APP_NAME_BASE }}  
+  WEB_URL: ${{ secrets.WEB_URL }}
+
+  
+
+jobs:
+
+  notify-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get Commit Info
+        run: |
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          COMMIT_AUTHOR=$(git log -1 --pretty="%an")
+          COMMIT_DATE=$(git log -1 --pretty="%cd" --date=iso)
+          MESSAGE="🛠 *New Build Triggered*%0A"
+          MESSAGE+="%0A"
+          MESSAGE+="👤 *Author:* \`$COMMIT_AUTHOR\`%0A"
+          MESSAGE+="📅 *Date:* \`$COMMIT_DATE\`%0A"
+          MESSAGE+="🔢 *Commit:* \`$COMMIT_HASH\`%0A"
+          MESSAGE+="📝 *Message:* \`$COMMIT_MESSAGE\`%0A"
+          curl -X POST "https://api.telegram.org/bot${{ env.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+               -d "chat_id=${{ env.TELEGRAM_CHAT_ID }}" \
+               -d "text=$MESSAGE" \
+               -d "parse_mode=MarkdownV2"
+  build-android:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION || '3.16.0' }}
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+
+      - name: Create .env file
+        run: echo "${{ secrets.ENV_FILE_CONTENTS }}" > .env
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Split APKs
+        run: flutter build apk --split-per-abi
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: build/app/outputs/flutter-apk/*.apk
+
+      - name: Send APK to Telegram
+        run: |
+            TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
+            APK_FILE=$(ls build/app/outputs/flutter-apk/*.apk | head -n 1)
+            APK_SIZE=$(du -h $APK_FILE | cut -f1)
+  
+            MESSAGE="📱 *Android Build Completed*%0A"
+            MESSAGE+="📅 *Date:* $TIMESTAMP%0A"
+            MESSAGE+="📂 *File:* $(basename $APK_FILE)%0A"
+            MESSAGE+="📦 *Size:* $APK_SIZE"
+  
+            curl -F "chat_id=${{ env.TELEGRAM_CHAT_ID }}" \
+                 -F "document=@$APK_FILE" \
+                 -F "caption=$MESSAGE" \
+                 "https://api.telegram.org/bot${{ env.TELEGRAM_BOT_TOKEN }}/sendDocument"
+  
+
+  build-ios:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Get App Name from pubspec.yaml
+        run: echo "APP_NAME=${{ env.APP_NAME_BASE }}_ios" >> $GITHUB_ENV
+
+      - name: Create .env file
+        run: echo "${{ secrets.ENV_FILE_CONTENTS }}" > .env
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Clean and Reinstall CocoaPods
+        run: |
+          cd ios
+          rm -rf Pods Podfile.lock
+          pod install --verbose
+      - name: Set Xcode permissions
+        run: sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+
+      - name: Clean project before build
+        run: flutter clean
+
+      - name: Build iOS
+        run: |
+          set -e
+          flutter build ios --release --no-codesign
+      - name: Ensure Runner.app Exists
+        run: |
+          if [ ! -d "build/ios/iphoneos/Runner.app" ]; then
+            echo "❌ Build failed: Runner.app not found!"
+            exit 1
+          fi
+      - name: Zip IPA file
+        run: |
+          cd build/ios/iphoneos
+          zip -r ../../../build/ios/${{ env.APP_NAME }}.zip Runner.app
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: build/ios/${{ env.APP_NAME }}.zip
+
+      - name: Send IPA to Telegram
+        run: |
+            TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
+            IPA_FILE="build/ios/${{ env.APP_NAME }}.zip"
+            IPA_SIZE=$(du -h $IPA_FILE | cut -f1)
+  
+            MESSAGE="🍏 *iOS Build Completed*%0A"
+            MESSAGE+="📅 *Date:* $TIMESTAMP%0A"
+            MESSAGE+="📂 *File:* $(basename $IPA_FILE)%0A"
+            MESSAGE+="📦 *Size:* $IPA_SIZE"
+  
+            curl -F "chat_id=${{ env.TELEGRAM_CHAT_ID }}" \
+                 -F "document=@$IPA_FILE" \
+                 -F "caption=$MESSAGE" \
+                 "https://api.telegram.org/bot${{ env.TELEGRAM_BOT_TOKEN }}/sendDocument"
+  
+
+  build-web:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Create .env file
+        run: echo "${{ secrets.ENV_FILE_CONTENTS }}" > .env
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Web with base href set to root
+        run: flutter build web --release --base-href="/" -t lib/main_preview.dart
+
+      - name: Upload Web Build (Ensure artifact is available)
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: build/web
+
+      - name: Deploy to GitHub Pages
+        if: success()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{ secrets.GH_PAGES_DEPLOY_TOKEN }}
+          publish_dir: build/web
+          publish_branch: gh-pages
+          force_orphan: true
+
+      - name: Send Web Build URL to Telegram
+        run: |
+            TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
+
+            # Thoát các ký tự đặc biệt trong MarkdownV2
+            ESCAPED_WEB_URL=$(echo "${{ env.WEB_URL }}" | sed 's/\./\\./g')
+
+            # Tạo tin nhắn Telegram với MarkdownV2
+            MESSAGE="🚀 *Web Build Completed*%0A"
+            MESSAGE+="📅 *Date:* \`$TIMESTAMP\`%0A"
+            MESSAGE+="🌍 *URL:* \[Click here\]\($ESCAPED_WEB_URL\)"
+
+            # Gửi tin nhắn qua Telegram
+            curl -X POST "https://api.telegram.org/bot${{ env.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+                 --data-urlencode "chat_id=${{ env.TELEGRAM_CHAT_ID }}" \
+                 --data-urlencode "text=$MESSAGE" \
+                 --data-urlencode "parse_mode=MarkdownV2"
