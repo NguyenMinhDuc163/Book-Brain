@@ -46,6 +46,11 @@ dependencies:
   flutter_launcher_icons: ^0.14.3
   flutter_dotenv: ^5.2.1
   device_preview_plus: ^2.2.6
+  font_awesome_flutter: ^10.8.0
+  salomon_bottom_bar: ^3.3.2
+  smooth_page_indicator: ^1.2.1
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -67,6 +72,7 @@ dependency_overrides:
       
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+#dart run flutter_launcher_icons
 flutter_icons:
   android: true
   ios: true

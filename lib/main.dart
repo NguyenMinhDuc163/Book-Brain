@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:book_brain/providers/provider_setup.dart';
-import 'package:book_brain/screen/login/view/login_screen.dart';
+import 'package:book_brain/screen/splash/view/splash_screen.dart' show SplashScreen;
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
 import 'package:book_brain/utils/routers.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_ce_flutter/adapters.dart';
 import 'package:provider/provider.dart';
@@ -69,7 +69,7 @@ class MyApp extends StatelessWidget {
           localizationsDelegates: context.localizationDelegates,
           supportedLocales: context.supportedLocales,
           locale: context.locale,
-          home: const LoginScreen(),
+          home: const SplashScreen(),
           navigatorKey: NavigationService.navigatorKey,
           routes: routes,
           debugShowCheckedModeBanner: false,
