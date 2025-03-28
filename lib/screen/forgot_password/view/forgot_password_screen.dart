@@ -1,4 +1,5 @@
 
+import 'package:book_brain/screen/login/view/login_screen.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/screen/login/widget/button_widget.dart';
 import 'package:book_brain/utils/core/common/toast.dart';
@@ -47,7 +48,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       showToastTop(
         message: 'Email đặt lại mật khẩu đã được gửi thành công. Vui lòng kiểm tra email của bạn.',
       );
-      Navigator.of(context).pushNamed(RouteNames.loginScreen);
+      Navigator.of(context).pushNamed(LoginScreen.routeName);
     } catch (e) {
       showToastTop(
         message: 'Không gửi được email đặt lại mật khẩu',

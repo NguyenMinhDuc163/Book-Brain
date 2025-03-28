@@ -1,3 +1,4 @@
+import 'package:book_brain/screen/splash/view/intro_screen.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
 import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
@@ -30,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
     //   LocalStorageHelper.setValue('ignoreIntroScreen', true);
     //   Navigator.of(context).pushNamed(IntroScreen.routeName);
     // }
-    Navigator.of(context).pushNamed(RouteNames.introScreen);
+    Navigator.of(context).pushNamed(IntroScreen.routeName);
   }
   @override
   Widget build(BuildContext context) {

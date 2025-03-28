@@ -6,6 +6,7 @@ class ProviderSetup {
   static List<SingleChildWidget> getProviders() {
     return [
       ChangeNotifierProvider(create: (_) => LoginNotifier()),
+      ChangeNotifierProvider(create: (_) => LoginNotifier()),
       // Thêm các Provider khác ở đây
     ];
   }

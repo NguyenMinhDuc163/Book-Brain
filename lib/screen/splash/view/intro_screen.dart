@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:book_brain/screen/login/view/login_screen.dart';
 import 'package:book_brain/screen/login/widget/button_widget.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/constants/textstyle_ext.dart';
@@ -126,7 +127,7 @@ class _IntroScreenState extends State<IntroScreen> {
                                     duration: const Duration(milliseconds: 200),
                                     curve: Curves.easeInSine);
                               } else {
-                                Navigator.of(context).pushNamed(RouteNames.loginScreen);
+                                Navigator.of(context).pushNamed(LoginScreen.routeName);
                               }
                             },
                           ),
