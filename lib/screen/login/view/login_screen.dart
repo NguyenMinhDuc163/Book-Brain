@@ -1,12 +1,13 @@
+import 'package:book_brain/screen/forgot_password/view/forgot_password_screen.dart';
+import 'package:book_brain/screen/login/provider/login_notifier.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/screen/login/widget/button_widget.dart';
+import 'package:book_brain/screen/main_app.dart';
+import 'package:book_brain/screen/sign_up/view/sign_up_screen.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
-import 'package:book_brain/utils/router_names.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:book_brain/screen/login/provider/login_notifier.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -133,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         setState(() {
                           if (!_isPressed) _isPressed = true;
                           Navigator.of(context)
-                              .pushNamed(RouteNames.forgotPasswordScreen);
+                              .pushNamed(ForgotPasswordScreen.routeName);
                         });
                       },
                     )
@@ -147,11 +148,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   title: 'Đăng nhập',
                   isign: _isSigin,
                   ontap: (){
+                    // presenter.login(username: "", password: "");
                     // presenter.loginService.login(
                     //   username: _emailController.text,
                     //   password: _passwordController.text,
                     // );
-                    Navigator.pushNamed(context, RouteNames.mainApp);
+                    // Navigator.pushNamed(context, MainApp.routeName);
                   },
                 ),
                 SizedBox(
@@ -191,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: GestureDetector(
+                      child: GestureDetector( 
                         onTap: (){},
                         child: Stack(
                           alignment: Alignment.center,
@@ -269,7 +271,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         // setState(() {
                         //   if (!_isCliclSignUp) _isCliclSignUp = true;
                         // });
-                        Navigator.of(context).pushNamed(RouteNames.signUpScreen);
+                        Navigator.of(context).pushNamed(SignUpScreen.routeName);
                       },
                     )
                   ],

@@ -1,3 +1,4 @@
+import 'package:book_brain/screen/login/view/login_screen.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/utils/core/common/toast.dart' show showToast, showToastTop;
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
@@ -11,6 +12,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../login/widget/button_widget.dart' show ButtonWidget;
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
+  static const String routeName = '/sign_up_screen';
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
 }
@@ -358,7 +360,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final String password = _passwordController.text.trim();
     final String phoneNumber = _phoneNumberController.text.trim();
     print('userName: $userName, email: $email, password: $password, phoneNumber: $phoneNumber');
-    Navigator.of(context).pushNamed(RouteNames.loginScreen);
+    Navigator.of(context).pushNamed(LoginScreen.routeName);
     // User? user = await _auth.signUpWithEmailAndPassWord(email, password, userName,  phoneNumber);
 
     // setState(() {

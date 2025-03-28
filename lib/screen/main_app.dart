@@ -1,3 +1,4 @@
+import 'package:book_brain/screen/favorites/view/favorites_screen.dart';
 import 'package:book_brain/screen/home/view/home_screen.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,6 +8,7 @@ import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 class MainApp extends StatefulWidget {
   const MainApp({super.key});
+  static const String routeName = '/main_app';
   @override
   State<MainApp> createState() => _MainAppState();
 }
@@ -28,8 +30,8 @@ class _MainAppState extends State<MainApp> {
           index: _currentIndex,
           children: const [
             HomeScreen(),
-            HomeScreen(),
-            HomeScreen(),
+            FavoritesScreen(),
+            // HomeScreen(),
             HomeScreen(),
           ],
         ),
@@ -44,22 +46,22 @@ class _MainAppState extends State<MainApp> {
             SalomonBottomBarItem( // su dung thu vien
               icon: Icon(FontAwesomeIcons.house,
                 size: kDefaultIconSize,),
-              title: Text("Home"),
+              title: Text("Trang chủ"),
             ),
             SalomonBottomBarItem( // su dung thu vien
               icon: Icon(FontAwesomeIcons.solidHeart,
                 size: kDefaultIconSize,),
-              title: Text("Likes"),
+              title: Text("Yêu thích"),
             ),
-            SalomonBottomBarItem( // su dung thu vien
-              icon: Icon(FontAwesomeIcons.briefcase,
-                size: kDefaultIconSize,),
-              title: Text("Booking"),
-            ),
+            // SalomonBottomBarItem( // su dung thu vien
+            //   icon: Icon(FontAwesomeIcons.briefcase,
+            //     size: kDefaultIconSize,),
+            //   title: Text("Booking"),
+            // ),
             SalomonBottomBarItem( // su dung thu vien
               icon: Icon(FontAwesomeIcons.solidUser,
                 size: kDefaultIconSize,),
-              title: Text("Profile"),
+              title: Text("Cá nhân"),
             ),
           ],
         ),

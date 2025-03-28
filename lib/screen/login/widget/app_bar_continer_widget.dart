@@ -40,7 +40,7 @@ class AppBarContinerWidget extends StatelessWidget {
       body: Stack(
         children: [
           SizedBox(
-            height: 186,
+            height: height_150,
             child: AppBar(
               title: title ??
                   Padding(
