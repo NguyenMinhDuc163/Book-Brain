@@ -12,6 +12,8 @@ mixin AssetHelper {
   static const String icoBookFollow = '${_baseIconPath}ico_book_follow.png';
   static const String icoHistory = '${_baseIconPath}ico_history.png';
   static const String icoRank = '${_baseIconPath}ico_rank.png';
+  static const String icoUserProfile = '${_baseIconPath}ico_userprofile.png';
+
 
   // images
   static const String icoGG = '${_baseIconPath}icoGG.png';
