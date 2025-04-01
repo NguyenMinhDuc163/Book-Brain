@@ -4,6 +4,7 @@ import 'package:book_brain/screen/forgot_password/view/forgot_password_screen.da
 import 'package:book_brain/screen/home/view/home_screen.dart';
 import 'package:book_brain/screen/main_app.dart';
 import 'package:book_brain/screen/search_book/view/search_screen.dart';
+import 'package:book_brain/screen/preview/view/preview_screen.dart';
 import 'package:book_brain/screen/sign_up/view/sign_up_screen.dart';
 import 'package:book_brain/screen/splash/view/intro_screen.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,7 @@ final Map<String, WidgetBuilder> routes = {
   FavoritesScreen.routeName: (context) => const FavoritesScreen(),
   SearchScreen.routeName: (context) => const SearchScreen(),
   EditProfileScreen.routeName: (context) => const EditProfileScreen(),
+  PreviewScreen.routeName: (context) => const PreviewScreen(),
 };
 
 MaterialPageRoute<dynamic>? generateRoutes(RouteSettings settings) {

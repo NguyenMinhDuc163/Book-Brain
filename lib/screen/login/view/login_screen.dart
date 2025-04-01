@@ -155,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     //   username: _emailController.text,
                     //   password: _passwordController.text,
                     // );
-                    // Navigator.pushNamed(context, MainApp.routeName);
+                    Navigator.pushNamed(context, MainApp.routeName);
                   },
                 ),
                 SizedBox(
