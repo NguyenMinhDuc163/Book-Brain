@@ -1,3 +1,4 @@
+import 'package:book_brain/screen/following_book/view/following_book_screen.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/constants/textstyle_ext.dart';
@@ -6,6 +7,8 @@ import 'package:book_brain/utils/core/helpers/image_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+
+import '../../history_reading/view/history_reading_screen.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
   static const String routeName = '/home_screen';
@@ -227,9 +230,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: kDefaultIconSize,
                       height: kDefaultIconSize,
                     ),
-                    Color(0xffFE9C5E), () {
-                  // Navigator.of(context).pushNamed(RouteNames.hotelBookingScreen);
-                }, 'Lịch sử'),
+                    Color(0xffFE9C5E),
+                  (){
+                      Navigator.pushNamed(context, HistoryReadingScreen.routeName);
+                  }
+                  ,'Lịch sử',
+
+                ),
               ),
               SizedBox(width: kDefaultPadding),
               Expanded(
@@ -255,7 +262,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: kDefaultIconSize,
                     ),
                     Color(0xff3EC8BC),
-                        () {},
+                        () {
+                          Navigator.pushNamed(context, FollowingBookScreen.routeName);
+                        },
                     'Sách theo dõi'),
               ),
             ],
