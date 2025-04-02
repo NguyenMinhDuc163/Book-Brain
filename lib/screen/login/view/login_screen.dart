@@ -3,6 +3,7 @@ import 'package:book_brain/screen/login/provider/login_notifier.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/screen/login/widget/button_widget.dart';
 import 'package:book_brain/screen/main_app.dart';
+import 'package:book_brain/screen/search_book/view/search_screen.dart';
 import 'package:book_brain/screen/sign_up/view/sign_up_screen.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
@@ -148,6 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   title: 'Đăng nhập',
                   isign: _isSigin,
                   ontap: (){
+                    Navigator.of(context).pushNamed(MainApp.routeName);
                     // presenter.login(username: "", password: "");
                     // presenter.loginService.login(
                     //   username: _emailController.text,

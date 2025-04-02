@@ -1,5 +1,6 @@
 import 'package:book_brain/screen/favorites/view/favorites_screen.dart';
 import 'package:book_brain/screen/home/view/home_screen.dart';
+import 'package:book_brain/screen/setting/view/setting_screen.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,7 @@ class _MainAppState extends State<MainApp> {
             HomeScreen(),
             FavoritesScreen(),
             // HomeScreen(),
-            HomeScreen(),
+            SettingScreen(),
           ],
         ),
         bottomNavigationBar: SalomonBottomBar( // tao ra 1 thanh buttom bar bang thu vien
@@ -59,9 +60,12 @@ class _MainAppState extends State<MainApp> {
             //   title: Text("Booking"),
             // ),
             SalomonBottomBarItem( // su dung thu vien
+            
               icon: Icon(FontAwesomeIcons.solidUser,
+            
                 size: kDefaultIconSize,),
               title: Text("Cá nhân"),
+             
             ),
           ],
         ),

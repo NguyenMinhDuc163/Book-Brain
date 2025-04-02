@@ -1,5 +1,6 @@
 import 'package:book_brain/screen/following_book/view/following_book_screen.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
+import 'package:book_brain/screen/preview/view/preview_screen.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/constants/textstyle_ext.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
@@ -66,8 +67,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildImageHomScreen(String name, String image) {
     return GestureDetector(
       onTap: () {
-        // Navigator.of(context)
-        //     .pushNamed(RouteNames, arguments: name);
+        Navigator.of(context)
+            .pushNamed(PreviewScreen.routeName);
       },
       child: Container(
         margin: EdgeInsets.only(bottom: kDefaultPadding),

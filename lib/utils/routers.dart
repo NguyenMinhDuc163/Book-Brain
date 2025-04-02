@@ -1,9 +1,12 @@
+import 'package:book_brain/screen/edit_profile/view/edit_profile_screen.dart';
 import 'package:book_brain/screen/favorites/view/favorites_screen.dart';
 import 'package:book_brain/screen/following_book/view/following_book_screen.dart';
 import 'package:book_brain/screen/forgot_password/view/forgot_password_screen.dart';
 import 'package:book_brain/screen/history_reading/view/history_reading_screen.dart';
 import 'package:book_brain/screen/home/view/home_screen.dart';
 import 'package:book_brain/screen/main_app.dart';
+import 'package:book_brain/screen/search_book/view/search_screen.dart';
+import 'package:book_brain/screen/preview/view/preview_screen.dart';
 import 'package:book_brain/screen/sign_up/view/sign_up_screen.dart';
 import 'package:book_brain/screen/splash/view/intro_screen.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +24,9 @@ final Map<String, WidgetBuilder> routes = {
   FavoritesScreen.routeName: (context) => const FavoritesScreen(),
   HistoryReadingScreen.routeName: (context) => const HistoryReadingScreen(),
   FollowingBookScreen.routeName: (context) => const FollowingBookScreen(),
+  SearchScreen.routeName: (context) => const SearchScreen(),
+  EditProfileScreen.routeName: (context) => const EditProfileScreen(),
+  PreviewScreen.routeName: (context) => const PreviewScreen(),
 };
 
 MaterialPageRoute<dynamic>? generateRoutes(RouteSettings settings) {
