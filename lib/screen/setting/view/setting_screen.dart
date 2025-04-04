@@ -1,3 +1,4 @@
+import 'package:book_brain/screen/change_password/view/change_password_screen.dart';
 import 'package:book_brain/screen/edit_profile/view/edit_profile_screen.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart' show AssetHelper;
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
@@ -49,7 +50,7 @@ class _SettingScreenState extends State<SettingScreen> {
                     _buildSettingItem(
                       "Đổi mật khẩu",
                       const Color.fromARGB(255, 0, 0, 0),
-                      () {},
+                      () => Navigator.push(context, MaterialPageRoute(builder: (context)=>ChangePasswordScreen())),
                     ),
                     _buildSettingItem(
                       "Đăng xuất",
