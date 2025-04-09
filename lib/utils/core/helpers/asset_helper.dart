@@ -13,6 +13,9 @@ mixin AssetHelper {
   static const String icoHistory = '${_baseIconPath}ico_history.png';
   static const String icoRank = '${_baseIconPath}ico_rank.png';
   static const String icoUserProfile = '${_baseIconPath}ico_userprofile.png';
+  static const String icoLocation = '${_baseIconPath}icoLocation.png';
+  static const String icoStar = 'assets/icons/ico_star.png';
+
 
 
   // images
@@ -24,5 +27,8 @@ mixin AssetHelper {
   static const String slide3= '${_baseImagePath}slide3.png';
   static const String backgroundSplash= '${_baseImagePath}background_splash.png';
   static const String circleSplash= '${_baseImagePath}circle_splash.png';
+
+  // bia truye
+  static const String harryPotterCover= '${_baseImagePath}harry_potter_cover.jpg';
 
 }
