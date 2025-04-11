@@ -26,10 +26,13 @@ class ColorPalette {
   static const Color kAccent2 = Color(0xFFB9C2FC);
   static const Color kAccent3 = Color(0xFFEEB8D8);
   static const Color kAccent4 = Color(0xFF6AC6C5);
+  static const Color kAccent5 = Color(0xFFF6D3C5);
   static const Color kSecondary = Color(0xFF1D2445);
   static const Color kSuccess = Color(0xFF329447);
   static const Color kGrey = Color(0xff0000004d);
   static const Color kLightPink = Color(0xFFF5D3BB);
+  static const Color backgroundColor = Color(0xFFF4E7D8);
+  static const Color backgroundColor2 = Color(0xFFFBF5E9);
   static const Color kLightPink2 = Color(0xFFFFE2CD);
   static const Color kLightBrown = Color(0xFF73665C);
   static const Color slateGray = Color(0xFFC6E2FF);
