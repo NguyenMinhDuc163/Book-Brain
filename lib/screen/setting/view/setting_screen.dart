@@ -1,5 +1,6 @@
 import 'package:book_brain/screen/change_password/view/change_password_screen.dart';
 import 'package:book_brain/screen/edit_profile/view/edit_profile_screen.dart';
+import 'package:book_brain/screen/login/view/login_screen.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart' show AssetHelper;
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
@@ -26,7 +27,9 @@ class _SettingScreenState extends State<SettingScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: kMediumPadding),
+              SizedBox(
+                height: kDefaultPadding * 5,
+              ),
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(kMediumPadding),
@@ -55,7 +58,7 @@ class _SettingScreenState extends State<SettingScreen> {
                     _buildSettingItem(
                       "Đăng xuất",
                       const Color.fromARGB(255, 0, 0, 0),
-                      () {},
+                      () => Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen())),
                     ),
                   ],
                 ),
@@ -84,7 +87,7 @@ class _SettingScreenState extends State<SettingScreen> {
     }
 
     return Padding(
-      padding: EdgeInsets.all(kItemPadding * 1.5),
+      padding: EdgeInsets.all(kItemPadding * 1.5), 
       child: InkWell(
         onTap: onTap,
         child: Row(
