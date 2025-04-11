@@ -40,6 +40,7 @@ double margin_775 = 775.h;
 
 
 double padding_5 = 5.h;
+double padding_10 = 10.h;
 double padding_16 = 16.h;
 double padding_24 = 24.h;
 double padding_32 = 32.h;
@@ -53,6 +54,7 @@ double width_8 = 8.w;
 double width_16 = 16.w;
 double width_20 = 20.w;
 double width_24 = 24.w;
+double width_25 = 25.w;
 double width_28 = 28.w;
 double width_30 = 30.w;
 double width_32 = 32.w;
@@ -78,6 +80,7 @@ double width_800 = 800.w;
 double height_2 = 2.h;
 double height_4 = 4.h;
 double height_8 = 8.h;
+double height_12 = 12.h;
 double height_16 = 16.h;
 double height_20 = 20.h;
 double height_24 = 24.h;
@@ -107,6 +110,8 @@ double fontSize_14 = 14;
 double fontSize_16 = 16;
 
 double fontSize_32sp = 32.sp;
+double fontSize_15sp = 15.sp;
+double fontSize_13sp = 13.sp;
 double fontSize_35sp = 35.sp;
 double fontSize_38sp = 38.sp;
 double fontSize_40sp = 40.sp;

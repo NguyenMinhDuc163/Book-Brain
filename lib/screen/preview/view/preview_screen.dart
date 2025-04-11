@@ -1,3 +1,5 @@
+import 'package:book_brain/screen/detail_book/view/detail_book_screen.dart';
+import 'package:book_brain/screen/detail_book/widget/bottom_sheet_selector.dart';
 import 'package:book_brain/screen/login/widget/button_widget.dart';
 import 'package:book_brain/screen/preview/widget/item_utility_widget.dart';
 import 'package:book_brain/utils/core/constants/color_constants.dart';
@@ -19,6 +21,9 @@ class PreviewScreen extends StatefulWidget {
 
 class _PreviewScreenState extends State<PreviewScreen> {
   bool _dangTheoDoi = false;
+  final List<String> _chapters = MockData.mockChapters;
+  String _selectedChapter = "-- Harry Potter và Hòn đá phù thủy - Chương 01";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -224,11 +229,25 @@ class _PreviewScreenState extends State<PreviewScreen> {
                           // SizedBox(
                           //   height: kDefaultPadding * 2,
                           // ),
+                          BottomSheetSelector(
+                            title: 'Chọn chương sách',
+                            items: _chapters,
+                            selectedValue: _selectedChapter,
+                            onValueChanged: (value) {
+                              setState(() {
+                                _selectedChapter = value;
+                              });
+                            },
+                            placeholder: 'Vui lòng chọn chương sách',
+                          ),
+                          SizedBox(
+                            height: kDefaultPadding,
+                          ),
                           ButtonWidget(
                             title: 'Bắt đầu đọc',
                             ontap: () {
-                              // Navigator.of(context)
-                              //     .pushNamed(RouteNames.selectRoomScreen);
+                              Navigator.of(context)
+                                  .pushNamed(DetailBookScreen.routeName);
                             },
                           ),
                           SizedBox(
