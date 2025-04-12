@@ -1,4 +1,8 @@
 
+import 'package:flutter/material.dart';
+
+import '../../../screen/ranking/model/ranking_user.dart';
+
 class MockData {
   static const describe = '''Khi một lá thư được gởi đến cho cậu bé Harry Potter bình thường và bất hạnh, cậu khám phá ra một bí mật đã được che giấu suốt cả một thập kỉ. Cha mẹ cậu chính là phù thủy và cả hai đã bị lời nguyền của Chúa tể Hắc ám giết hại khi Harry mới chỉ là một đứa trẻ, và bằng cách nào đó, cậu đã giữ được mạng sống của mình. Thoát khỏi những người giám hộ Muggle không thể chịu đựng nổi để nhập học vào trường Hogwarts, một trường đào tạo phù thủy với những bóng ma và phép thuật, Harry tình cờ dấn thân vào một cuộc phiêu lưu đầy gai góc khi cậu phát hiện ra một con chó ba đầu đang canh giữ một căn phòng trên tầng ba. Rồi Harry nghe nói đến một viên đá bị mất tích sở hữu những sức mạnh lạ kì, rất quí giá, vô cùng nguy hiểm, mà cũng có thể là mang cả hai đặc điểm trên.''';
   static const List<String> mockChapters = [
@@ -14,6 +18,65 @@ class MockData {
     "-- Harry Potter và Hòn đá phù thủy - Chương 07",
   ];
 
+
+  static  List<RankingUser> topUsers  = [
+    RankingUser(
+      name: 'Duc',
+      score: '2,569 d',
+      avatarBackgroundColor: Colors.lightBlue.shade200,
+      flagColor: Colors.red,
+      rank: 1,
+    ),
+    RankingUser(
+      name: 'Duc',
+      score: '1,469 d',
+      avatarBackgroundColor: Colors.pink.shade100,
+      flagColor: Colors.blue,
+      rank: 2,
+    ),
+    RankingUser(
+      name: 'Duc',
+      score: '1,053 ddh',
+      avatarBackgroundColor: Colors.lightBlue.shade100,
+      flagColor: Colors.red,
+      rank: 3,
+    ),
+    RankingUser(
+      name: 'Dương Anh Đức',
+      score: '590 điểm',
+      avatarBackgroundColor: Colors.purple.shade100,
+      flagColor: Colors.green,
+      rank: 4,
+    ),
+    RankingUser(
+      name: 'Nguyễn Đức Minh',
+      score: '448 điểm',
+      avatarBackgroundColor: Colors.brown.shade100,
+      flagColor: Colors.green,
+      rank: 5,
+    ),
+    RankingUser(
+      name: 'Mai Linh',
+      score: '412 điểm',
+      avatarBackgroundColor: Colors.yellow.shade100,
+      flagColor: Colors.red,
+      rank: 6,
+    ),
+    RankingUser(
+      name: 'Trần Văn Khoa',
+      score: '389 điểm',
+      avatarBackgroundColor: Colors.blue.shade100,
+      flagColor: Colors.blue,
+      rank: 7,
+    ),
+    RankingUser(
+      name: 'Phạm Thị Hương',
+      score: '354 điểm',
+      avatarBackgroundColor: Colors.green.shade100,
+      flagColor: Colors.red,
+      rank: 8,
+    ),
+  ];
 
   static const contentBook = ''' Ông bà Dursley, nhà số 4 đường Privet Drive, tự hào mà nói họ hoàn toàn bình thường, cám ơn bà con quan tâm. Bà con đừng trông mong gì họ tin vào những chuyện kỳ lạ hay bí ẩn, đơn giản là vì họ chẳng hơi đâu bận tâm đến mấy trò vớ vẩn đó.
 Ông Dursley là giám đốc một công ty gọi là Grunnings, chuyên sản suất máy khoan. Ông là một người cao lớn lực lưỡng, cổ gần như không có, nhưng lại có một bộ ria mép vĩ đại. Bà Dursley thì ốm nhom, tóc vàng, với một cái cổ dài gấp đôi bình thường, rất tiện cho bà nhóng qua hàng rào để dòm ngó nhà hàng xóm. Hai ông bà Dursley có một cậu quý tử tên là Dudley, mà theo ý họ thì không thể có đứa bé nào trên đời này ngoan hơn được nữa.

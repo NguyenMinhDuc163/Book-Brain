@@ -49,8 +49,10 @@ double padding_80 = 80.h;
 
 
 double getParentWidth(BuildContext context) => MediaQuery.of(context).size.width;
+double width_1 = 1.w;
 double width_2 = 2.w;
 double width_8 = 8.w;
+double width_10 = 10.w;
 double width_16 = 16.w;
 double width_20 = 20.w;
 double width_24 = 24.w;
@@ -79,6 +81,7 @@ double width_800 = 800.w;
 
 double height_2 = 2.h;
 double height_4 = 4.h;
+double height_5 = 5.h;
 double height_8 = 8.h;
 double height_12 = 12.h;
 double height_16 = 16.h;
@@ -92,6 +95,7 @@ double height_50 = 50.h;
 double height_56 = 56.h;
 double height_64 = 64.h;
 double height_70 = 70.h;
+double height_80 = 80.h;
 double height_85 = 85.h;
 double height_100 = 100.h;
 double height_120 = 120.h;
@@ -100,7 +104,9 @@ double height_140 = 140.h;
 double height_150 = 150.h;
 double height_160 = 160.h;
 double height_200 = 200.h;
+double height_350 = 350.h;
 double height_400 = 400.h;
+double height_420 = 420.h;
 double height_550 = 550.h;
 double height_500 = 500.h;
 

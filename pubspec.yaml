@@ -49,6 +49,7 @@ dependencies:
   font_awesome_flutter: ^10.8.0
   salomon_bottom_bar: ^3.3.2
   smooth_page_indicator: ^1.2.1
+  flutter_svg: ^2.0.17
 
 
 dev_dependencies:

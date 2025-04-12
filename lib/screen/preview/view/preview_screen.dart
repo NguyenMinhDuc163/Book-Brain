@@ -229,6 +229,11 @@ class _PreviewScreenState extends State<PreviewScreen> {
                           // SizedBox(
                           //   height: kDefaultPadding * 2,
                           // ),
+
+                          Text("Danh sách chương", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),),
+                          SizedBox(
+                            height: kDefaultPadding,
+                          ),
                           BottomSheetSelector(
                             title: 'Chọn chương sách',
                             items: _chapters,

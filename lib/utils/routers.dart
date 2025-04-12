@@ -15,6 +15,8 @@ import 'package:book_brain/screen/login/view/login_screen.dart';
 import 'package:book_brain/utils/router_names.dart';
 import 'package:book_brain/screen/change_password/view/change_password_screen.dart';
 import 'package:book_brain/screen/search_result_screen/view/search_result_screen.dart';
+
+import '../screen/ranking/view/ranking_screen.dart';
 final Map<String, WidgetBuilder> routes = {
   // noi tong hop ca routes
   LoginScreen.routeName: (context) => const LoginScreen(),
@@ -30,7 +32,7 @@ final Map<String, WidgetBuilder> routes = {
   EditProfileScreen.routeName: (context) => const EditProfileScreen(),
   PreviewScreen.routeName: (context) => const PreviewScreen(),
   ChangePasswordScreen.routeName: (context) => const ChangePasswordScreen(),
-  //SearchResultScreen.routeName: (context) => const SearchResultScreen(),
+  RankingScreen.routeName: (context) => const RankingScreen(),
   DetailBookScreen.routeName: (context) => const DetailBookScreen(),
 };
 
