@@ -23,7 +23,7 @@ class _SettingScreenState extends State<SettingScreen> {
       body: AppBarContinerWidget(
         titleString: "Cài đặt",
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: kDefaultPadding),
+          padding: EdgeInsets.symmetric(horizontal: kDefaultPadding, vertical: kDefaultPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -106,11 +106,11 @@ class _SettingScreenState extends State<SettingScreen> {
                 color: Colors.black87,
               ),
             ),
-            Spacer(), // Đẩy biểu tượng ">" sang phải
+            Spacer(), 
             FaIcon(
               FontAwesomeIcons.chevronRight, 
               size: kDefaultIconSize,
-              color: Colors.grey.shade600, // Màu xám nhạt cho ">"
+              color: Colors.grey.shade600, 
             ),
           ],
         ),

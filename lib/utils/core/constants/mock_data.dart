@@ -21,21 +21,21 @@ class MockData {
 
   static  List<RankingUser> topUsers  = [
     RankingUser(
-      name: 'Duc',
+      name: 'Nguyễn Minh Dức',
       score: '2,569 d',
       avatarBackgroundColor: Colors.lightBlue.shade200,
       flagColor: Colors.red,
       rank: 1,
     ),
     RankingUser(
-      name: 'Duc',
+      name: 'Nguyễn Lê Quốc Khánh',
       score: '1,469 d',
       avatarBackgroundColor: Colors.pink.shade100,
       flagColor: Colors.blue,
       rank: 2,
     ),
     RankingUser(
-      name: 'Duc',
+      name: 'Nguyễn Hữu Tú Minh',
       score: '1,053 ddh',
       avatarBackgroundColor: Colors.lightBlue.shade100,
       flagColor: Colors.red,
@@ -77,6 +77,11 @@ class MockData {
       rank: 8,
     ),
   ];
+
+  static const String rv1 = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.";
+  static const String rv2 = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.";
+  static const String rv3 = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.";
+
 
   static const contentBook = ''' Ông bà Dursley, nhà số 4 đường Privet Drive, tự hào mà nói họ hoàn toàn bình thường, cám ơn bà con quan tâm. Bà con đừng trông mong gì họ tin vào những chuyện kỳ lạ hay bí ẩn, đơn giản là vì họ chẳng hơi đâu bận tâm đến mấy trò vớ vẩn đó.
 Ông Dursley là giám đốc một công ty gọi là Grunnings, chuyên sản suất máy khoan. Ông là một người cao lớn lực lưỡng, cổ gần như không có, nhưng lại có một bộ ria mép vĩ đại. Bà Dursley thì ốm nhom, tóc vàng, với một cái cổ dài gấp đôi bình thường, rất tiện cho bà nhóng qua hàng rào để dòm ngó nhà hàng xóm. Hai ông bà Dursley có một cậu quý tử tên là Dudley, mà theo ý họ thì không thể có đứa bé nào trên đời này ngoan hơn được nữa.

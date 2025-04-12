@@ -2,6 +2,7 @@ import 'package:book_brain/screen/detail_book/view/detail_book_screen.dart';
 import 'package:book_brain/screen/detail_book/widget/bottom_sheet_selector.dart';
 import 'package:book_brain/screen/login/widget/button_widget.dart';
 import 'package:book_brain/screen/preview/widget/item_utility_widget.dart';
+import 'package:book_brain/screen/reivew_book/view/review_book_screen.dart';
 import 'package:book_brain/utils/core/constants/color_constants.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/constants/mock_data.dart';
@@ -30,48 +31,51 @@ class _PreviewScreenState extends State<PreviewScreen> {
       body: Stack(
         children: [
           Positioned.fill(
-            child: ImageHelper.loadFromAsset(AssetHelper.harryPotterCover,
-                fit: BoxFit.fill),
+            child: ImageHelper.loadFromAsset(
+              AssetHelper.harryPotterCover,
+              fit: BoxFit.fill,
+            ),
           ),
           Positioned(
-              top: kMediumPadding * 3,
-              left: kMediumPadding,
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-                child: Container(
-                  padding: EdgeInsets.all(kItemPadding),
-                  decoration: BoxDecoration(
-                    borderRadius:
-                    BorderRadius.all(Radius.circular(kDefaultPadding)),
-                    color: Colors.white,
+            top: kMediumPadding * 3,
+            left: kMediumPadding,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: Container(
+                padding: EdgeInsets.all(kItemPadding),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(kDefaultPadding),
                   ),
-                  child: Icon(
-                    FontAwesomeIcons.arrowLeft,
-                    size: 18,
-                  ),
+                  color: Colors.white,
                 ),
-              )),
+                child: Icon(FontAwesomeIcons.arrowLeft, size: 18),
+              ),
+            ),
+          ),
           Positioned(
-              top: kMediumPadding * 3,
-              right: kMediumPadding,
-              child: GestureDetector(
-                onTap: () {},
-                child: Container(
-                  padding: EdgeInsets.all(kItemPadding),
-                  decoration: BoxDecoration(
-                    borderRadius:
-                    BorderRadius.all(Radius.circular(kDefaultPadding)),
-                    color: Colors.white,
+            top: kMediumPadding * 3,
+            right: kMediumPadding,
+            child: GestureDetector(
+              onTap: () {},
+              child: Container(
+                padding: EdgeInsets.all(kItemPadding),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(kDefaultPadding),
                   ),
-                  child: Icon(
-                    FontAwesomeIcons.solidHeart,
-                    size: 18,
-                    color: Colors.red,
-                  ),
+                  color: Colors.white,
                 ),
-              )),
+                child: Icon(
+                  FontAwesomeIcons.solidHeart,
+                  size: 18,
+                  color: Colors.red,
+                ),
+              ),
+            ),
+          ),
           DraggableScrollableSheet(
             // mot man hinh nho co the keo len kheo xuong
             initialChildSize: 0.3,
@@ -96,15 +100,14 @@ class _PreviewScreenState extends State<PreviewScreen> {
                         height: 5,
                         width: 60,
                         decoration: BoxDecoration(
-                          borderRadius:
-                          BorderRadius.all(Radius.circular(kItemPadding)),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(kItemPadding),
+                          ),
                           color: Colors.black,
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: kDefaultPadding,
-                    ),
+                    SizedBox(height: kDefaultPadding),
                     Expanded(
                       child: ListView(
                         controller: scrollController,
@@ -115,11 +118,12 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                 child: Text(
                                   "Harry Potter và Hòn đá phù thủy",
                                   maxLines: 2,
-                                  style: TextStyles.defaultStyle.fontHeader.bold,
+                                  style:
+                                      TextStyles.defaultStyle.fontHeader.bold,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              SizedBox(width: width_16,),
+                              SizedBox(width: width_16),
                               GestureDetector(
                                 onTap: () {
                                   setState(() {
@@ -127,16 +131,24 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                   });
                                 },
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: _dangTheoDoi ?  Color(0xFFBB86FC) : ColorPalette.colorGreen,
+                                    color:
+                                        _dangTheoDoi
+                                            ? Color(0xFFBB86FC)
+                                            : ColorPalette.colorGreen,
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                       Text(
-                                        _dangTheoDoi ? 'Theo dõi' : 'Đã theo dõi',
+                                      Text(
+                                        _dangTheoDoi
+                                            ? 'Theo dõi'
+                                            : 'Đã theo dõi',
                                         style: TextStyle(
                                           color: Colors.black,
                                           fontWeight: FontWeight.w500,
@@ -154,86 +166,71 @@ class _PreviewScreenState extends State<PreviewScreen> {
                               ),
                             ],
                           ),
-                          SizedBox(
-                            height: kDefaultPadding,
-                          ),
+                          SizedBox(height: kDefaultPadding),
                           Row(
                             children: [
-                               Icon(
-                                FontAwesomeIcons.user,
-                                size: 18,
-                              ),
-                              SizedBox(
-                                width: kMinPadding,
-                              ),
-                              Text(
-                                  "J. K. Rowling",
-                              )
+                              Icon(FontAwesomeIcons.user, size: 18),
+                              SizedBox(width: kMinPadding),
+                              Text("J. K. Rowling"),
                             ],
                           ),
-                          SizedBox(
-                            height: kDefaultPadding,
-                          ),
+                          SizedBox(height: kDefaultPadding),
                           Row(
                             children: [
                               ImageHelper.loadFromAsset(AssetHelper.icoStar),
-                              SizedBox(
-                                width: kMinPadding,
-                              ),
-                              Text(
-                                '4.2/5 ',
-                              ),
+                              SizedBox(width: kMinPadding),
+                              Text('4.2/5 '),
                               Text(
                                 '(2456 đánh giá)',
                                 style: TextStyle(
-                                    color: ColorPalette.subTitleColor),
-                              )
+                                  color: ColorPalette.subTitleColor,
+                                ),
+                              ),
+                              Spacer(),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(context, ReviewBookScreen.routeName);
+                                },
+                                child: Text("Xem thêm"),
+                              ),
                             ],
                           ),
-                          SizedBox(
-                            height: kDefaultPadding,
-                          ),
+                          SizedBox(height: kDefaultPadding),
                           Text(
                             'Thể loại',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          SizedBox(
-                            height: kDefaultPadding,
-                          ),
+                          SizedBox(height: kDefaultPadding),
                           Text(
                             'Văn học phương Tây, Phiêu lưu, Hành động.',
                             style: TextStyle(fontWeight: FontWeight.w300),
                           ),
-                          SizedBox(
-                            height: kDefaultPadding,
-                          ),
+                          SizedBox(height: kDefaultPadding),
                           // ItemUtilityWidge(),
-                          SizedBox(
-                            height: kDefaultPadding,
-                          ),
+                          SizedBox(height: kDefaultPadding),
                           Text(
                             'Mô tả',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          SizedBox(
-                            height: kDefaultPadding,
-                          ),
+                          SizedBox(height: kDefaultPadding),
                           Text(
                             MockData.describe,
                             style: TextStyle(fontWeight: FontWeight.w300),
                           ),
-                          SizedBox(
-                            height: kDefaultPadding,
-                          ),
+                          SizedBox(height: kDefaultPadding),
+
                           // ImageHelper.loadFromAsset(AssetHelper.imageMap),
                           // SizedBox(
                           //   height: kDefaultPadding * 2,
                           // ),
-
-                          Text("Danh sách chương", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),),
-                          SizedBox(
-                            height: kDefaultPadding,
+                          Text(
+                            "Danh sách chương",
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
+                          SizedBox(height: kDefaultPadding),
                           BottomSheetSelector(
                             title: 'Chọn chương sách',
                             items: _chapters,
@@ -245,19 +242,16 @@ class _PreviewScreenState extends State<PreviewScreen> {
                             },
                             placeholder: 'Vui lòng chọn chương sách',
                           ),
-                          SizedBox(
-                            height: kDefaultPadding,
-                          ),
+                          SizedBox(height: kDefaultPadding),
                           ButtonWidget(
                             title: 'Bắt đầu đọc',
                             ontap: () {
-                              Navigator.of(context)
-                                  .pushNamed(DetailBookScreen.routeName);
+                              Navigator.of(
+                                context,
+                              ).pushNamed(DetailBookScreen.routeName);
                             },
                           ),
-                          SizedBox(
-                            height: kDefaultPadding,
-                          ),
+                          SizedBox(height: kDefaultPadding),
                         ],
                       ),
                     ),

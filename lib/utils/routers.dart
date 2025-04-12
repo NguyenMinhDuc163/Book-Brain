@@ -6,6 +6,7 @@ import 'package:book_brain/screen/forgot_password/view/forgot_password_screen.da
 import 'package:book_brain/screen/history_reading/view/history_reading_screen.dart';
 import 'package:book_brain/screen/home/view/home_screen.dart';
 import 'package:book_brain/screen/main_app.dart';
+import 'package:book_brain/screen/reivew_book/view/review_book_screen.dart';
 import 'package:book_brain/screen/search_book/view/search_screen.dart';
 import 'package:book_brain/screen/preview/view/preview_screen.dart';
 import 'package:book_brain/screen/sign_up/view/sign_up_screen.dart';
@@ -34,6 +35,7 @@ final Map<String, WidgetBuilder> routes = {
   ChangePasswordScreen.routeName: (context) => const ChangePasswordScreen(),
   RankingScreen.routeName: (context) => const RankingScreen(),
   DetailBookScreen.routeName: (context) => const DetailBookScreen(),
+  ReviewBookScreen.routeName: (context) => const ReviewBookScreen(),
 };
 
 MaterialPageRoute<dynamic>? generateRoutes(RouteSettings settings) {

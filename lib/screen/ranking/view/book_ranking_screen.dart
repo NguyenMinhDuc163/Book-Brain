@@ -2,7 +2,6 @@ import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/extentions/size_extension.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 import '../../../utils/core/constants/color_constants.dart';
 import '../../../utils/core/helpers/image_helper.dart';

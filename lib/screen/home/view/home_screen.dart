@@ -1,9 +1,11 @@
 import 'package:book_brain/screen/following_book/view/following_book_screen.dart';
+import 'package:book_brain/screen/home/widget/book_item_widget.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/screen/preview/view/preview_screen.dart';
 import 'package:book_brain/screen/ranking/view/ranking_screen.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/constants/textstyle_ext.dart';
+import 'package:book_brain/utils/core/extentions/size_extension.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
 import 'package:flutter/material.dart';
@@ -20,27 +22,25 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final List<Map<String, String>> listImageLeft = [
-    {'name': 'Name', 'image': AssetHelper.bookMock},
-    {'name': 'Name', 'image': AssetHelper.bookMock},
-  ];
-  final List<Map<String, String>> listImageRight = [
-    {'name': 'Name', 'image': AssetHelper.bookMock},
-    {'name': 'Name', 'image': AssetHelper.bookMock},
-  ];
+  final List<Map<String, String>> listAllBooks = [
+    {'name': 'SHOE DOG', 'image': AssetHelper.bookMock},
+    {'name': 'No Rules Rules', 'image': AssetHelper.bookMock},
+    {'name': 'To Pixar And Beyond', 'image': AssetHelper.bookMock},
 
-  Widget _buildItemCategory(
-    Widget icon,
-    Color color,
-    Function() onTap,
-    String title,
-  ) {
+  ];
+  Widget _buildItemCategory({
+    required Widget icon,
+    required Color color,
+    required Function() onTap,
+    required String title,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Column(
         children: [
           Container(
-            width: double.infinity,
+            width: width_100,
+            height: height_50,
             padding: EdgeInsets.symmetric(vertical: kMediumPadding),
             decoration: BoxDecoration(
               color: color.withOpacity(0.2),
@@ -118,8 +118,25 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.symmetric(horizontal: kItemPadding),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(width: kMinPadding),
+            Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(kItemPadding),
+                color: Colors.white,
+              ),
+              child: Icon(
+                FontAwesomeIcons.user,
+                color: Colors.black,
+                size: 30,
+              ),
+            ),
+            SizedBox(width: width_16),
             Column(
+              spacing: height_5,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -127,7 +144,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   'Nguyen Van A',
                   style: TextStyles.defaultStyle.fontHeader.whiteTextColor.bold,
                 ),
-                SizedBox(height: kMediumPadding),
                 Text(
                   'Bạn sẽ đọc cuốn sách nào hôm nay?',
                   style: TextStyles.defaultStyle.fontCaption.whiteTextColor,
@@ -140,17 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
               size: kDefaultIconSize,
               color: Colors.white,
             ),
-            SizedBox(width: kMinPadding),
-            Container(
-              height: 40,
-              width: 40,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(kItemPadding),
-                color: Colors.white,
-              ),
-              padding: EdgeInsets.all(kItemPadding),
-              child: ImageHelper.loadFromAsset(AssetHelper.avatar),
-            ),
+
           ],
         ),
       ),
@@ -189,100 +195,73 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.pushNamed(context, SearchScreen.routeName);
             },
           ),
-          SizedBox(height: kDefaultPadding),
-          Row(
-            children: [
-              Expanded(
-                child: _buildItemCategory(
-                  ImageHelper.loadFromAsset(
-                    AssetHelper.icoHistory,
-                    width: kDefaultIconSize,
-                    height: kDefaultIconSize,
-                  ),
-                  Color(0xffFE9C5E),
-                  () {
-                    Navigator.pushNamed(
-                      context,
-                      HistoryReadingScreen.routeName,
-                    );
-                  },
-                  'Lịch sử',
-                ),
-              ),
-              SizedBox(width: kDefaultPadding),
-              Expanded(
-                child: _buildItemCategory(
-                  ImageHelper.loadFromAsset(
-                    AssetHelper.icoRank,
-                    width: kDefaultIconSize,
-                    height: kDefaultIconSize,
-                  ),
-                  Color(0xffF77777),
-                  () {
-                    Navigator.of(context).pushNamed(RankingScreen.routeName);
-                  },
-                  'Xếp hạng',
-                ),
-              ),
-              SizedBox(width: kDefaultPadding),
-              Expanded(
-                child: _buildItemCategory(
-                  ImageHelper.loadFromAsset(
-                    AssetHelper.icoBookFollow,
-                    width: kDefaultIconSize,
-                    height: kDefaultIconSize,
-                  ),
-                  Color(0xff3EC8BC),
-                  () {
-                    Navigator.pushNamed(context, FollowingBookScreen.routeName);
-                  },
-                  'Sách theo dõi',
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: kMediumPadding),
-          Row(
-            children: [
-              Text('Cuốn sách phổ biến', style: TextStyles.defaultStyle.bold),
-              Spacer(),
-              Text(
-                'Tất cả',
-                style: TextStyles.defaultStyle.bold.primaryTextColor,
-              ),
-            ],
-          ),
-          SizedBox(height: kMediumPadding),
+          SizedBox(height: height_30),
           Expanded(
             child: SingleChildScrollView(
-              child: Row(
+              child: Column(
                 children: [
-                  Expanded(
-                    child: Column(
-                      children:
-                          listImageLeft
-                              .map(
-                                (e) => _buildImageHomScreen(
-                                  e['name']!,
-                                  e['image']!,
-                                ),
-                              )
-                              .toList(),
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildItemCategory(
+                          icon: Icon(FontAwesomeIcons.rankingStar, color: Color(0xffFE9C5E),),
+                          color: Color(0xffFE9C5E),
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              HistoryReadingScreen.routeName,
+                            );
+                          },
+                          title: 'Lịch sử',
+                        ),
+                      ),
+                      SizedBox(width: kDefaultPadding),
+                      Expanded(
+                        child: _buildItemCategory(
+                          icon: Icon(FontAwesomeIcons.rankingStar, color: Color(0xffF77777),),
+                          color: Color(0xffF77777),
+                          onTap: () {
+                            Navigator.of(
+                              context,
+                            ).pushNamed(RankingScreen.routeName);
+                          },
+                          title: 'Xếp hạng',
+                        ),
+                      ),
+                      SizedBox(width: kDefaultPadding),
+                      Expanded(
+                        child: _buildItemCategory(
+                          icon: Icon(FontAwesomeIcons.bookBookmark, color: Color(0xff3EC8BC),),
+
+                          color: Color(0xff3EC8BC),
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              FollowingBookScreen.routeName,
+                            );
+                          },
+                          title: 'Sách theo dõi',
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(width: kDefaultPadding),
-                  Expanded(
-                    child: Column(
-                      children:
-                          listImageRight
-                              .map(
-                                (e) => _buildImageHomScreen(
-                                  e['name']!,
-                                  e['image']!,
-                                ),
-                              )
-                              .toList(),
-                    ),
+                  SizedBox(height: kMediumPadding),
+                  HorizontalBookList(
+                    title: 'Top thinh hành',
+                    books: listAllBooks,
+                    onSeeAllPressed: () {},
+                  ),
+
+                  HorizontalBookList(
+                    title: 'Dành cho bạn',
+                    books: listAllBooks,
+                    onSeeAllPressed: () {},
+                  ),
+
+                  HorizontalBookList(
+                    title: 'Mới xuất bản',
+                    books: listAllBooks,
+                    onSeeAllPressed: () {},
                   ),
                 ],
               ),

@@ -2,6 +2,7 @@ import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../utils/core/constants/color_constants.dart';
 import '../../../utils/core/helpers/asset_helper.dart';
 
 class RatingStars extends StatelessWidget {
@@ -21,7 +22,7 @@ class RatingStars extends StatelessWidget {
     this.starWidth = 22,
     this.starHeight = 22,
     this.activeColor = Colors.orange,
-    this.inactiveColor = Colors.grey,
+    this.inactiveColor = ColorPalette.lavenderWhite,
     required this.activeStar,
     required this.inactiveStar,
   }) :
@@ -63,7 +64,7 @@ class RatingStarsExample extends StatelessWidget {
               inactiveStar: AssetHelper.icoStarSVG,
             ),
 
-            SizedBox(height: 20),
+            // SizedBox(height: 20),
 
             // Ví dụ với các tùy chọn khác
             RatingStars(
