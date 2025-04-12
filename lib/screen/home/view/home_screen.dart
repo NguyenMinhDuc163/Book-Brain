@@ -8,7 +8,7 @@ import 'package:book_brain/utils/core/helpers/image_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-
+import 'package:book_brain/screen/search_book/view/search_screen.dart';
 import '../../history_reading/view/history_reading_screen.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -216,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onSubmitted: (String submitValue) {},
             ),
             onTap: (){
-              // Navigator.pushNamed(context, RouteNames.searchScreen);
+               Navigator.pushNamed(context, SearchScreen.routeName);
             },
           ),
           SizedBox(
