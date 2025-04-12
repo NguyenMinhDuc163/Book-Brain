@@ -30,7 +30,7 @@ final Map<String, WidgetBuilder> routes = {
   EditProfileScreen.routeName: (context) => const EditProfileScreen(),
   PreviewScreen.routeName: (context) => const PreviewScreen(),
   ChangePasswordScreen.routeName: (context) => const ChangePasswordScreen(),
-  SearchResultScreen.routeName: (context) => const SearchResultScreen(),
+  //SearchResultScreen.routeName: (context) => const SearchResultScreen(),
   DetailBookScreen.routeName: (context) => const DetailBookScreen(),
 };
 

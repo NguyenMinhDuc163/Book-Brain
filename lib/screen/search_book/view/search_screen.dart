@@ -3,8 +3,7 @@ import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/utils/core/constants/textstyle_ext.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
-import 'package:book_brain/screen/search_result_screen/view/search_result_screen.dart'; 
-import '../../login/widget/button_widget.dart' show ButtonWidget; 
+import 'package:book_brain/screen/search_result_screen/view/search_result_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -15,6 +14,13 @@ class SearchScreen extends StatefulWidget {
 
 class _MyWidgetState extends State<SearchScreen> {
   final TextEditingController _keywordController = TextEditingController();
+  // Danh sách tìm kiếm gần đây 
+  final List<String> recentSearches = [
+    "Harry Potter",
+    "Lord of the Rings",
+    "Doraemon",
+    "Naruto",
+  ];
 
   @override
   void dispose() {
@@ -28,8 +34,8 @@ class _MyWidgetState extends State<SearchScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          //builder: (context) => SearchResultScreen(keyword: keyword),
-          builder: (context) => SearchResultScreen(),
+        builder: (context) => SearchResultScreen(keyword: keyword),
+        //  builder: (context) => SearchResultScreen(),
         ),
       );
     }
@@ -46,14 +52,14 @@ class _MyWidgetState extends State<SearchScreen> {
         titleString: "Tìm kiếm sách",
         child: SingleChildScrollView(
           child: Column(
-            spacing: 5,
+            crossAxisAlignment: CrossAxisAlignment.start, 
             children: [
-              //SizedBox(height: kDefaultPadding * 3),
+              SizedBox(height: kDefaultPadding * 2),
               TextField(
-                controller: _keywordController, // Gắn controller
+                controller: _keywordController,
                 autocorrect: false,
                 decoration: InputDecoration(
-                  hintText: 'Tìm kiếm cuốn sách của bạn',
+                  hintText: 'Nhập tựa đề sách / tác giả',
                   prefixIcon: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Icon(
@@ -69,7 +75,7 @@ class _MyWidgetState extends State<SearchScreen> {
                         FontAwesomeIcons.forward,
                         size: 14,
                       ),
-                      onTap: () => _search(), 
+                      onTap: () => _search(),
                     ),
                   ),
                   filled: true,
@@ -82,11 +88,39 @@ class _MyWidgetState extends State<SearchScreen> {
                 ),
                 style: TextStyles.defaultStyle,
                 onSubmitted: (value) {
-                  _search(); // Tìm kiếm khi nhấn Enter trên bàn phím
+                  _search();
                 },
               ),
               SizedBox(height: kDefaultPadding),
-              
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: kItemPadding),
+                child: Text(
+                  "Tìm kiếm gần đây",
+                  style: TextStyles.defaultStyle.bold.copyWith(fontSize: 16),
+                ),
+              ),
+              //SizedBox(height: kDefaultPadding / 2),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: kItemPadding),
+                child: ListView.builder(
+                  shrinkWrap: true, // Giới hạn chiều cao theo nội dung
+                  physics: NeverScrollableScrollPhysics(), // Tắt cuộn riêng của ListView
+                  itemCount: recentSearches.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero, // Xóa padding mặc định
+                      title: Text(
+                        recentSearches[index],
+                        style: TextStyles.defaultStyle.copyWith(fontSize: 14),
+                      ),
+                      onTap: () {
+                        _keywordController.text = recentSearches[index]; // Điền từ khóa vào TextField
+                        _search();
+                      },
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),
