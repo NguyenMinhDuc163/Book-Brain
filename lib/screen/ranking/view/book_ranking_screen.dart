@@ -23,7 +23,7 @@ class _BookRankingScreenState extends State<BookRankingScreen> {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: Colors.grey.shade100,
-          width: 1, // Độ dày viền
+          width: 1, 
         ),
       ),
       padding: EdgeInsets.all(kDefaultPadding),
@@ -44,13 +44,13 @@ class _BookRankingScreenState extends State<BookRankingScreen> {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: Colors.grey.shade100,
-          width: 1, // Độ dày viền
+          width: 1, 
         ),
       ),
       padding: EdgeInsets.all(kDefaultPadding),
       margin: EdgeInsets.symmetric(vertical: kDefaultPadding),
       child: Row(
-        spacing: width_8,
+        spacing: width_10,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
@@ -64,7 +64,7 @@ class _BookRankingScreenState extends State<BookRankingScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
-              spacing: height_4,
+              spacing: height_6,
               children: [
                 Text("Pobres criaturas"),
                 Text("J.K.Rowling"),
@@ -82,6 +82,7 @@ class _BookRankingScreenState extends State<BookRankingScreen> {
             
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: width_8,
                   children: [
                     Text("7.8", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
@@ -111,7 +112,7 @@ class _BookRankingScreenState extends State<BookRankingScreen> {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: Colors.grey,
-          width: 1, // Độ dày viền
+          width: 1, 
         ),
       ),
       child: Text(

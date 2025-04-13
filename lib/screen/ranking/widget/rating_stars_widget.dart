@@ -19,8 +19,8 @@ class RatingStars extends StatelessWidget {
     Key? key,
     required this.rating,
     this.totalStars = 5,
-    this.starWidth = 22,
-    this.starHeight = 22,
+    this.starWidth = 12,
+    this.starHeight = 12,
     this.activeColor = Colors.orange,
     this.inactiveColor = ColorPalette.lavenderWhite,
     required this.activeStar,
@@ -56,6 +56,7 @@ class RatingStarsExample extends StatelessWidget {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Ví dụ hiển thị 3 sao vàng, 2 sao xám
             RatingStars(
@@ -70,8 +71,8 @@ class RatingStarsExample extends StatelessWidget {
             RatingStars(
               rating: 4,
               totalStars: 5,
-              starWidth: 24,
-              starHeight: 24,
+              starWidth: 20,
+              starHeight: 20,
               activeColor: Colors.amber,
               inactiveColor: Colors.grey.shade300,
               activeStar: AssetHelper.icoStarSVG,

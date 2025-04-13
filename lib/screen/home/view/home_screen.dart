@@ -112,6 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return AppBarContainerWidget(
       titleString: 'home',
+      isShowBackButton: false,
       title: Padding(
         padding: const EdgeInsets.symmetric(horizontal: kItemPadding),
         child: Row(
@@ -162,41 +163,42 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+      bottomWidget: InkWell(
+        child: TextField(
+          enabled: false,
+          autocorrect: false,
+          decoration: InputDecoration(
+            hintText: 'Tìm kiếm cuốn sách của bạn',
+            prefixIcon: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Icon(
+                FontAwesomeIcons.magnifyingGlass,
+                color: Colors.black,
+                size: 14,
+              ),
+            ),
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.all(Radius.circular(kItemPadding)),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: kItemPadding,
+            ),
+          ),
+          style: TextStyles.defaultStyle,
+          onChanged: (value) {},
+          onSubmitted: (String submitValue) {},
+        ),
+        onTap: () {
+          Navigator.pushNamed(context, SearchScreen.routeName);
+        },
+      ),
+      paddingContent: EdgeInsets.all(kDefaultPadding),
+      topPadding: 10,
       child: Column(
         children: [
-          InkWell(
-            child: TextField(
-              enabled: false,
-              autocorrect: false,
-              decoration: InputDecoration(
-                hintText: 'Tìm kiếm cuốn sách của bạn',
-                prefixIcon: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Icon(
-                    FontAwesomeIcons.magnifyingGlass,
-                    color: Colors.black,
-                    size: 14,
-                  ),
-                ),
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.all(Radius.circular(kItemPadding)),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: kItemPadding,
-                ),
-              ),
-              style: TextStyles.defaultStyle,
-              onChanged: (value) {},
-              onSubmitted: (String submitValue) {},
-            ),
-            onTap: () {
-              Navigator.pushNamed(context, SearchScreen.routeName);
-            },
-          ),
-          SizedBox(height: height_30),
           Expanded(
             child: SingleChildScrollView(
               child: Column(

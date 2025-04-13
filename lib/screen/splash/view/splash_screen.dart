@@ -3,7 +3,6 @@ import 'package:book_brain/screen/splash/view/intro_screen.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
 import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
-import 'package:book_brain/utils/router_names.dart';
 import 'package:flutter/cupertino.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -32,6 +31,8 @@ class _SplashScreenState extends State<SplashScreen> {
       LocalStorageHelper.setValue('ignoreIntroScreen', true);
       Navigator.of(context).pushNamed(IntroScreen.routeName);
     }
+    Navigator.of(context).pushNamed(IntroScreen.routeName);
+
   }
   @override
   Widget build(BuildContext context) {

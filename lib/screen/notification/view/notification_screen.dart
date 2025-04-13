@@ -91,7 +91,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         backgroundColor: ColorPalette.lavenderWhite,
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: height_60),
+            padding: EdgeInsets.symmetric(vertical: height_10),
             child: Column(
               spacing: height_10,
               children: _bookAppNotifications.map((notification) {
