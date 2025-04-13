@@ -16,6 +16,38 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
+  void _showLogoutConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Đăng xuất'),
+          content: Text('Bạn có chắc chắn muốn đăng xuất không?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Đóng dialog
+              },
+              child: Text('Hủy'), 
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Đóng dialog
+                
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginScreen()),
+                  (Route<dynamic> route) => false, // Xóa toàn bộ stack điều hướng
+                );
+              },
+              child: Text('Đồng ý'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,12 +85,15 @@ class _SettingScreenState extends State<SettingScreen> {
                     _buildSettingItem(
                       "Đổi mật khẩu",
                       const Color.fromARGB(255, 0, 0, 0),
-                      () => Navigator.push(context, MaterialPageRoute(builder: (context)=>ChangePasswordScreen())),
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ChangePasswordScreen()),
+                      ),
                     ),
                     _buildSettingItem(
                       "Đăng xuất",
                       const Color.fromARGB(255, 0, 0, 0),
-                      () => Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen())),
+                      () => _showLogoutConfirmationDialog(), 
                     ),
                   ],
                 ),
@@ -87,7 +122,7 @@ class _SettingScreenState extends State<SettingScreen> {
     }
 
     return Padding(
-      padding: EdgeInsets.all(kItemPadding * 1.5), 
+      padding: EdgeInsets.all(kItemPadding * 1.5),
       child: InkWell(
         onTap: onTap,
         child: Row(
@@ -106,11 +141,11 @@ class _SettingScreenState extends State<SettingScreen> {
                 color: Colors.black87,
               ),
             ),
-            Spacer(), // Đẩy biểu tượng ">" sang phải
+            Spacer(),
             FaIcon(
-              FontAwesomeIcons.chevronRight, 
+              FontAwesomeIcons.chevronRight,
               size: kDefaultIconSize,
-              color: Colors.grey.shade600, // Màu xám nhạt cho ">"
+              color: Colors.grey.shade600,
             ),
           ],
         ),
