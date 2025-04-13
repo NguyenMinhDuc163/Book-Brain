@@ -1,4 +1,5 @@
 
+import 'package:book_brain/screen/preview/view/preview_screen.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/constants/textstyle_ext.dart' show ExtendedTextStyle, TextStyles;
 import 'package:flutter/material.dart';
@@ -104,10 +105,15 @@ class HorizontalBookList extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             itemCount: books.length,
             itemBuilder: (context, index) {
-              return BookItem(
-                name: books[index]['name']!,
-                image: books[index]['image']!,
-                rating: int.tryParse(books[index]['rating'] ?? '4') ?? 4,
+              return InkWell(
+                onTap: (){
+                  Navigator.pushNamed(context, PreviewScreen.routeName);
+                },
+                child: BookItem(
+                  name: books[index]['name']!,
+                  image: books[index]['image']!,
+                  rating: int.tryParse(books[index]['rating'] ?? '4') ?? 4,
+                ),
               );
             },
           ),

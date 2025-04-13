@@ -95,6 +95,7 @@ double height_38 = 38.h;
 double height_40 = 40.h;
 double height_50 = 50.h;
 double height_56 = 56.h;
+double height_60 = 60.h;
 double height_64 = 64.h;
 double height_70 = 70.h;
 double height_80 = 80.h;

@@ -31,12 +31,12 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       body: AppBarContinerWidget(
         titleString: "Yêu thích",
         paddingContent: EdgeInsets.only(
-          top: height_30,
           left: kDefaultPadding,
           right: kDefaultPadding,
         ),
         child: Column(
           children: [
+            SizedBox(height: height_40),
             Expanded(
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

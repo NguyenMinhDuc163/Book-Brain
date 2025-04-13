@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../screen/ranking/model/ranking_user.dart';
+import '../helpers/asset_helper.dart';
 
 class MockData {
   static const describe = '''Khi một lá thư được gởi đến cho cậu bé Harry Potter bình thường và bất hạnh, cậu khám phá ra một bí mật đã được che giấu suốt cả một thập kỉ. Cha mẹ cậu chính là phù thủy và cả hai đã bị lời nguyền của Chúa tể Hắc ám giết hại khi Harry mới chỉ là một đứa trẻ, và bằng cách nào đó, cậu đã giữ được mạng sống của mình. Thoát khỏi những người giám hộ Muggle không thể chịu đựng nổi để nhập học vào trường Hogwarts, một trường đào tạo phù thủy với những bóng ma và phép thuật, Harry tình cờ dấn thân vào một cuộc phiêu lưu đầy gai góc khi cậu phát hiện ra một con chó ba đầu đang canh giữ một căn phòng trên tầng ba. Rồi Harry nghe nói đến một viên đá bị mất tích sở hữu những sức mạnh lạ kì, rất quí giá, vô cùng nguy hiểm, mà cũng có thể là mang cả hai đặc điểm trên.''';
@@ -78,10 +79,72 @@ class MockData {
     ),
   ];
 
+
+  static const List<Map<String, String>> listAllBooks = [
+    {'name': 'SHOE DOG', 'image': AssetHelper.harryPotterCover},
+    {'name': 'No Rules Rules', 'image': AssetHelper.bookMock},
+    {'name': 'To Pixar And Beyond', 'image': AssetHelper.harryPotterCover},
+
+  ];
+
   static const String rv1 = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.";
   static const String rv2 = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.";
   static const String rv3 = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.";
 
+
+
+  static const List<Map<String, String>> bookAppNotifications = [
+    {
+      "title": "Sách mới",
+      "content": "Tiểu thuyết mới 'Hành trình bên lề' của tác giả Nguyễn Văn A vừa được thêm vào thư viện",
+      "time": "Hôm nay 09:50 SA"
+    },
+    {
+      "title": "Thử thách đọc sách",
+      "content": "Bạn đã hoàn thành 20% thử thách đọc sách của tháng. Cố lên!",
+      "time": "Hôm qua 14:30 CH"
+    },
+    {
+      "title": "Khuyến mãi",
+      "content": "Ưu đãi đặc biệt: Giảm 50% cho 3 cuốn sách văn học kinh điển",
+      "time": "Hôm kia 11:15 SA"
+    },
+    {
+      "title": "Sách được đề xuất",
+      "content": "Dựa trên sở thích của bạn, chúng tôi gợi ý cuốn 'Người tình' của Marguerite Duras",
+      "time": "Thứ Sáu 16:45 CH"
+    },
+    {
+      "title": "Đánh dấu",
+      "content": "Bạn đã đánh dấu trang 150 của cuốn 'Bên nhau trọn đời'",
+      "time": "Thứ Năm 10:20 SA"
+    },
+    {
+      "title": "Thư viện",
+      "content": "Bạn có 3 cuốn sách sắp đến hạn trả",
+      "time": "Thứ Tư 15:10 CH"
+    },
+    {
+      "title": "Cộng đồng",
+      "content": "Nhóm đọc sách 'Những tâm hồn đọc' vừa thêm chủ đề thảo luận mới",
+      "time": "Tuần trước 08:30 SA"
+    },
+    {
+      "title": "Cập nhật ứng dụng",
+      "content": "Phiên bản mới 2.5 đã sẵn sàng với tính năng đọc sách offline",
+      "time": "11/04/2024 20:15"
+    },
+    {
+      "title": "Chế độ đọc",
+      "content": "Bạn đã đọc liên tục 7 ngày. Chế độ đọc của bạn thật ấn tượng!",
+      "time": "10/04/2024 09:45 SA"
+    },
+    {
+      "title": "Gợi ý sách",
+      "content": "Hôm nay, hãy thử thể loại khoa học viễn tưởng với cuốn 'Dune'",
+      "time": "09/04/2024 17:30 CH"
+    }
+  ];
 
   static const contentBook = ''' Ông bà Dursley, nhà số 4 đường Privet Drive, tự hào mà nói họ hoàn toàn bình thường, cám ơn bà con quan tâm. Bà con đừng trông mong gì họ tin vào những chuyện kỳ lạ hay bí ẩn, đơn giản là vì họ chẳng hơi đâu bận tâm đến mấy trò vớ vẩn đó.
 Ông Dursley là giám đốc một công ty gọi là Grunnings, chuyên sản suất máy khoan. Ông là một người cao lớn lực lưỡng, cổ gần như không có, nhưng lại có một bộ ria mép vĩ đại. Bà Dursley thì ốm nhom, tóc vàng, với một cái cổ dài gấp đôi bình thường, rất tiện cho bà nhóng qua hàng rào để dòm ngó nhà hàng xóm. Hai ông bà Dursley có một cậu quý tử tên là Dudley, mà theo ý họ thì không thể có đứa bé nào trên đời này ngoan hơn được nữa.

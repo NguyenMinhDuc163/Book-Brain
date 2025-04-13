@@ -17,6 +17,7 @@ import 'package:book_brain/utils/router_names.dart';
 import 'package:book_brain/screen/change_password/view/change_password_screen.dart';
 import 'package:book_brain/screen/search_result_screen/view/search_result_screen.dart';
 
+import '../screen/notification/view/notification_screen.dart';
 import '../screen/ranking/view/ranking_screen.dart';
 final Map<String, WidgetBuilder> routes = {
   // noi tong hop ca routes
@@ -36,6 +37,7 @@ final Map<String, WidgetBuilder> routes = {
   RankingScreen.routeName: (context) => const RankingScreen(),
   DetailBookScreen.routeName: (context) => const DetailBookScreen(),
   ReviewBookScreen.routeName: (context) => const ReviewBookScreen(),
+  NotificationScreen.routeName: (context) => const NotificationScreen(),
 };
 
 MaterialPageRoute<dynamic>? generateRoutes(RouteSettings settings) {

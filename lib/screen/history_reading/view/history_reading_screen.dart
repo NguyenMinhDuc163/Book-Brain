@@ -1,9 +1,12 @@
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
+import 'package:book_brain/utils/core/extentions/size_extension.dart';
 import 'package:flutter/material.dart';
 
 import '../../../utils/core/constants/dimension_constants.dart';
+import '../../../utils/core/constants/mock_data.dart';
 import '../../../utils/core/helpers/asset_helper.dart';
 import '../../../utils/core/helpers/image_helper.dart';
+import '../../home/widget/book_item_widget.dart';
 
 class HistoryReadingScreen extends StatefulWidget {
   const HistoryReadingScreen({super.key});
@@ -27,83 +30,29 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final List<Map<String, String>> _listAllBooks =  MockData.listAllBooks;
+
     return Scaffold(
       body: AppBarContinerWidget(
-        titleString: "Yêu thích",
-        child: Column(
-          children: [
-            Row(
-              children: List.generate(
-                _tabTitles.length,
-                    (index) => Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedIndex = index;
-                      });
-                    },
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 4),
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                        color:
-                        _selectedIndex == index
-                            ? Colors.white
-                            : Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color:
-                          _selectedIndex == index
-                              ? Colors.transparent
-                              : Colors.white.withOpacity(0.5),
-                          width: 1,
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            _tabIcons[index],
-                            size: 18,
-                            color:
-                            _selectedIndex == index
-                                ? Color(0xFF6A5AE0)
-                                : Colors.white,
-                          ),
-                          SizedBox(width: 6),
-                          Text(
-                            _tabTitles[index],
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color:
-                              _selectedIndex == index
-                                  ? Color(0xFF6A5AE0)
-                                  : Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+        titleString: "Lịch sử đọc sách",
+        child: SingleChildScrollView(
+          child: Padding(
+            padding:  EdgeInsets.only(top: height_70),
+            child: Column(
+              children: [
+                HorizontalBookList(
+                  title: 'Sách đang đọc',
+                  books: _listAllBooks,
+                  onSeeAllPressed: () {},
                 ),
-              ),
+                HorizontalBookList(
+                  title: 'Sách đã đọc',
+                  books: _listAllBooks,
+                  onSeeAllPressed: () {},
+                ),
+              ],
             ),
-
-            SizedBox(height: height_30,),
-
-            // Nội dung tab
-            Expanded(
-              child: IndexedStack(
-                index: _selectedIndex,
-                children: [
-                  _buildItem(),
-                  _buildItem(),
-                  _buildItem(),
-                ],
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

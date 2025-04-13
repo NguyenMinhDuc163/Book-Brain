@@ -1,9 +1,11 @@
 import 'package:book_brain/screen/following_book/view/following_book_screen.dart';
 import 'package:book_brain/screen/home/widget/book_item_widget.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
+import 'package:book_brain/screen/notification/view/notification_screen.dart';
 import 'package:book_brain/screen/preview/view/preview_screen.dart';
 import 'package:book_brain/screen/ranking/view/ranking_screen.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
+import 'package:book_brain/utils/core/constants/mock_data.dart';
 import 'package:book_brain/utils/core/constants/textstyle_ext.dart';
 import 'package:book_brain/utils/core/extentions/size_extension.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
@@ -22,12 +24,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final List<Map<String, String>> listAllBooks = [
-    {'name': 'SHOE DOG', 'image': AssetHelper.bookMock},
-    {'name': 'No Rules Rules', 'image': AssetHelper.bookMock},
-    {'name': 'To Pixar And Beyond', 'image': AssetHelper.bookMock},
+  final List<Map<String, String>> _listAllBooks = MockData.listAllBooks;
 
-  ];
   Widget _buildItemCategory({
     required Widget icon,
     required Color color,
@@ -128,11 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: BorderRadius.circular(kItemPadding),
                 color: Colors.white,
               ),
-              child: Icon(
-                FontAwesomeIcons.user,
-                color: Colors.black,
-                size: 30,
-              ),
+              child: Icon(FontAwesomeIcons.user, color: Colors.black, size: 30),
             ),
             SizedBox(width: width_16),
             Column(
@@ -151,12 +145,20 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             Spacer(),
-            Icon(
-              FontAwesomeIcons.bell,
-              size: kDefaultIconSize,
-              color: Colors.white,
-            ),
+            IconButton(
+              icon: Badge.count(
+                count: 1,
+                child: Icon(
+                  FontAwesomeIcons.bell,
+                  color: Colors.white,
+                  size: height_20,
+                ),
+              ),
 
+              onPressed: () {
+                Navigator.pushNamed(context, NotificationScreen.routeName);
+              },
+            ),
           ],
         ),
       ),
@@ -204,7 +206,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Expanded(
                         child: _buildItemCategory(
-                          icon: Icon(FontAwesomeIcons.rankingStar, color: Color(0xffFE9C5E),),
+                          icon: Icon(
+                            FontAwesomeIcons.rankingStar,
+                            color: Color(0xffFE9C5E),
+                          ),
                           color: Color(0xffFE9C5E),
                           onTap: () {
                             Navigator.pushNamed(
@@ -218,7 +223,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       SizedBox(width: kDefaultPadding),
                       Expanded(
                         child: _buildItemCategory(
-                          icon: Icon(FontAwesomeIcons.rankingStar, color: Color(0xffF77777),),
+                          icon: Icon(
+                            FontAwesomeIcons.rankingStar,
+                            color: Color(0xffF77777),
+                          ),
                           color: Color(0xffF77777),
                           onTap: () {
                             Navigator.of(
@@ -231,7 +239,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       SizedBox(width: kDefaultPadding),
                       Expanded(
                         child: _buildItemCategory(
-                          icon: Icon(FontAwesomeIcons.bookBookmark, color: Color(0xff3EC8BC),),
+                          icon: Icon(
+                            FontAwesomeIcons.bookBookmark,
+                            color: Color(0xff3EC8BC),
+                          ),
 
                           color: Color(0xff3EC8BC),
                           onTap: () {
@@ -248,19 +259,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(height: kMediumPadding),
                   HorizontalBookList(
                     title: 'Top thinh hành',
-                    books: listAllBooks,
+                    books: _listAllBooks,
                     onSeeAllPressed: () {},
                   ),
 
                   HorizontalBookList(
                     title: 'Dành cho bạn',
-                    books: listAllBooks,
+                    books: _listAllBooks,
                     onSeeAllPressed: () {},
                   ),
 
                   HorizontalBookList(
                     title: 'Mới xuất bản',
-                    books: listAllBooks,
+                    books: _listAllBooks,
                     onSeeAllPressed: () {},
                   ),
                 ],

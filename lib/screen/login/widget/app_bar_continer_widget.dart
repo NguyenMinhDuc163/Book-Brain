@@ -19,7 +19,7 @@ class AppBarContinerWidget extends StatelessWidget {
       horizontal: kMediumPadding,
     ),
     this.avatar, this.email,
-    this.positon,
+    this.positon, this.backgroundColor,
   })  : assert(title != null || titleString != null,
   'title or titleString can\'t be null'),
         super(key: key);
@@ -34,10 +34,12 @@ class AppBarContinerWidget extends StatelessWidget {
   final String? avatar;
   final String? email;
   final bool? positon;
+  final Color? backgroundColor ;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: backgroundColor ??  Colors.white ,
       body: Stack(
         children: [
           SizedBox(
