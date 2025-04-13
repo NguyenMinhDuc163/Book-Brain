@@ -15,6 +15,8 @@ mixin AssetHelper {
   static const String icoUserProfile = '${_baseIconPath}ico_userprofile.png';
   static const String icoLocation = '${_baseIconPath}icoLocation.png';
   static const String icoStar = 'assets/icons/ico_star.png';
+  static const String icoCrown = 'assets/icons/ico_crown.png';
+  static const String icoStarSVG = 'assets/icons/ico_star.svg';
 
 
 
@@ -31,4 +33,8 @@ mixin AssetHelper {
   // bia truye
   static const String harryPotterCover= '${_baseImagePath}harry_potter_cover.jpg';
 
+  // rank
+  static const String rank1= '${_baseImagePath}rank_1.png';
+  static const String rank2= '${_baseImagePath}rank_2.png';
+  static const String rank3= '${_baseImagePath}rank_3.png';
 }

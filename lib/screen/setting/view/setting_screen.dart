@@ -55,7 +55,7 @@ class _SettingScreenState extends State<SettingScreen> {
       body: AppBarContinerWidget(
         titleString: "Cài đặt",
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: kDefaultPadding),
+          padding: EdgeInsets.symmetric(horizontal: kDefaultPadding, vertical: kDefaultPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

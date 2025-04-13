@@ -4,6 +4,7 @@ import 'package:book_brain/screen/main_app.dart';
 import 'package:book_brain/utils/core/constants/color_constants.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/constants/mock_data.dart';
+import 'package:book_brain/utils/widget/base_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -45,46 +46,16 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorPalette.backgroundColor,
+      appBar: BaseAppbar(title: "Harry Potter", backgroundColor: ColorPalette.backgroundColor,   textColor: Colors.black),
+
       body: Column(
         children: [
+
           // Phần header cố định
           Container(
-            padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top + height_20,
-                left: width_25,
-                right: width_25,
-                bottom: height_20
-            ),
+            padding: EdgeInsets.all(kDefaultPadding),
             child: Column(
               children: [
-                // Nút quay lại và home
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    InkWell(
-                      onTap: (){
-                        Navigator.pop(context);
-                      },
-                      child: Icon(
-                        FontAwesomeIcons.arrowLeft,
-                        size: 20,
-                      ),
-                    ),
-                    InkWell(
-                      onTap: (){
-                        Navigator.pushNamedAndRemoveUntil(context, MainApp.routeName, (route) => false);
-                      },
-                      child: Icon(
-                        FontAwesomeIcons.house,
-                        size: 20,
-                      ),
-                    )
-                  ],
-                ),
-
-                SizedBox(height: height_12),
-
-                // Tiêu đề và chương
                 Column(
                   children: [
                     Text(

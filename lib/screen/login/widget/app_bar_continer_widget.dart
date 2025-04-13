@@ -1,6 +1,7 @@
 import 'package:book_brain/utils/core/constants/color_constants.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/constants/textstyle_ext.dart';
+import 'package:book_brain/utils/core/extentions/size_extension.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
 import 'package:flutter/material.dart';
@@ -155,9 +156,10 @@ class AppBarContinerWidget extends StatelessWidget {
               backgroundColor: ColorPalette.backgroundScaffoldColor,
             ),
           ),
+
           Container(
-            margin: (positon == null) ? EdgeInsets.only(top: 156) : null,
-            padding:(positon == null) ? paddingContent : null,
+            margin: EdgeInsets.only(top: 100.h),
+            padding: paddingContent,
             child: child,
           ),
         ],

@@ -1,3 +1,4 @@
+import 'package:book_brain/screen/login/view/login_screen.dart';
 import 'package:book_brain/screen/splash/view/intro_screen.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
@@ -24,14 +25,13 @@ class _SplashScreenState extends State<SplashScreen> {
     // man hinh nay chi xuat hien trong lan khoi dong dau tien
     final ignoreIntroScreen = LocalStorageHelper.getValue('ignoreIntroScreen') as bool?;
     await Future.delayed(const Duration(milliseconds: 1000));
-    // if(ignoreIntroScreen != null && ignoreIntroScreen){
-    //   Navigator.of(context).pushNamed(LoginScreen.routeName);
-    // }
-    // else{
-    //   LocalStorageHelper.setValue('ignoreIntroScreen', true);
-    //   Navigator.of(context).pushNamed(IntroScreen.routeName);
-    // }
-    Navigator.of(context).pushNamed(IntroScreen.routeName);
+    if(ignoreIntroScreen != null && ignoreIntroScreen){
+      Navigator.of(context).pushNamed(LoginScreen.routeName);
+    }
+    else{
+      LocalStorageHelper.setValue('ignoreIntroScreen', true);
+      Navigator.of(context).pushNamed(IntroScreen.routeName);
+    }
   }
   @override
   Widget build(BuildContext context) {
