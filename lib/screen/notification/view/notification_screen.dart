@@ -86,7 +86,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AppBarContinerWidget(
+      body: AppBarContainerWidget(
         titleString: "Thông báo",
         backgroundColor: ColorPalette.lavenderWhite,
         child: SingleChildScrollView(

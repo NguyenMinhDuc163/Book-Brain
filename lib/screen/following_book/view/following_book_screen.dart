@@ -29,7 +29,7 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AppBarContinerWidget(
+      body: AppBarContainerWidget(
         titleString: "Theo dõi",
         child: Column(
           children: [

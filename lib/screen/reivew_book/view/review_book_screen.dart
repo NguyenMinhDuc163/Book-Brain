@@ -146,7 +146,7 @@ class _ReviewBookScreenState extends State<ReviewBookScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AppBarContinerWidget(
+      body: AppBarContainerWidget(
         titleString: 'Reviews',
         child: SingleChildScrollView(
           child: Column(

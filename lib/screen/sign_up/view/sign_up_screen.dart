@@ -43,7 +43,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         // Khi bên ngoài form được chạm, ẩn bàn phím bằng cách mất trọng tâm
         FocusScope.of(context).requestFocus(FocusNode());
       },
-      child: AppBarContinerWidget(
+      child: AppBarContainerWidget(
         titleString: 'Đăng ký',
         child: SingleChildScrollView(
           child: Column(

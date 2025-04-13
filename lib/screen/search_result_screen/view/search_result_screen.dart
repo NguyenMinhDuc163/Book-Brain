@@ -55,7 +55,7 @@ class SearchResultScreen extends StatelessWidget {
     final filteredBooks = _filterBooks(keyword);
 
     return Scaffold(
-      body: AppBarContinerWidget(
+      body: AppBarContainerWidget(
         titleString: "Kết quả tìm kiếm",
         child: SingleChildScrollView(
           child: Padding(

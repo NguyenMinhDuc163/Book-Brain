@@ -22,7 +22,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  // final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
   String? selectedValue = 'Việt Nam'; 
   bool isSign = false;
@@ -44,7 +43,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         // Khi bên ngoài form được chạm, ẩn bàn phím bằng cách mất trọng tâm
         FocusScope.of(context).requestFocus(FocusNode());
       },
-      child: AppBarContinerWidget(
+      child: AppBarContainerWidget(
         titleString: 'Chỉnh sửa thông tin',
         child: SingleChildScrollView(
           child: Column(

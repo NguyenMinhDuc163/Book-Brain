@@ -28,7 +28,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AppBarContinerWidget(
+      body: AppBarContainerWidget(
         titleString: "Yêu thích",
         paddingContent: EdgeInsets.only(
           left: kDefaultPadding,

@@ -6,34 +6,25 @@ import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-class AppBarContinerWidget extends StatelessWidget {
-  const AppBarContinerWidget({
-    Key? key,
+class AppBarContainerWidget extends StatelessWidget {
+  const AppBarContainerWidget({
+    super.key,
     required this.child,
     this.title,
     this.titleString,
-    this.subTitleString,
-    this.implementTraling = false,
-    this.implementLeading = true,
     this.paddingContent = const EdgeInsets.symmetric(
       horizontal: kMediumPadding,
     ),
-    this.avatar, this.email,
-    this.positon, this.backgroundColor,
+    this.avatar,
+   this.backgroundColor,
   })  : assert(title != null || titleString != null,
-  'title or titleString can\'t be null'),
-        super(key: key);
+  'title or titleString can\'t be null');
 
   final Widget child;
   final Widget? title;
   final String? titleString;
-  final String? subTitleString;
-  final bool implementTraling;
-  final bool implementLeading;
   final EdgeInsets? paddingContent;
   final String? avatar;
-  final String? email;
-  final bool? positon;
   final Color? backgroundColor ;
 
   @override
@@ -51,7 +42,6 @@ class AppBarContinerWidget extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        if (implementLeading)
                           GestureDetector(
                             onTap: () {
                               Navigator.of(context).pop();
@@ -81,44 +71,10 @@ class AppBarContinerWidget extends StatelessWidget {
                                   style: TextStyles.defaultStyle.fontHeader
                                       .whiteTextColor.bold,
                                 ),
-                                if(subTitleString != null && email != null) // dung cho profile screen
-                                  Column(
-                                    children: [
-                                      Text(subTitleString!, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
-                                      Text(email!, style: TextStyle(fontSize: 12),)
-                                    ],
-                                  ),
-
-
-                                if (subTitleString != null && email == null)
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: kMediumPadding),
-                                    child: Text(
-                                      subTitleString!,
-                                      style: TextStyles.defaultStyle.fontCaption
-                                          .whiteTextColor,
-                                    ),
-                                  ),
                               ],
                             ),
                           ),
                         ),
-                        if (implementTraling)
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(
-                                kDefaultPadding,
-                              ),
-                              color: Colors.white,
-                            ),
-                            padding: EdgeInsets.all(kItemPadding),
-                            child: Icon(
-                              FontAwesomeIcons.bars,
-                              size: kDefaultPadding,
-                              color: Colors.black,
-                            ),
-                          ),
                       ],
                     ),
                   ),

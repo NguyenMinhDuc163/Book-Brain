@@ -66,7 +66,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AppBarContinerWidget(
+    return AppBarContainerWidget(
       titleString: 'Quên mật khẩu',
       child: Column(
         children: [

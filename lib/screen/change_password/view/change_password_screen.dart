@@ -37,7 +37,7 @@ class _MyWidgetState extends State<ChangePasswordScreen> {
         // Khi bên ngoài form được chạm, ẩn bàn phím bằng cách mất trọng tâm
         FocusScope.of(context).requestFocus(FocusNode());
       }, 
-      child: AppBarContinerWidget(
+      child: AppBarContainerWidget(
         titleString: "Đổi mật khẩu",
         child: SingleChildScrollView(
           child: Column(

@@ -33,7 +33,7 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
     final List<Map<String, String>> _listAllBooks =  MockData.listAllBooks;
 
     return Scaffold(
-      body: AppBarContinerWidget(
+      body: AppBarContainerWidget(
         titleString: "Lịch sử đọc sách",
         child: SingleChildScrollView(
           child: Padding(

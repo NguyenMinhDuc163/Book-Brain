@@ -110,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AppBarContinerWidget(
+    return AppBarContainerWidget(
       titleString: 'home',
       title: Padding(
         padding: const EdgeInsets.symmetric(horizontal: kItemPadding),
@@ -162,7 +162,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      implementLeading: false,
       child: Column(
         children: [
           InkWell(

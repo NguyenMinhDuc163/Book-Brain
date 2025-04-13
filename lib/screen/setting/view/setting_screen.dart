@@ -20,7 +20,7 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
-      body: AppBarContinerWidget(
+      body: AppBarContainerWidget(
         titleString: "Cài đặt",
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: kDefaultPadding, vertical: kDefaultPadding),
