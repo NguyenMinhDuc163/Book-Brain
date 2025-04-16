@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "639597782806",
+    "project_id": "book-brain-cc654",
+    "storage_bucket": "book-brain-cc654.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:639597782806:android:2e4f0d7f1a5db0d4015237",
+        "android_client_info": {
+          "package_name": "com.nguyenduc.book_brain"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAitqNxW0Jibi2IVF4RG8VBUBVB07IRvOI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

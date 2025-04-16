@@ -29,6 +29,7 @@ mixin AssetHelper {
   static const String slide3= '${_baseImagePath}slide3.png';
   static const String backgroundSplash= '${_baseImagePath}background_splash.png';
   static const String circleSplash= '${_baseImagePath}circle_splash.png';
+  static const String harryPotter2= '${_baseImagePath}harry_potter_2.jpg';
 
   // bia truye
   static const String harryPotterCover= '${_baseImagePath}harry_potter_cover.jpg';

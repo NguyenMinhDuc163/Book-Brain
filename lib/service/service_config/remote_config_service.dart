@@ -10,7 +10,7 @@ mixin RemoteConfigService {
     await remoteConfig.ensureInitialized();
     await remoteConfig.setConfigSettings(
       RemoteConfigSettings(
-        fetchTimeout: const Duration(seconds: 10),
+        fetchTimeout: const Duration(seconds: 20),
         minimumFetchInterval: Duration.zero,
       ),
     );

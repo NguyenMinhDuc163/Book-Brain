@@ -83,7 +83,7 @@ class MockData {
   static const List<Map<String, String>> listAllBooks = [
     {'name': 'SHOE DOG', 'image': AssetHelper.harryPotterCover},
     {'name': 'No Rules Rules', 'image': AssetHelper.bookMock},
-    {'name': 'To Pixar And Beyond', 'image': AssetHelper.harryPotterCover},
+    {'name': 'To Pixar And Beyond', 'image': AssetHelper.harryPotter2},
 
   ];
 

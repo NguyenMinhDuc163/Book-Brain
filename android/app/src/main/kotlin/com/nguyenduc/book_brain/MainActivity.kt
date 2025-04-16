@@ -1,4 +1,4 @@
-package com.example.book_brain
+package com.nguyenduc.book_brain
 
 import io.flutter.embedding.android.FlutterActivity
 
