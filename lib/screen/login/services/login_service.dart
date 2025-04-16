@@ -12,8 +12,13 @@ class LoginService implements ILoginInterface {
   Future<bool> login({
     required String username,
     required String password,
+    required tokenFCM,
   }) async {
-    LoginRequest request = LoginRequest(email: username, password: password);
+    LoginRequest request = LoginRequest(
+      email: username,
+      password: password,
+      fcmToken: tokenFCM,
+    );
     final BaseResponse<LoginResponse> response = await apiServices.sendLogin(
       request,
     );

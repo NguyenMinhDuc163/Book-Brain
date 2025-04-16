@@ -4,10 +4,11 @@ import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/screen/login/widget/button_widget.dart';
 import 'package:book_brain/screen/main_app.dart';
 import 'package:book_brain/screen/search_book/view/search_screen.dart';
-import 'package:book_brain/screen/sign_up/view/sign_up_screen.dart';
+import 'package:book_brain/screen/login/view/sign_up_screen.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
+import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -148,14 +149,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 ButtonWidget(
                   title: 'Đăng nhập',
                   isign: _isSigin,
-                  ontap: (){
-                    Navigator.of(context).pushNamed(MainApp.routeName);
+                  ontap: () async {
                     // presenter.login(username: "", password: "");
-                    // presenter.loginService.login(
-                    //   username: _emailController.text,
-                    //   password: _passwordController.text,
-                    // );
-                    Navigator.pushNamed(context, MainApp.routeName);
+                    final tokenFCM = LocalStorageHelper.getValue('fcm_token');
+
+                    bool isSend = await presenter.login(
+                      username: _emailController.text,
+                      password: _passwordController.text,
+                      tokenFCM: tokenFCM ?? "123",
+                    );
+                    if (isSend) {
+                      Navigator.of(context).pushNamed(MainApp.routeName);
+                    }
+
                   },
                 ),
                 SizedBox(

@@ -9,7 +9,7 @@ import 'package:book_brain/screen/main_app.dart';
 import 'package:book_brain/screen/reivew_book/view/review_book_screen.dart';
 import 'package:book_brain/screen/search_book/view/search_screen.dart';
 import 'package:book_brain/screen/preview/view/preview_screen.dart';
-import 'package:book_brain/screen/sign_up/view/sign_up_screen.dart';
+import 'package:book_brain/screen/login/view/sign_up_screen.dart';
 import 'package:book_brain/screen/splash/view/intro_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:book_brain/screen/login/view/login_screen.dart';

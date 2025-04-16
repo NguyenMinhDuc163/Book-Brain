@@ -1,19 +1,34 @@
 
 
 import 'package:book_brain/service/api_service/BaseApiService.dart';
+import 'package:book_brain/service/api_service/request/RegisterRequest.dart';
 import 'package:book_brain/service/api_service/request/login_request.dart';
 import 'package:book_brain/service/api_service/response/base_response.dart';
 import 'package:book_brain/service/api_service/response/login_response.dart';
+import 'package:book_brain/service/common/url_static.dart';
+
+import 'response/RegisterResponse.dart';
 
 class ApiServices extends BaseApiService {
   // api login
   Future<BaseResponse<LoginResponse>> sendLogin(LoginRequest request) async {
     return await sendRequest<LoginResponse>(
-      'auth/login',
+      UrlStatic.API_LOGIN,
       method: 'POST',
       data: request.toJson(),
       fromJson: (json) => LoginResponse.fromJson(json),
     );
+  }
+
+  Future<BaseResponse<RegisterResponse>> sendRegister(RegisterRequest request) async {
+    return await sendRequest<RegisterResponse>(
+      UrlStatic.API_REGISTER,
+      method: 'POST',
+      data: request.toJson(),
+      fromJson: (json) => RegisterResponse.fromJson(json),
+    );
+  }
+
     // // GET
     // Future<BaseResponse<GetFamilyResponse>> getFamily({
     //   int? userId,
@@ -33,7 +48,6 @@ class ApiServices extends BaseApiService {
     //   );
     // }
 
-  }
 }
 
 
