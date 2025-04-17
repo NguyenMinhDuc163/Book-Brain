@@ -151,16 +151,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   isign: _isSigin,
                   ontap: () async {
                     // presenter.login(username: "", password: "");
-                    final tokenFCM = LocalStorageHelper.getValue('fcm_token');
-
-                    bool isSend = await presenter.login(
-                      username: _emailController.text,
-                      password: _passwordController.text,
-                      tokenFCM: tokenFCM ?? "123",
-                    );
-                    if (isSend) {
-                      Navigator.of(context).pushNamed(MainApp.routeName);
-                    }
+                    // final tokenFCM = LocalStorageHelper.getValue('fcm_token');
+                    //
+                    // bool isSend = await presenter.login(
+                    //   username: _emailController.text,
+                    //   password: _passwordController.text,
+                    //   tokenFCM: tokenFCM ?? "123",
+                    // );
+                    // if (isSend) {
+                    //   Navigator.of(context).pushNamed(MainApp.routeName);
+                    // }
+                    Navigator.of(context).pushNamed(MainApp.routeName);
 
                   },
                 ),

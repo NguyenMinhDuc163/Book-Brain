@@ -4,6 +4,8 @@ import 'package:book_brain/service/api_service/BaseApiService.dart';
 import 'package:book_brain/service/api_service/request/RegisterRequest.dart';
 import 'package:book_brain/service/api_service/request/login_request.dart';
 import 'package:book_brain/service/api_service/response/base_response.dart';
+import 'package:book_brain/service/api_service/response/book_info_response.dart';
+import 'package:book_brain/service/api_service/response/detail_book_response.dart';
 import 'package:book_brain/service/api_service/response/login_response.dart';
 import 'package:book_brain/service/common/url_static.dart';
 
@@ -29,24 +31,37 @@ class ApiServices extends BaseApiService {
     );
   }
 
-    // // GET
-    // Future<BaseResponse<GetFamilyResponse>> getFamily({
-    //   int? userId,
-    // }) async {
-    //   final queryParams = <String, int>{};
-    //
-    //   // Thêm tham số vào queryParams nếu chúng không null hoặc không rỗng
-    //   if (userId != null) {
-    //     queryParams["user_id"] = userId;
-    //   }
-    //
-    //   return await sendRequest<GetFamilyResponse>(
-    //     'family/list',
-    //     method: 'GET',
-    //     data: queryParams, // Truyền queryParams vào đây
-    //     fromJson: (json) => GetFamilyResponse.fromJson(json),
-    //   );
-    // }
+
+
+// GET
+Future<BaseResponse<BookInfoResponse>> getInfoBook(
+) async {
+  return await sendRequest<BookInfoResponse>(
+    UrlStatic.API_INFO_BOOK,
+    method: 'GET',
+    // data: {}, // Truyền queryParams vào đây
+    fromJson: (json) => BookInfoResponse.fromJson(json),
+  );
+}
+
+
+    // GET
+    Future<BaseResponse<DetailBookResponse>> getDetailBook({
+      required int bookId,
+      required int chapterId,
+    }) async {
+      final queryParams = <String, int>{};
+
+        queryParams["id"] = bookId;
+        queryParams["chapter"] = chapterId;
+
+      return await sendRequest<DetailBookResponse>(
+        'detailBook',
+        method: 'GET',
+        data: queryParams, // Truyền queryParams vào đây
+        fromJson: (json) => DetailBookResponse.fromJson(json),
+      );
+    }
 
 }
 

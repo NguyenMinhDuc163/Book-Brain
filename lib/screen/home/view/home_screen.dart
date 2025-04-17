@@ -1,4 +1,5 @@
 import 'package:book_brain/screen/following_book/view/following_book_screen.dart';
+import 'package:book_brain/screen/home/provider/home_notiffier.dart';
 import 'package:book_brain/screen/home/widget/book_item_widget.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/screen/notification/view/notification_screen.dart';
@@ -24,8 +25,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final List<Map<String, String>> _listAllBooks = MockData.listAllBooks;
-
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() =>
+        Provider.of<HomeNotiffier>(context, listen: false).getData()
+    );
+  }
   Widget _buildItemCategory({
     required Widget icon,
     required Color color,
@@ -110,6 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final presenter = Provider.of<HomeNotiffier>(context);
     return AppBarContainerWidget(
       titleString: 'home',
       isShowBackButton: false,
@@ -260,19 +267,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(height: kMediumPadding),
                   HorizontalBookList(
                     title: 'Top thinh hành',
-                    books: _listAllBooks,
+                    books: presenter.bookInfo,
                     onSeeAllPressed: () {},
                   ),
 
                   HorizontalBookList(
                     title: 'Dành cho bạn',
-                    books: _listAllBooks,
+                    books: presenter.bookInfo,
                     onSeeAllPressed: () {},
                   ),
 
                   HorizontalBookList(
                     title: 'Mới xuất bản',
-                    books: _listAllBooks,
+                    books: presenter.bookInfo,
                     onSeeAllPressed: () {},
                   ),
                 ],
@@ -283,4 +290,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+
 }

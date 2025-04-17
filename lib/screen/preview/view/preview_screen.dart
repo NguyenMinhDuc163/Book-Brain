@@ -1,6 +1,7 @@
 import 'package:book_brain/screen/detail_book/view/detail_book_screen.dart';
 import 'package:book_brain/screen/detail_book/widget/bottom_sheet_selector.dart';
 import 'package:book_brain/screen/login/widget/button_widget.dart';
+import 'package:book_brain/screen/preview/provider/preview_notifier.dart';
 import 'package:book_brain/screen/preview/widget/item_utility_widget.dart';
 import 'package:book_brain/screen/reivew_book/view/review_book_screen.dart';
 import 'package:book_brain/utils/core/constants/color_constants.dart';
@@ -11,6 +12,7 @@ import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 class PreviewScreen extends StatefulWidget {
   const PreviewScreen({super.key});
@@ -22,19 +24,33 @@ class PreviewScreen extends StatefulWidget {
 
 class _PreviewScreenState extends State<PreviewScreen> {
   bool _dangTheoDoi = false;
-  final List<String> _chapters = MockData.mockChapters;
-  String _selectedChapter = "-- Harry Potter và Hòn đá phù thủy - Chương 01";
-
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() =>
+        Provider.of<PreviewNotifier>(context, listen: false).getData()
+    );
+  }
   @override
   Widget build(BuildContext context) {
+    final presenter = Provider.of<PreviewNotifier>(context);
+    final List<String>? _chapters = presenter.bookDetail?.chapters.map((chapter) =>
+    "Chương ${chapter.chapterOrder}: ${chapter.title}"
+    ).toList();
+
+    String _selectedChapter = presenter.bookDetail?.currentChapter != null
+        ? "Chương ${presenter.bookDetail?.currentChapter?.chapterOrder}: ${presenter.bookDetail?.currentChapter?.title}"
+        : ""; //
+
     return Scaffold(
       body: Stack(
         children: [
           Positioned.fill(
-            child: ImageHelper.loadFromAsset(
-              AssetHelper.harryPotterCover,
-              fit: BoxFit.fill,
-            ),
+            // child: ImageHelper.loadFromAsset(
+            //   AssetHelper.harryPotterCover,
+            //   fit: BoxFit.fill,
+            // ),
+            child: Image.network(presenter.bookDetail?.imageUrl ?? "", fit: BoxFit.fill,),
           ),
           Positioned(
             top: kMediumPadding * 3,
@@ -116,7 +132,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  "Harry Potter và Hòn đá phù thủy",
+                                  presenter.bookDetail?.title ?? "",
                                   maxLines: 2,
                                   style:
                                       TextStyles.defaultStyle.fontHeader.bold,
@@ -171,7 +187,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                             children: [
                               Icon(FontAwesomeIcons.user, size: 18),
                               SizedBox(width: kMinPadding),
-                              Text("J. K. Rowling"),
+                              Text(presenter.bookDetail?.authorName ?? ""),
                             ],
                           ),
                           SizedBox(height: kDefaultPadding),
@@ -197,7 +213,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                           ),
                           SizedBox(height: kDefaultPadding),
                           Text(
-                            'Thể loại',
+                            presenter.bookDetail?.categoryName ?? "",
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           SizedBox(height: kDefaultPadding),
@@ -233,11 +249,18 @@ class _PreviewScreenState extends State<PreviewScreen> {
                           SizedBox(height: kDefaultPadding),
                           BottomSheetSelector(
                             title: 'Chọn chương sách',
-                            items: _chapters,
-                            selectedValue: _selectedChapter,
+                            items: _chapters ?? [], // Cung cấp danh sách chương
+                            selectedValue: _selectedChapter ?? '', // Cung cấp giá trị mặc định là chuỗi rỗng nếu null
                             onValueChanged: (value) {
                               setState(() {
-                                _selectedChapter = value;
+                                _selectedChapter = value; // value đã là String
+
+                                // Nếu bạn cần sử dụng lại giá trị này dưới dạng số
+                                int? chapterOrder = int.tryParse(value);
+                                if (chapterOrder != null) {
+                                  // Làm gì đó với giá trị số
+                                  // Ví dụ: loadChapter(chapterOrder);
+                                }
                               });
                             },
                             placeholder: 'Vui lòng chọn chương sách',

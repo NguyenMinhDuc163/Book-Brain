@@ -1,5 +1,6 @@
 
 import 'package:book_brain/screen/preview/view/preview_screen.dart';
+import 'package:book_brain/service/api_service/response/book_info_response.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/constants/textstyle_ext.dart' show ExtendedTextStyle, TextStyles;
 import 'package:flutter/material.dart';
@@ -7,13 +8,13 @@ import 'package:flutter/material.dart';
 class BookItem extends StatelessWidget {
   final String name;
   final String image;
-  final int rating; 
+  final int rating;
 
   const BookItem({
     Key? key,
     required this.name,
     required this.image,
-    this.rating = 4, 
+    this.rating = 4,
   }) : super(key: key);
 
   @override
@@ -30,7 +31,7 @@ class BookItem extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               image: DecorationImage(
-                image: AssetImage(image),
+                image: NetworkImage(image),
                 fit: BoxFit.cover,
               ),
             ),
@@ -68,7 +69,7 @@ class BookItem extends StatelessWidget {
 class HorizontalBookList extends StatelessWidget {
   final String title;
   final String seeAllText;
-  final List<Map<String, String>> books;
+  final List<BookInfoResponse> books;
   final Function()? onSeeAllPressed;
 
   const HorizontalBookList({
@@ -105,14 +106,16 @@ class HorizontalBookList extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             itemCount: books.length,
             itemBuilder: (context, index) {
+              final book = books[index];
+              int rate = int.tryParse((book.rating ?? '10/10').split('/')[0]) ?? 4;
               return InkWell(
                 onTap: (){
                   Navigator.pushNamed(context, PreviewScreen.routeName);
                 },
                 child: BookItem(
-                  name: books[index]['name']!,
-                  image: books[index]['image']!,
-                  rating: int.tryParse(books[index]['rating'] ?? '4') ?? 4,
+                  name: book.title ?? "",
+                  image: book.imageUrl ?? "",
+                  rating: rate,
                 ),
               );
             },

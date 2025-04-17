@@ -29,16 +29,16 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
             padding:  EdgeInsets.only(top: height_10),
             child: Column(
               children: [
-                HorizontalBookList(
-                  title: 'Sách đang đọc',
-                  books: _listAllBooks,
-                  onSeeAllPressed: () {},
-                ),
-                HorizontalBookList(
-                  title: 'Sách đã đọc',
-                  books: _listAllBooks,
-                  onSeeAllPressed: () {},
-                ),
+                // HorizontalBookList(
+                //   title: 'Sách đang đọc',
+                //   books: _listAllBooks,
+                //   onSeeAllPressed: () {},
+                // ),
+                // HorizontalBookList(
+                //   title: 'Sách đã đọc',
+                //   books: _listAllBooks,
+                //   onSeeAllPressed: () {},
+                // ),
               ],
             ),
           ),
