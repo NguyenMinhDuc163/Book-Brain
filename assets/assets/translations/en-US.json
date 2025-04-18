@@ -1,0 +1,7 @@
+{
+  "account_login": {
+    "login": "Login",
+    "login_success": "Login Successful",
+    "login_failed": "Login Failed"
+  }
+}
