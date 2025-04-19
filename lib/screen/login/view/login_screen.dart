@@ -3,12 +3,12 @@ import 'package:book_brain/screen/login/provider/login_notifier.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/screen/login/widget/button_widget.dart';
 import 'package:book_brain/screen/main_app.dart';
-import 'package:book_brain/screen/search_book/view/search_screen.dart';
 import 'package:book_brain/screen/login/view/sign_up_screen.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
 import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -26,8 +26,8 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isSigin = false;
   bool _isCliclSignUp = false;
 
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController(text: kDebugMode ? 'traj10x@gmail.com' : '');
+  final TextEditingController _passwordController = TextEditingController(text: kDebugMode ? '123456' : '');
 
   bool _obscurePassword = true;
 
@@ -38,9 +38,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: GestureDetector(
         behavior: HitTestBehavior
-            .translucent, // Cho phép GestureDetector bắt sự kiện trên toàn bộ khu vực widget
+            .translucent, 
         onTap: () {
-          // Khi bên ngoài form được chạm, ẩn bàn phím bằng cách mất trọng tâm
+          
           FocusScope.of(context).requestFocus(FocusNode());
         },
         child: AppBarContainerWidget(
@@ -113,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 _isCheck = val ?? false;
                               });
                             }),
-                        // SizedBox(width: kDefaultPadding,),
+                        
                         Text(
                           'Nhớ mật khẩu',
                           style: TextStyle(
@@ -145,23 +145,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(
                   height: kDefaultPadding,
                 ),
-                //TODO login button
+                
                 ButtonWidget(
                   title: 'Đăng nhập',
                   isign: _isSigin,
                   ontap: () async {
-                    // presenter.login(username: "", password: "");
-                    // final tokenFCM = LocalStorageHelper.getValue('fcm_token');
-                    //
-                    // bool isSend = await presenter.login(
-                    //   username: _emailController.text,
-                    //   password: _passwordController.text,
-                    //   tokenFCM: tokenFCM ?? "123",
-                    // );
-                    // if (isSend) {
-                    //   Navigator.of(context).pushNamed(MainApp.routeName);
-                    // }
-                    Navigator.of(context).pushNamed(MainApp.routeName);
+                    final tokenFCM = LocalStorageHelper.getValue('fcm_token');
+
+                    bool isSend = await presenter.login(
+                      username: _emailController.text,
+                      password: _passwordController.text,
+                      tokenFCM: tokenFCM ?? "123",
+                    );
+                    if (isSend) {
+                      Navigator.of(context).pushNamed(MainApp.routeName);
+                    }
 
                   },
                 ),
@@ -172,8 +170,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: const [
                     Expanded(
                       child: Divider(
-                        color: Colors.grey, // Màu của đường thẳng
-                        thickness: 1, // Độ dày của đường thẳng
+                        color: Colors.grey, 
+                        thickness: 1, 
                       ),
                     ),
                     Padding(
@@ -187,8 +185,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     Expanded(
                       child: Divider(
-                        color: Colors.grey, // Màu của đường thẳng
-                        thickness: 1, // Độ dày của đường thẳng
+                        color: Colors.grey, 
+                        thickness: 1, 
                       ),
                     ),
                     SizedBox(
@@ -199,65 +197,45 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(
                   height: kDefaultPadding,
                 ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector( 
-                        onTap: (){},
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            ImageHelper.loadFromAsset(AssetHelper.icoRectangleWhite),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                ImageHelper.loadFromAsset(AssetHelper.icoGG),
-                                SizedBox(
-                                  width: kMinPadding,
-                                ),
-                                Text(
-                                  'Google',
-                                  style: TextStyle(
-                                      fontSize: 16, fontWeight: FontWeight.bold),
-                                )
-                              ],
-                            ),
-                          ],
-                        ),
+                InkWell(
+                  onTap: (){},
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.grey.shade300, 
+                        width: 1,
                       ),
+                      
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 3,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
                     ),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          // Navigator.of(context).pushNamed(TicketStubScreen.routeName);
-                        },
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            ImageHelper.loadFromAsset(AssetHelper.icoRectangleBlue),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                ImageHelper.loadFromAsset(AssetHelper.icoFB),
-                                SizedBox(
-                                  width: kMinPadding,
-                                ),
-                                Text(
-                                  'Facebook',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white),
-                                )
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  ],
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16), 
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        ImageHelper.loadFromAsset(AssetHelper.icoGG),
+                        SizedBox(width: 8), 
+                        Text(
+                          'Google',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87, 
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
                 ),
                 SizedBox(
                   height: kDefaultPadding,
@@ -277,9 +255,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: _isCliclSignUp ? Colors.purple : Colors.blue),
                       ),
                       onTap: () {
-                        // setState(() {
-                        //   if (!_isCliclSignUp) _isCliclSignUp = true;
-                        // });
+                        
+                        
+                        
                         Navigator.of(context).pushNamed(SignUpScreen.routeName);
                       },
                     )

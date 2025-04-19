@@ -1,3 +1,4 @@
+import 'package:book_brain/screen/change_password/view/change_password_screen.dart';
 import 'package:book_brain/screen/detail_book/view/detail_book_screen.dart';
 import 'package:book_brain/screen/edit_profile/view/edit_profile_screen.dart';
 import 'package:book_brain/screen/favorites/view/favorites_screen.dart';
@@ -5,17 +6,14 @@ import 'package:book_brain/screen/following_book/view/following_book_screen.dart
 import 'package:book_brain/screen/forgot_password/view/forgot_password_screen.dart';
 import 'package:book_brain/screen/history_reading/view/history_reading_screen.dart';
 import 'package:book_brain/screen/home/view/home_screen.dart';
-import 'package:book_brain/screen/main_app.dart';
-import 'package:book_brain/screen/reivew_book/view/review_book_screen.dart';
-import 'package:book_brain/screen/search_book/view/search_screen.dart';
-import 'package:book_brain/screen/preview/view/preview_screen.dart';
+import 'package:book_brain/screen/login/view/login_screen.dart';
 import 'package:book_brain/screen/login/view/sign_up_screen.dart';
+import 'package:book_brain/screen/main_app.dart';
+import 'package:book_brain/screen/preview/view/preview_screen.dart';
+import 'package:book_brain/screen/reivew_book/view/review_book_screen.dart';
+import 'package:book_brain/screen/search_result_screen/view/search_screen.dart';
 import 'package:book_brain/screen/splash/view/intro_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:book_brain/screen/login/view/login_screen.dart';
-import 'package:book_brain/utils/router_names.dart';
-import 'package:book_brain/screen/change_password/view/change_password_screen.dart';
-import 'package:book_brain/screen/search_result_screen/view/search_result_screen.dart';
 
 import '../screen/notification/view/notification_screen.dart';
 import '../screen/ranking/view/ranking_screen.dart';
@@ -32,11 +30,11 @@ final Map<String, WidgetBuilder> routes = {
   FollowingBookScreen.routeName: (context) => const FollowingBookScreen(),
   SearchScreen.routeName: (context) => const SearchScreen(),
   EditProfileScreen.routeName: (context) => const EditProfileScreen(),
-  PreviewScreen.routeName: (context) => const PreviewScreen(),
+  PreviewScreen.routeName: (context) =>  PreviewScreen(),
   ChangePasswordScreen.routeName: (context) => const ChangePasswordScreen(),
   RankingScreen.routeName: (context) => const RankingScreen(),
-  DetailBookScreen.routeName: (context) => const DetailBookScreen(),
-  ReviewBookScreen.routeName: (context) => const ReviewBookScreen(),
+  DetailBookScreen.routeName: (context) =>  DetailBookScreen(),
+  ReviewBookScreen.routeName: (context) =>  ReviewBookScreen(),
   NotificationScreen.routeName: (context) => const NotificationScreen(),
 };
 

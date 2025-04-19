@@ -5,6 +5,8 @@ import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/constants/textstyle_ext.dart' show ExtendedTextStyle, TextStyles;
 import 'package:flutter/material.dart';
 
+import '../../../utils/core/helpers/network_image_handler.dart';
+
 class BookItem extends StatelessWidget {
   final String name;
   final String image;
@@ -25,20 +27,26 @@ class BookItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           
-          Container(
+          // Container(
+          //   width: 140,
+          //   height: 200,
+          //   decoration: BoxDecoration(
+          //     borderRadius: BorderRadius.circular(8),
+          //     image: DecorationImage(
+          //       image: NetworkImage(image),
+          //       fit: BoxFit.cover,
+          //     ),
+          //   ),
+          // ),
+
+          NetworkImageHandler(
+            imageUrl: image, // URL hình ảnh của bạn
             width: 140,
             height: 200,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              image: DecorationImage(
-                image: NetworkImage(image),
-                fit: BoxFit.cover,
-              ),
-            ),
           ),
           SizedBox(height: 8),
           
-          Container(
+          SizedBox(
             width: 140,
             child: Text(
               name,
@@ -110,7 +118,9 @@ class HorizontalBookList extends StatelessWidget {
               int rate = int.tryParse((book.rating ?? '10/10').split('/')[0]) ?? 4;
               return InkWell(
                 onTap: (){
-                  Navigator.pushNamed(context, PreviewScreen.routeName);
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => PreviewScreen(bookId: book.bookId,)
+                  ));
                 },
                 child: BookItem(
                   name: book.title ?? "",

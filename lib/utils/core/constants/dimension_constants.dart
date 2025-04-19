@@ -109,6 +109,7 @@ double height_150 = 150.h;
 double height_160 = 160.h;
 double height_180 = 180.h;
 double height_200 = 200.h;
+double height_300 = 300.h;
 double height_350 = 350.h;
 double height_400 = 400.h;
 double height_420 = 420.h;

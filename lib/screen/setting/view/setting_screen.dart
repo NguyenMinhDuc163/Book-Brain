@@ -19,6 +19,7 @@ class _SettingScreenState extends State<SettingScreen> {
   bool _isDarkMode = false;
   bool _notificationsEnabled = true;
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

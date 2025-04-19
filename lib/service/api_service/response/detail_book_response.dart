@@ -1,4 +1,6 @@
-class DetailBookResponse {
+import 'base_response.dart';
+
+class DetailBookResponse extends BaseResponse{
   DetailBookResponse({
     required this.bookId,
     required this.title,
@@ -18,6 +20,7 @@ class DetailBookResponse {
     required this.totalChapters,
     required this.chapters,
     required this.currentChapter,
+    required this.totalReviews,
   });
 
   final int? bookId;
@@ -38,6 +41,7 @@ class DetailBookResponse {
   final int? totalChapters;
   final List<Chapter> chapters;
   final CurrentChapter? currentChapter;
+  final int? totalReviews;
 
   factory DetailBookResponse.fromJson(Map<String, dynamic> json){
     return DetailBookResponse(
@@ -57,6 +61,7 @@ class DetailBookResponse {
       createdAt: DateTime.tryParse(json["created_at"] ?? ""),
       updatedAt: DateTime.tryParse(json["updated_at"] ?? ""),
       totalChapters: json["total_chapters"],
+      totalReviews: json["total_reviews"],
       chapters: json["chapters"] == null ? [] : List<Chapter>.from(json["chapters"]!.map((x) => Chapter.fromJson(x))),
       currentChapter: json["current_chapter"] == null ? null : CurrentChapter.fromJson(json["current_chapter"]),
     );
@@ -79,7 +84,8 @@ class DetailBookResponse {
     "created_at": createdAt?.toIso8601String(),
     "updated_at": updatedAt?.toIso8601String(),
     "total_chapters": totalChapters,
-    "chapters": chapters.map((x) => x?.toJson()).toList(),
+    "totalReviews": totalReviews,
+    "chapters": chapters.map((x) => x.toJson()).toList(),
     "current_chapter": currentChapter?.toJson(),
   };
 

@@ -1,14 +1,18 @@
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/screen/reivew_book/widget/feedBack_widget.dart';
+import 'package:book_brain/utils/core/common/toast.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
-import '../../../utils/core/constants/mock_data.dart' show MockData;
+import '../provider/review_book_notifier.dart';
 import '../widget/evaluation_widget.dart';
 
 class ReviewBookScreen extends StatefulWidget {
-  const ReviewBookScreen({super.key});
+  ReviewBookScreen({super.key, this.bookId});
+  int? bookId;
   static const String routeName = '/review_book_screen';
 
   @override
@@ -20,9 +24,47 @@ class _ReviewBookScreenState extends State<ReviewBookScreen> {
   final TextEditingController _commentController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    Future.microtask(
+          () => Provider.of<ReviewBookNotifier>(
+        context,
+        listen: false,
+      ).getData(widget.bookId ?? 1),
+    );
+  }
+
+  @override
   void dispose() {
     _commentController.dispose();
     super.dispose();
+  }
+
+  // Hàm tính thời gian đã trôi qua
+  String _getTimeAgo(String? dateTimeString) {
+    if (dateTimeString == null) return "0 phút trước";
+
+    try {
+      DateTime dateTime = DateTime.parse(dateTimeString);
+      DateTime now = DateTime.now();
+      Duration difference = now.difference(dateTime);
+
+      if (difference.inDays > 365) {
+        return "${(difference.inDays / 365).floor()} năm trước";
+      } else if (difference.inDays > 30) {
+        return "${(difference.inDays / 30).floor()} tháng trước";
+      } else if (difference.inDays > 0) {
+        return "${difference.inDays} ngày trước";
+      } else if (difference.inHours > 0) {
+        return "${difference.inHours} giờ trước";
+      } else if (difference.inMinutes > 0) {
+        return "${difference.inMinutes} phút trước";
+      } else {
+        return "Vừa xong";
+      }
+    } catch (e) {
+      return "0 phút trước";
+    }
   }
 
   void _showReviewBottomSheet() {
@@ -32,12 +74,12 @@ class _ReviewBookScreenState extends State<ReviewBookScreen> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) {
+      builder: (bottomSheetContext) {  // Đổi tên biến context
         return StatefulBuilder(
-          builder: (context, setState) {
+          builder: (statefulContext, setState) {  // Đổi tên biến context
             return Padding(
               padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
+                bottom: MediaQuery.of(statefulContext).viewInsets.bottom,
                 left: 16.0,
                 right: 16.0,
                 top: 16.0,
@@ -102,7 +144,7 @@ class _ReviewBookScreenState extends State<ReviewBookScreen> {
                         IconButton(
                           icon: Icon(Icons.image),
                           onPressed: () {
-                            
+                            // Chức năng thêm hình ảnh
                           },
                         ),
                         Text('Thêm hình ảnh (tùy chọn)'),
@@ -110,12 +152,30 @@ class _ReviewBookScreenState extends State<ReviewBookScreen> {
                     ),
                     SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: _userRating > 0 ? () {
-                        
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Cảm ơn bạn đã đánh giá!')),
+                      onPressed: _userRating > 0 ? () async {
+                        // Lưu tham chiếu đến các giá trị cần thiết
+                        final reviewNotifier = Provider.of<ReviewBookNotifier>(this.context, listen: false);
+                        final bookId = widget.bookId ?? 1;
+                        final rating = _userRating.toInt() ?? 5;
+                        final comment = _commentController.text;
+
+                        // Đóng bottom sheet trước
+                        Navigator.pop(bottomSheetContext);
+
+                        // Sau đó xử lý đánh giá với tham chiếu đã lưu
+                        bool isSubmit = await reviewNotifier.createReview(
+                          bookId: bookId,
+                          rating: rating,
+                          comment: comment,
                         );
+
+                        if(isSubmit) {
+                          showToastTop(message: "Cảm ơn bạn đã đánh giá!");
+                          // cập nhật lại danh sách đánh giá
+                          await reviewNotifier.getAllReview(bookId);
+                        } else {
+                          showToastTop(message: "Đánh giá không thành công!");
+                        }
                       } : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFF6A5AE0),
@@ -145,40 +205,55 @@ class _ReviewBookScreenState extends State<ReviewBookScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final presenter = Provider.of<ReviewBookNotifier>(context);
     return Scaffold(
       body: AppBarContainerWidget(
         titleString: 'Reviews',
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const EvaluationWidget(score: 4.9),
-              const SizedBox(height: kDefaultPadding),
-              const FeedBackWidget(
-                avatar: AssetHelper.avatar,
-                name: 'Nguyen Minh Duc',
-                rate: 4,
-                comment: MockData.rv1,
-                image: [AssetHelper.harryPotterCover, AssetHelper.harryPotterCover],
-                time: 24,
+              // Hiển thị thống kê đánh giá
+              EvaluationWidget(
+                averageRating: presenter.statsReview?.averageRating,
+                totalReviews: presenter.statsReview?.totalReviews,
+                fiveStarCount: presenter.statsReview?.fiveStar,
+                fourStarCount: presenter.statsReview?.fourStar,
+                threeStarCount: presenter.statsReview?.threeStar,
+                twoStarCount: presenter.statsReview?.twoStar,
+                oneStarCount: presenter.statsReview?.oneStar,
               ),
               const SizedBox(height: kDefaultPadding),
-              const FeedBackWidget(
-                avatar: AssetHelper.avatar,
-                name: 'Nguyen Van Nam',
-                rate: 4,
-                comment: MockData.rv2,
-                image: [AssetHelper.harryPotterCover, AssetHelper.harryPotterCover],
-                time: 11,
-              ),
-              const SizedBox(height: kDefaultPadding),
-              const FeedBackWidget(
-                avatar: AssetHelper.avatar,
-                name: 'Hoang Son Hai',
-                rate: 5,
-                comment: MockData.rv3,
-                image: [AssetHelper.harryPotterCover, AssetHelper.harryPotterCover],
-                time: 43,
-              ),
+
+              // Hiển thị danh sách đánh giá từ API
+              if (presenter.reviews != null && presenter.reviews!.isNotEmpty)
+                ...presenter.reviews!.map((review) => Column(
+                  children: [
+                    FeedBackWidget(
+                      avatar: (review.avatarUrl ?? '') != '' ? review.avatarUrl ?? "" : AssetHelper.avatar,
+                      name: review.username ?? '',
+                      rate: int.tryParse(review.rating.toString() ) ?? 5,
+                      comment: review.comment ?? "",
+                      image: const [], // Hiện tại API không có hình ảnh
+                      time: _getTimeAgo(review.createdAt.toString()),
+                      helpfulCount: int.tryParse(review.helpfulCount ?? '0') ?? 0,
+                    ),
+                    const SizedBox(height: kDefaultPadding),
+                  ],
+                )).toList()
+              else
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      "Chưa có đánh giá nào cho sách này",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontStyle: FontStyle.italic,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

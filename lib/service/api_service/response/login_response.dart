@@ -1,6 +1,8 @@
 import 'package:book_brain/screen/login/model/user_model.dart';
 
-class LoginResponse {
+import 'base_response.dart';
+
+class LoginResponse extends BaseResponse{
   final String key;
   final dynamic value;
 

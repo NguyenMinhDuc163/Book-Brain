@@ -12,12 +12,12 @@ class RegisterNotifier extends BaseNotifier{
   RegisterService registerService = RegisterService(); // khai báo service
 
 
-  Future<bool> register({required String username, required String password, required String email}) async {
+  Future<bool> register({required String username, required String password, required String email, String? phoneNumber}) async {
     return await execute(() async{
-      bool isRegister = await registerService.register(username: username, password: password, email: email);
+      bool isRegister = await registerService.register(username: username, password: password, email: email, phoneNumber: phoneNumber ?? "");
       notifyListeners(); // thông báo cho các widget khác biết rằng đã có sự thay đổi
 
-      if (isRegister == 200 || isRegister == 201) {
+      if (isRegister ) {
         showToastTop(message: "account_login.login_success".tr());
         return true;
       } else {

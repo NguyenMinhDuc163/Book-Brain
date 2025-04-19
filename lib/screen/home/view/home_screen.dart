@@ -5,16 +5,14 @@ import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/screen/notification/view/notification_screen.dart';
 import 'package:book_brain/screen/preview/view/preview_screen.dart';
 import 'package:book_brain/screen/ranking/view/ranking_screen.dart';
+import 'package:book_brain/screen/search_result_screen/view/search_screen.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
-import 'package:book_brain/utils/core/constants/mock_data.dart';
 import 'package:book_brain/utils/core/constants/textstyle_ext.dart';
-import 'package:book_brain/utils/core/extentions/size_extension.dart';
-import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:book_brain/screen/search_book/view/search_screen.dart';
+
 import '../../history_reading/view/history_reading_screen.dart';
 
 class HomeScreen extends StatefulWidget {

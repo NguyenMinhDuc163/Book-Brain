@@ -1,11 +1,12 @@
-import 'package:flutter/material.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
-import 'package:book_brain/utils/core/constants/textstyle_ext.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:book_brain/screen/search_result_screen/provider/search_notifier.dart';
+import 'package:book_brain/screen/search_result_screen/view/search_result_screen.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
-import 'package:book_brain/screen/search_result_screen/view/search_result_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -18,7 +19,7 @@ class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _keywordController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
 
-  
+
   List<String> recentSearches = [
     'Harry Potter',
     'Nguyễn Nhật Ánh',
@@ -38,7 +39,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _searchFocusNode.requestFocus();
@@ -73,6 +74,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () {
@@ -85,27 +87,27 @@ class _SearchScreenState extends State<SearchScreen> {
           horizontal: kMediumPadding,
           vertical: 16,
         ),
-        child: SingleChildScrollView( 
+        child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              
-              
-              
 
-              
+
+
+
+
               if (recentSearches.isNotEmpty) ...[
                 _buildRecentSearches(),
                 SizedBox(height: 20),
               ],
 
-              
+
               _buildPopularCategories(),
               SizedBox(height: 20),
 
-              
+
               _buildTrendingBooks(),
-              
+
               SizedBox(height: 20),
             ],
           ),
@@ -145,12 +147,12 @@ class _SearchScreenState extends State<SearchScreen> {
           suffixIcon: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              
+
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
                 child: GestureDetector(
                   onTap: () {
-                    
+
                   },
                   child: Container(
                     padding: EdgeInsets.all(8),
@@ -273,12 +275,12 @@ class _SearchScreenState extends State<SearchScreen> {
             color: Colors.black87,
           ),
         ),
-        
-        
+
+
         GridView.count(
           shrinkWrap: true,
           padding: EdgeInsets.only(top: height_12),
-          physics: NeverScrollableScrollPhysics(), 
+          physics: NeverScrollableScrollPhysics(),
           crossAxisCount: 3,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
@@ -350,7 +352,7 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
         SizedBox(height: 16),
         SizedBox(
-          height: 180, 
+          height: 180,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: trendingBooks.length,
@@ -367,9 +369,9 @@ class _SearchScreenState extends State<SearchScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      
+
                       Container(
-                        height: 130, 
+                        height: 130,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
@@ -389,7 +391,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       ),
                       SizedBox(height: 8),
-                      
+
                       Text(
                         book['title'],
                         style: TextStyle(
@@ -399,7 +401,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      
+
                       Text(
                         book['author'],
                         style: TextStyle(

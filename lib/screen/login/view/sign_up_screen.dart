@@ -73,48 +73,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
               SizedBox(height: kDefaultPadding),
-              Container(
-                padding: EdgeInsets.all(10),
-                alignment: Alignment.center,
-                height: 60,
-                decoration: BoxDecoration(
-                  border: Border.all(),
-                  borderRadius: BorderRadius.all(Radius.circular(6)),
-                  color: Colors.white,
-                ),
-                child: DropdownButton<String>(
-                  value: selectedValue,
-                  onChanged: (String? value) {
-                    setState(() {
-                      selectedValue = value;
-                    });
-                  },
-                  items:
-                      <String>[
-                        'Vietnamese',
-                        'Myanmar',
-                        'japan',
-                        'China',
-                      ].map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Row(
-                            children: [
-                              Icon(FontAwesomeIcons.earthAsia), // Icon
-                              SizedBox(
-                                width: 10,
-                              ), // Khoảng cách giữa icon và text
-                              Text(value), // Text
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                  dropdownColor: Colors.white,
-                  isExpanded: true,
-                  underline: Container(height: 0, color: Colors.transparent),
-                ),
-              ),
-              SizedBox(height: kDefaultPadding),
               TextField(
                 controller: _phoneNumberController,
                 keyboardType: TextInputType.phone,
@@ -241,11 +199,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 isign: isSign,
                 ontap: () async {
                   bool isRegister = await presenter.register(
-                    username: 'Nguyen Duc',
-                    password: '123',
-                    email: 'traj10x@gmail.com',
+                    username: _userNameController.text.trim(),
+                    password: _passwordController.text.trim(),
+                    email: _emailController.text.trim(),
+                    phoneNumber: _phoneNumberController.text.trim()
                   );
-
                   if (isRegister) {
                     Navigator.pushNamed(context, LoginScreen.routeName);
                   }

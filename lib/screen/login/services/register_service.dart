@@ -14,8 +14,8 @@ class RegisterService implements IRegisterInterface {
   final ApiServices apiServices = ApiServices();
 
   @override
-  Future<bool> register({required String username, required String password, required String email}) async {
-    RegisterRequest request = RegisterRequest(email: email, password: password,  username: username);
+  Future<bool> register({required String username, required String password, required String email, String? phoneNumber}) async {
+    RegisterRequest request = RegisterRequest(email: email, password: password,  username: username, phoneNumber: phoneNumber ?? "");
     final BaseResponse<RegisterResponse> response = await apiServices.sendRegister(
       request,
     );

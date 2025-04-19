@@ -11,12 +11,12 @@ class LoginNotifier extends BaseNotifier{
   LoginService loginService = LoginService(); // khai báo service
 
 
-  Future<bool> login({required String username, required String password, required tokenFCM}) async {
+  Future<bool> login({required String username, required String password, required String tokenFCM}) async {
     return await execute(() async{
-      bool isLogin = await loginService.login(username: username, password: password,tokenFCM: tokenFCM);
+      bool isLogin = await loginService.login(username: username, password: password,tokenFCM: tokenFCM ?? "");
       notifyListeners(); // thông báo cho các widget khác biết rằng đã có sự thay đổi
 
-      if (isLogin == 200 || isLogin == 201) {
+      if (isLogin) {
         showToastTop(message: "account_login.login_success".tr());
         return true;
       } else {
