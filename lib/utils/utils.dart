@@ -19,19 +19,30 @@ class Utils {
     if (rating == null) return null;
 
     try {
-      // Tách số từ chuỗi dạng "9.7/10"
+      
       final parts = rating.split('/');
       if (parts.length != 2) return null;
 
-      // Lấy giá trị số đầu tiên (9.7)
+      
       final ratingValue = double.tryParse(parts[0]);
       if (ratingValue == null) return null;
 
-      // Chuyển đổi sang hệ /5
+      
       final convertedValue = (ratingValue / 2).toStringAsFixed(1);
       return "$convertedValue/5";
     } catch (e) {
       return null;
+    }
+  }
+
+
+  static String formatDate(DateTime? date) {
+    if (date == null) return "N/A";
+
+    try {
+      return "${date.day}/${date.month}/${date.year}";
+    } catch (e) {
+      return "N/A";
     }
   }
 }

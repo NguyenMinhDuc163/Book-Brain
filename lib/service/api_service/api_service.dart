@@ -1,16 +1,28 @@
 import 'package:book_brain/service/api_service/BaseApiService.dart';
 import 'package:book_brain/service/api_service/request/RegisterRequest.dart';
 import 'package:book_brain/service/api_service/request/create_reivew_request.dart';
+import 'package:book_brain/service/api_service/request/delete_all_noti_request.dart';
+import 'package:book_brain/service/api_service/request/delete_notification_request.dart';
+import 'package:book_brain/service/api_service/request/favorites_request.dart';
 import 'package:book_brain/service/api_service/request/login_request.dart';
+import 'package:book_brain/service/api_service/request/subscriptions_request.dart';
 import 'package:book_brain/service/api_service/response/all_review_response.dart';
 import 'package:book_brain/service/api_service/response/base_response.dart';
 import 'package:book_brain/service/api_service/response/book_info_response.dart';
 import 'package:book_brain/service/api_service/response/chapters_response.dart';
+import 'package:book_brain/service/api_service/response/create_favorites_response.dart';
 import 'package:book_brain/service/api_service/response/create_review_response.dart';
+import 'package:book_brain/service/api_service/response/create_subscriptions_response.dart';
+import 'package:book_brain/service/api_service/response/delete_all_notificaiton_response.dart';
+import 'package:book_brain/service/api_service/response/delete_notification_response.dart';
+import 'package:book_brain/service/api_service/response/delete_subscriptions_response.dart';
 import 'package:book_brain/service/api_service/response/detail_book_response.dart';
+import 'package:book_brain/service/api_service/response/favorites_response.dart';
 import 'package:book_brain/service/api_service/response/login_response.dart';
+import 'package:book_brain/service/api_service/response/notification_response.dart';
 import 'package:book_brain/service/api_service/response/review_stats_response.dart';
 import 'package:book_brain/service/api_service/response/search_book_response.dart';
+import 'package:book_brain/service/api_service/response/subscriptions_response.dart';
 import 'package:book_brain/service/common/url_static.dart';
 
 import 'response/RegisterResponse.dart';
@@ -141,6 +153,123 @@ class ApiServices extends BaseApiService {
       method: 'POST',
       data: request.toJson(),
       fromJson: (json) => CreateReviewResponse.fromJson(json),
+    );
+  }
+
+
+  /// chuc nang yeu thich
+  Future<BaseResponse<FavoritesResponse>> getFavorites({
+    required int page,
+    required int limit,
+  }) async {
+    final queryParams = <String, dynamic>{};
+
+    queryParams["page"] = page;
+    queryParams["limit"] = limit;
+
+    return await sendRequest<FavoritesResponse>(
+      UrlStatic.API_FAVORISTES,
+      method: 'GET',
+      data: queryParams,
+      fromJson: (json) => FavoritesResponse.fromJson(json),
+    );
+  }
+
+  Future<BaseResponse<CreateFavoritesResponse>> sendCreateFavorites(FavoritesRequest request) async {
+    return await sendRequest<CreateFavoritesResponse>(
+      UrlStatic.API_FAVORISTES,
+      method: 'POST',
+      data: request.toJson(),
+      fromJson: (json) => CreateFavoritesResponse.fromJson(json),
+    );
+  }
+
+  Future<BaseResponse<CreateFavoritesResponse>> sendDeleteFavorites(FavoritesRequest request) async {
+    return await sendRequest<CreateFavoritesResponse>(
+      UrlStatic.API_FAVORISTES,
+      method: 'POST',
+      data: request.toJson(),
+      fromJson: (json) => CreateFavoritesResponse.fromJson(json),
+    );
+  }
+
+
+  /// chuc nang dang ky theo doi sách
+  Future<BaseResponse<SubscriptionsResponse>> getSubscriptions({
+    required int page,
+    required int limit,
+    required bool activeOnly,
+  }) async {
+    final queryParams = <String, dynamic>{};
+
+    queryParams["page"] = page;
+    queryParams["limit"] = limit;
+    queryParams["active_only"] = limit; //true tra ve các sách đã đăng ký theo dõi, false => all
+
+    return await sendRequest<SubscriptionsResponse>(
+      UrlStatic.API_SUBCRIPTIONS,
+      method: 'GET',
+      data: queryParams,
+      fromJson: (json) => SubscriptionsResponse.fromJson(json),
+    );
+  }
+
+
+  Future<BaseResponse<CreateSubscriptionsResponse>> sendCreateSubscription(SubscriptionsRequest request) async {
+    return await sendRequest<CreateSubscriptionsResponse>(
+      UrlStatic.API_SUBCRIPTIONS,
+      method: 'POST',
+      data: request.toJson(),
+      fromJson: (json) => CreateSubscriptionsResponse.fromJson(json),
+    );
+  }
+
+  Future<BaseResponse<DeleteSubscriptionsResponse>> sendDeleteSubscription(SubscriptionsRequest request) async {
+    return await sendRequest<DeleteSubscriptionsResponse>(
+      UrlStatic.API_SUBCRIPTIONS,
+      method: 'API_SUBCRIPTIONS',
+      data: request.toJson(),
+      fromJson: (json) => DeleteSubscriptionsResponse.fromJson(json),
+    );
+  }
+
+
+  /// nhan thong bao
+
+  Future<BaseResponse<NotificationResponse>> getNotification({
+    required int page,
+    required int limit,
+    required bool unreadOnly,
+  }) async {
+    final queryParams = <String, dynamic>{};
+
+    queryParams["page"] = page;
+    queryParams["limit"] = limit;
+    queryParams["unread_only"] = unreadOnly;
+
+    return await sendRequest<NotificationResponse>(
+      UrlStatic.API_NOTIFICATION,
+      method: 'GET',
+      data: queryParams,
+      fromJson: (json) => NotificationResponse.fromJson(json),
+    );
+  }
+
+  Future<BaseResponse<DeleteNotificationResponse>> sendDeleteNotification(DeleteNotificationRequest request) async {
+    return await sendRequest<DeleteNotificationResponse>(
+      UrlStatic.API_NOTIFICATION,
+      method: 'POST',
+      data: request.toJson(),
+      fromJson: (json) => DeleteNotificationResponse.fromJson(json),
+    );
+  }
+
+  Future<BaseResponse<DeleteAllNotificaitonResponse>> sendDeleteAllNotification(DeleteAllNotiRequest request) async {
+    return await sendRequest<DeleteAllNotificaitonResponse>(
+      UrlStatic.API_NOTIFICATION,
+      method: 'POST',
+      data: request.toJson(),
+      fromJson: (json) => DeleteAllNotificaitonResponse.fromJson(json),
     );
   }
 }

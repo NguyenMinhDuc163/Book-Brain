@@ -16,19 +16,17 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  int _currentIndex = 0; 
+  int _currentIndex = 0;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      behavior: HitTestBehavior
-          .translucent, 
+      behavior: HitTestBehavior.translucent,
       onTap: () {
-        
         FocusScope.of(context).requestFocus(FocusNode());
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: IndexedStack( 
+        body: IndexedStack(
           index: _currentIndex,
           children: const [
             HomeScreen(),
@@ -37,36 +35,29 @@ class _MainAppState extends State<MainApp> {
             SettingScreen(),
           ],
         ),
-        bottomNavigationBar: SalomonBottomBar( 
+        bottomNavigationBar: SalomonBottomBar(
           currentIndex: _currentIndex,
-          onTap: (index){
-            setState(() { 
-              _currentIndex = index; 
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
             });
           },
           items: [
-            SalomonBottomBarItem( 
-              icon: Icon(FontAwesomeIcons.house,
-                size: kDefaultIconSize,),
+            SalomonBottomBarItem(
+              icon: Icon(FontAwesomeIcons.house, size: kDefaultIconSize),
               title: Text("Trang chủ"),
             ),
-            SalomonBottomBarItem( 
-              icon: Icon(FontAwesomeIcons.solidHeart,
-                size: kDefaultIconSize,),
+            SalomonBottomBarItem(
+              icon: Icon(FontAwesomeIcons.solidHeart, size: kDefaultIconSize),
               title: Text("Yêu thích"),
             ),
             SalomonBottomBarItem(
-              icon: Icon(FontAwesomeIcons.rankingStar,
-                size: kDefaultIconSize,),
+              icon: Icon(FontAwesomeIcons.rankingStar, size: kDefaultIconSize),
               title: Text("Xếp hạng"),
             ),
-            SalomonBottomBarItem( 
-            
-              icon: Icon(FontAwesomeIcons.solidUser,
-            
-                size: kDefaultIconSize,),
+            SalomonBottomBarItem(
+              icon: Icon(FontAwesomeIcons.solidUser, size: kDefaultIconSize),
               title: Text("Cá nhân"),
-             
             ),
           ],
         ),

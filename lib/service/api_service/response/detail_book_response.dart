@@ -21,6 +21,8 @@ class DetailBookResponse extends BaseResponse{
     required this.chapters,
     required this.currentChapter,
     required this.totalReviews,
+    required this.isSubscribed,
+    required this.isFavorited,
   });
 
   final int? bookId;
@@ -42,6 +44,8 @@ class DetailBookResponse extends BaseResponse{
   final List<Chapter> chapters;
   final CurrentChapter? currentChapter;
   final int? totalReviews;
+  final bool? isSubscribed;
+  final bool? isFavorited;
 
   factory DetailBookResponse.fromJson(Map<String, dynamic> json){
     return DetailBookResponse(
@@ -62,6 +66,8 @@ class DetailBookResponse extends BaseResponse{
       updatedAt: DateTime.tryParse(json["updated_at"] ?? ""),
       totalChapters: json["total_chapters"],
       totalReviews: json["total_reviews"],
+      isSubscribed: json["is_subscribed"],
+      isFavorited: json["is_favorited"],
       chapters: json["chapters"] == null ? [] : List<Chapter>.from(json["chapters"]!.map((x) => Chapter.fromJson(x))),
       currentChapter: json["current_chapter"] == null ? null : CurrentChapter.fromJson(json["current_chapter"]),
     );
@@ -85,6 +91,8 @@ class DetailBookResponse extends BaseResponse{
     "updated_at": updatedAt?.toIso8601String(),
     "total_chapters": totalChapters,
     "totalReviews": totalReviews,
+    "is_subscribed": isSubscribed,
+    "is_favorited": isFavorited,
     "chapters": chapters.map((x) => x.toJson()).toList(),
     "current_chapter": currentChapter?.toJson(),
   };

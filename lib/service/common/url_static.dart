@@ -8,4 +8,8 @@ class UrlStatic{
   static const String API_CREATE_REVIEW = 'reviews';
   static const String API_ALL_REVIEW = 'books_reviews';
   static const String API_STATS_REVIEW = 'reviews/stats';
+
+  static const String API_FAVORISTES = 'favorites';
+  static const String API_SUBCRIPTIONS = 'subscriptions';
+  static const String API_NOTIFICATION = 'notifications';
 }

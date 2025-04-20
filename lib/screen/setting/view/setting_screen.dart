@@ -1,5 +1,6 @@
 import 'package:book_brain/screen/change_password/view/change_password_screen.dart';
 import 'package:book_brain/screen/edit_profile/view/edit_profile_screen.dart';
+import 'package:book_brain/screen/home/provider/home_notiffier.dart';
 import 'package:book_brain/screen/login/view/login_screen.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart' show AssetHelper;
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
@@ -7,6 +8,7 @@ import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
+import 'package:provider/provider.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -19,20 +21,29 @@ class _SettingScreenState extends State<SettingScreen> {
   bool _isDarkMode = false;
   bool _notificationsEnabled = true;
 
-
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() =>
+        Provider.of<HomeNotiffier>(context, listen: false).getData()
+    );
+  }
   @override
   Widget build(BuildContext context) {
+    final presenter = Provider.of<HomeNotiffier>(context);
+
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       body: AppBarContainerWidget(
         titleString: "Cài đặt",
+        isShowBackButton: false,
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: kDefaultPadding, vertical: kDefaultPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildProfileSection(),
+                _buildProfileSection(username: presenter.userName, email: presenter.email),
                 SizedBox(height: kDefaultPadding),
                 _buildAccountSection(),
                 SizedBox(height: kDefaultPadding),
@@ -49,7 +60,7 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  Widget _buildProfileSection() {
+  Widget _buildProfileSection({required String username,required String email}) {
     return Container(
       padding: EdgeInsets.all(kMediumPadding),
       decoration: BoxDecoration(
@@ -85,7 +96,7 @@ class _SettingScreenState extends State<SettingScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Nguyễn Văn A",
+                  username ?? '',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -94,7 +105,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  "nguyenvana@gmail.com",
+                  email,
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],

@@ -141,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Nguyen Minh Đức',
+                  presenter.userName ?? "Nguyễn Minh Đức",
                   style: TextStyles.defaultStyle.fontHeader.whiteTextColor.bold,
                 ),
                 Text(

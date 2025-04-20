@@ -14,15 +14,15 @@ class BaseAppbar extends StatelessWidget implements PreferredSizeWidget{
     return AppBar(
       backgroundColor: backgroundColor ?? Colors.grey,
 
-      leading: IconButton(
-        icon: Icon(
-          Icons.arrow_back,
-          color: textColor ??  Colors.white,
-        ),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-      ),
+      // leading: IconButton(
+      //   icon: Icon(
+      //     Icons.arrow_back,
+      //     color: textColor ??  Colors.white,
+      //   ),
+      //   onPressed: () {
+      //     Navigator.of(context).pop();
+      //   },
+      // ),
 
       title: Text(
         title,

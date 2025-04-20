@@ -25,8 +25,8 @@ class PreviewScreen extends StatefulWidget {
 }
 
 class _PreviewScreenState extends State<PreviewScreen> {
-  bool _dangTheoDoi = false;
-  String _selectedChapter = ""; // Đảm bảo biến này được khởi tạo
+  
+  String _selectedChapter = ""; 
   late int chapterNumber;
   @override
   void initState() {
@@ -44,14 +44,10 @@ class _PreviewScreenState extends State<PreviewScreen> {
   Widget build(BuildContext context) {
     final presenter = Provider.of<PreviewNotifier>(context);
 
-    final List<String>? _chapters =
-        presenter.bookDetail?.chapters
-            .map(
-              (chapter) => "Chương ${chapter.chapterOrder}: ${chapter.title}",
-            )
-            .toList();
+    final List<String>? _chapters = presenter.bookDetail?.chapters.map(
+              (chapter) => "Chương ${chapter.chapterOrder}: ${chapter.title}",).toList();
 
-    // Khởi tạo giá trị ban đầu từ currentChapter nếu có
+    
     if (_selectedChapter.isEmpty &&
         presenter.bookDetail?.currentChapter != null) {
       _selectedChapter =
@@ -61,7 +57,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background image
+          
           Positioned.fill(
             child: Image(
               image:
@@ -74,7 +70,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
             ),
           ),
 
-          // Back button
+          
           Positioned(
             top: kMediumPadding * 3,
             left: kMediumPadding,
@@ -95,12 +91,15 @@ class _PreviewScreenState extends State<PreviewScreen> {
             ),
           ),
 
-          // Heart button
+          
           Positioned(
             top: kMediumPadding * 3,
             right: kMediumPadding,
             child: GestureDetector(
-              onTap: () {},
+              onTap: () {
+                
+                presenter.setFavorites(!presenter.isFavorites);
+              },
               child: Container(
                 padding: EdgeInsets.all(kItemPadding),
                 decoration: BoxDecoration(
@@ -110,15 +109,18 @@ class _PreviewScreenState extends State<PreviewScreen> {
                   color: Colors.white,
                 ),
                 child: Icon(
-                  FontAwesomeIcons.solidHeart,
+                  
+                  presenter.isFavorites
+                      ? FontAwesomeIcons.solidHeart  
+                      : FontAwesomeIcons.heart,      
                   size: 18,
-                  color: Colors.red,
+                  color: presenter.isFavorites ? Colors.red : Colors.grey, 
                 ),
               ),
             ),
           ),
 
-          // Content and fixed button
+          
           Column(
             children: [
               Expanded(
@@ -138,7 +140,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                       ),
                       child: Column(
                         children: [
-                          // Handle indicator
+                          
                           Container(
                             alignment: Alignment.center,
                             margin: EdgeInsets.only(top: kDefaultPadding),
@@ -155,7 +157,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                           ),
                           SizedBox(height: kDefaultPadding),
 
-                          // Scrollable content
+                          
                           Expanded(
                             child: ListView(
                               controller: scrollController,
@@ -177,9 +179,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                     SizedBox(width: width_16),
                                     GestureDetector(
                                       onTap: () {
-                                        setState(() {
-                                          _dangTheoDoi = !_dangTheoDoi;
-                                        });
+                                        presenter.setFollowing(!presenter.isFollowing);
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(
@@ -188,7 +188,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                         ),
                                         decoration: BoxDecoration(
                                           color:
-                                              _dangTheoDoi
+                                          presenter.isFollowing
                                                   ? Color(0xFFBB86FC)
                                                   : ColorPalette.colorGreen,
                                           borderRadius: BorderRadius.circular(
@@ -199,9 +199,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Text(
-                                              _dangTheoDoi
-                                                  ? 'Theo dõi'
-                                                  : 'Đã theo dõi',
+                                              presenter.isFollowing ? 'Đã theo dõi' : 'Theo dõi',
                                               style: TextStyle(
                                                 color: Colors.black,
                                                 fontWeight: FontWeight.w500,
@@ -209,9 +207,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                             ),
                                             const SizedBox(width: 4),
                                             Icon(
-                                              _dangTheoDoi
-                                                  ? Icons.add
-                                                  : Icons.check,
+                                              presenter.isFollowing ? Icons.check : Icons.add,
                                               color: Colors.black,
                                               size: 18,
                                             ),
@@ -288,7 +284,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                   style: TextStyle(fontWeight: FontWeight.w300),
                                 ),
                                 SizedBox(height: kDefaultPadding),
-                                // ItemUtilityWidge(),
+                                
                                 SizedBox(height: kDefaultPadding),
                                 Text(
                                   'Mô tả',
@@ -320,7 +316,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                     setState(() {
                                       _selectedChapter = value;
 
-                                      // Nếu cần xử lý số chương
+                                      
                                       final pattern = RegExp(r'Chương (\d+):');
                                       final match = pattern.firstMatch(value);
                                       if (match != null &&
@@ -339,7 +335,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                   placeholder: 'Vui lòng chọn chương sách',
                                 ),
 
-                                // Thêm padding để tránh bị che bởi nút cố định
+                                
                                 SizedBox(height: 80),
                               ],
                             ),
@@ -351,7 +347,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                 ),
               ),
 
-              // Fixed button container
+              
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.all(kDefaultPadding),
