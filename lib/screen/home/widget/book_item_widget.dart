@@ -27,17 +27,7 @@ class BookItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           
-          // Container(
-          //   width: 140,
-          //   height: 200,
-          //   decoration: BoxDecoration(
-          //     borderRadius: BorderRadius.circular(8),
-          //     image: DecorationImage(
-          //       image: NetworkImage(image),
-          //       fit: BoxFit.cover,
-          //     ),
-          //   ),
-          // ),
+
 
           NetworkImageHandler(
             imageUrl: image, // URL hình ảnh của bạn

@@ -1,5 +1,6 @@
 import 'package:book_brain/screen/detail_book/provider/detail_book_notifier.dart';
 import 'package:book_brain/screen/detail_book/widget/bottom_sheet_selector.dart';
+import 'package:book_brain/screen/history_reading/service/history_service.dart';
 import 'package:book_brain/screen/reivew_book/service/review_book_service.dart';
 import 'package:book_brain/utils/core/common/toast.dart';
 import 'package:book_brain/utils/core/constants/color_constants.dart';
@@ -27,11 +28,11 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
   double _fontSize = fontSize_13sp;
   bool _isBookmarked = false;
   int chapterNumber = 1;
+  final TextEditingController noteController = TextEditingController();
 
   Color _backgroundColor = ColorPalette.backgroundColor;
   double _backgroundOpacity = 1.0;
 
-  final List<String> _chapters = MockData.mockChapters;
 
   Widget _buttonWidget(String text, Function()? onTap) {
     return InkWell(
@@ -70,13 +71,15 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
     );
   }
 
-  void _updateChapter(int newChapterNumber) {
+
+
+  void _updateChapter(int newChapterNumber, int maxChapterNumber) {
     if (newChapterNumber < 1) {
       showToastTop(message: "Bạn đang ở chương đầu tiên");
       return;
     }
 
-    if (newChapterNumber > 5) {
+    if (newChapterNumber > maxChapterNumber) {
       showToastTop(message: "Bạn đang ở chương cuối cùng");
       return;
     }
@@ -144,6 +147,10 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
           title: presenter.bookDetail?.title ?? "",
           backgroundColor: adjustedBackgroundColor,
           textColor: Colors.black,
+          onBack: (){
+            presenter.setHistoryBook(note: noteController.text, chapNumber: chapterNumber);
+            Navigator.of(context).pop();
+          },
         ),
 
         body: Column(
@@ -191,7 +198,8 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
                               int newChapterNumber =
                                   int.tryParse(match.group(1) ?? "") ?? 1;
 
-                              _updateChapter(newChapterNumber);
+                              _updateChapter(newChapterNumber,
+                                  presenter.bookDetail?.chapters.length ?? 1);
                             }
                           });
                         },
@@ -204,12 +212,14 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
                         children: [
                           _buttonWidget(
                             "Chương trước",
-                            () => _updateChapter(chapterNumber - 1),
+                            () => _updateChapter(chapterNumber - 1,
+                                presenter.bookDetail?.chapters.length ?? 1),
                           ),
                           _buttonWidget(
                             "Chương sau",
-                            () => _updateChapter(chapterNumber + 1),
-                          ),
+                            () => _updateChapter(chapterNumber + 1,
+                                presenter.bookDetail?.chapters.length ?? 1),),
+
                         ],
                       ),
 
@@ -505,7 +515,7 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
   }
 
   void _showNoteDialog(BuildContext context) {
-    final TextEditingController noteController = TextEditingController();
+    // final TextEditingController noteController = TextEditingController();
 
     showDialog(
       context: context,
@@ -515,16 +525,6 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                "Đoạn văn bản được chọn:",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 10),
-              Text(
-                MockData.contentBook.substring(0, 150) + "...",
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-              SizedBox(height: 20),
               TextField(
                 controller: noteController,
                 decoration: InputDecoration(

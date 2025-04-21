@@ -1,3 +1,4 @@
+import 'package:book_brain/screen/history_reading/service/history_service.dart';
 import 'package:book_brain/screen/home/service/home_service.dart';
 import 'package:book_brain/screen/preview/service/preview_service.dart';
 import 'package:book_brain/service/api_service/response/book_info_response.dart';
@@ -26,4 +27,19 @@ class DetailBookNotifier extends BaseNotifier{
     });
   }
 
+
+  Future<bool> setHistoryBook({String? note, int? chapNumber}) async {
+    return await execute(() async{
+      HistoryService historyService = HistoryService();
+      double rate = chapNumber! / (bookDetail?.totalChapters ?? 1) * 10;
+      historyService.updateHistory(
+        bookId: bookDetail!.bookId ?? 1,
+        readingStatus: chapNumber == bookDetail?.totalChapters ? "completed" :"reading",
+        completionRate: rate,
+        notes: note ?? "",
+      );
+      notifyListeners();
+      return true;
+    });
+  }
 }

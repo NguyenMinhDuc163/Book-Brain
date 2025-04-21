@@ -45,4 +45,37 @@ class Utils {
       return "N/A";
     }
   }
+
+
+  static int convertCompletionRate(String rateStr) {
+    try {
+      double rate = double.parse(rateStr);
+
+      if (rate < 1 || rate > 10) {
+        return 0;
+      }
+
+      return (rate * 10).toInt();
+    } catch (e) {
+      // Xử lý lỗi nếu không thể parse
+      print('Lỗi chuyển đổi tỉ lệ: $e');
+      return 0;
+    }
+  }
+
+
+ static String convertToFormattedDate(String isoDateString) {
+    try {
+      DateTime dateTime = DateTime.parse(isoDateString);
+
+      return '${twoDigitFormat(dateTime.day)}/${twoDigitFormat(dateTime.month)}/${dateTime.year}';
+    } catch (e) {
+      print('Lỗi chuyển đổi ngày: $e');
+      return '';
+    }
+  }
+
+ static String twoDigitFormat(int number) {
+    return number.toString().padLeft(2, '0');
+  }
 }

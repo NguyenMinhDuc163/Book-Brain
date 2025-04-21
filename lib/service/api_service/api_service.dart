@@ -6,6 +6,7 @@ import 'package:book_brain/service/api_service/request/delete_notification_reque
 import 'package:book_brain/service/api_service/request/favorites_request.dart';
 import 'package:book_brain/service/api_service/request/login_request.dart';
 import 'package:book_brain/service/api_service/request/subscriptions_request.dart';
+import 'package:book_brain/service/api_service/request/update_history_request.dart';
 import 'package:book_brain/service/api_service/response/all_review_response.dart';
 import 'package:book_brain/service/api_service/response/base_response.dart';
 import 'package:book_brain/service/api_service/response/book_info_response.dart';
@@ -18,11 +19,13 @@ import 'package:book_brain/service/api_service/response/delete_notification_resp
 import 'package:book_brain/service/api_service/response/delete_subscriptions_response.dart';
 import 'package:book_brain/service/api_service/response/detail_book_response.dart';
 import 'package:book_brain/service/api_service/response/favorites_response.dart';
+import 'package:book_brain/service/api_service/response/history_response.dart';
 import 'package:book_brain/service/api_service/response/login_response.dart';
 import 'package:book_brain/service/api_service/response/notification_response.dart';
 import 'package:book_brain/service/api_service/response/review_stats_response.dart';
 import 'package:book_brain/service/api_service/response/search_book_response.dart';
 import 'package:book_brain/service/api_service/response/subscriptions_response.dart';
+import 'package:book_brain/service/api_service/response/update_history_response.dart';
 import 'package:book_brain/service/common/url_static.dart';
 
 import 'response/RegisterResponse.dart';
@@ -272,4 +275,39 @@ class ApiServices extends BaseApiService {
       fromJson: (json) => DeleteAllNotificaitonResponse.fromJson(json),
     );
   }
+
+
+  /// lay lich su doc sach
+  Future<BaseResponse<UpdateHistoryResponse>> sendUpdateHistory(UpdateHistoryRequest request) async {
+    return await sendRequest<UpdateHistoryResponse>(
+      UrlStatic.API_HISTORY,
+      method: 'POST',
+      data: request.toJson(),
+      fromJson: (json) => UpdateHistoryResponse.fromJson(json),
+    );
+  }
+
+  Future<BaseResponse<HistoryResponse>> getHistory({
+    required int page,
+    required int limit,
+    // co 3 kieu  status reading, completed va rong
+    String? status,
+  }) async {
+    final queryParams = <String, dynamic>{};
+
+    queryParams["page"] = page;
+    queryParams["limit"] = limit;
+    if(status != null) {
+      queryParams["status"] = status;
+    }
+
+    return await sendRequest<HistoryResponse>(
+      UrlStatic.API_HISTORY,
+      method: 'GET',
+      data: queryParams,
+      fromJson: (json) => HistoryResponse.fromJson(json),
+    );
+  }
+
+
 }

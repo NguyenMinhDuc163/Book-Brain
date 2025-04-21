@@ -25,8 +25,8 @@ class PreviewScreen extends StatefulWidget {
 }
 
 class _PreviewScreenState extends State<PreviewScreen> {
-  
-  String _selectedChapter = ""; 
+
+  String _selectedChapter = "";
   late int chapterNumber;
   @override
   void initState() {
@@ -38,8 +38,15 @@ class _PreviewScreenState extends State<PreviewScreen> {
         listen: false,
       ).getData(widget.bookId ?? 1),
     );
+    _selectedChapter = "";
   }
 
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _selectedChapter = "";
+  }
   @override
   Widget build(BuildContext context) {
     final presenter = Provider.of<PreviewNotifier>(context);
@@ -315,8 +322,6 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                   onValueChanged: (value) {
                                     setState(() {
                                       _selectedChapter = value;
-
-                                      
                                       final pattern = RegExp(r'Chương (\d+):');
                                       final match = pattern.firstMatch(value);
                                       if (match != null &&

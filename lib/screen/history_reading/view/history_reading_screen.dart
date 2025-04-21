@@ -1,12 +1,14 @@
+import 'package:book_brain/screen/history_reading/provider/history_notifier.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
-import 'package:book_brain/utils/core/extentions/size_extension.dart';
+import 'package:book_brain/screen/preview/view/preview_screen.dart';
+import 'package:book_brain/service/api_service/response/history_response.dart';
+import 'package:book_brain/utils/core/helpers/network_image_handler.dart';
+import 'package:book_brain/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../utils/core/constants/dimension_constants.dart';
-import '../../../utils/core/constants/mock_data.dart';
 import '../../../utils/core/helpers/asset_helper.dart';
-import '../../../utils/core/helpers/image_helper.dart';
-import '../../home/widget/book_item_widget.dart';
 
 class HistoryReadingScreen extends StatefulWidget {
   const HistoryReadingScreen({super.key});
@@ -17,17 +19,28 @@ class HistoryReadingScreen extends StatefulWidget {
 
 class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
   int _selectedIndex = 0;
-  
-  final List<String> _tabTitles = ['Đang đọc', 'Lưu trữ', 'Đã đọc'];
+
+  final List<String> _tabTitles = ['Tất cả', 'Đang đọc', 'Đã đọc'];
+  late List<int> totalNumber;
 
   final List<IconData> _tabIcons = [
-    Icons.book_outlined,      
-    Icons.bookmark_outline,   
-    Icons.check_circle_outline, 
+    Icons.book_outlined,
+    Icons.bookmark_outline,
+    Icons.check_circle_outline,
   ];
-
+  @override
+  void initState() {
+    super.initState();
+    final presenter = Provider.of<HistoryNotifier>(context);
+    Future.microtask(() {
+      if (mounted) {
+        presenter.getData();
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
+    final presenter = Provider.of<HistoryNotifier>(context);
     return Scaffold(
       body: AppBarContainerWidget(
         titleString: "Lịch sử đọc sách",
@@ -100,14 +113,14 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             _buildTabHeader(),
-            
+
             Expanded(
               child: IndexedStack(
                 index: _selectedIndex,
                 children: [
-                  _buildCurrentlyReading(),
-                  _buildWantToRead(),
-                  _buildFinishedReading(),
+                  _buildAllReading(presenter.allHistory),
+                  _buildCurrentlyReading(presenter.currentHistory),
+                  _buildFinishedReading(presenter.completedHistory),
                 ],
               ),
             ),
@@ -155,26 +168,32 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
     );
   }
 
-  
-  Widget _buildCurrentlyReading() {
+
+  Widget _buildAllReading(List<HistoryResponse> allHistory) {
 
     return ListView.builder(
-      itemCount: 5,
+      itemCount: allHistory.length,
       padding: EdgeInsets.only(top: height_12),
       itemBuilder: (context, index) {
-        return _buildReadingBookItem(
-          title: "Harry Potter và Hoàng Tử Lai",
-          author: "J.K. Rowling",
-          progress: 65,
-          lastRead: "Hôm qua",
-          coverAsset: AssetHelper.harryPotterCover,
+        return InkWell(
+          onTap: (){
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => PreviewScreen(bookId: allHistory[index].bookId,)));
+          },
+          child: _buildReadingBookItem(
+            title: allHistory[index].title ?? '',
+            author: allHistory[index].authorName ?? '',
+            progress: Utils.convertCompletionRate( allHistory[index].completionRate ?? '5'),
+            lastRead: Utils.convertToFormattedDate(allHistory[index].lastReadAt.toString()),
+            coverAsset:allHistory[index].imageUrl ??  AssetHelper.defaultImage,
+          ),
         );
       },
     );
   }
 
-  
-  Widget _buildWantToRead() {
+
+  Widget _buildCurrentlyReading(List<HistoryResponse> currentHistory) {
     return GridView.builder(
       padding: EdgeInsets.only(top: height_12),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -183,36 +202,48 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
         crossAxisSpacing: 15,
         childAspectRatio: 0.7,
       ),
-      itemCount: 6,
+      itemCount: currentHistory.length,
       itemBuilder: (context, index) {
-        return _buildBookCard(
-          title: "Harry Potter và Hoàng Tử Lai",
-          author: "J.K. Rowling",
-          coverAsset: AssetHelper.harryPotterCover,
-          addedDate: "15/04/2025",
+        return InkWell(
+          onTap: (){
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => PreviewScreen(bookId: currentHistory[index].bookId,)));
+          },
+          child: _buildBookCard(
+            title:  currentHistory[index].title ?? '',
+            author:  currentHistory[index].authorName ?? '',
+            coverAsset: currentHistory[index].imageUrl ?? AssetHelper.defaultImage,
+            addedDate: Utils.convertToFormattedDate(currentHistory[index].lastReadAt.toString()),
+          ),
         );
       },
     );
   }
 
-  
-  Widget _buildFinishedReading() {
+
+  Widget _buildFinishedReading(List<HistoryResponse> completedHistory) {
     return ListView.builder(
-      itemCount: 5,
+      itemCount: completedHistory.length,
       padding: EdgeInsets.only(top: height_12),
       itemBuilder: (context, index) {
-        return _buildFinishedBookItem(
-          title: "Harry Potter và Hoàng Tử Lai",
-          author: "J.K. Rowling",
-          rating: 4.5,
-          finishedDate: "10/04/2025",
-          coverAsset: AssetHelper.harryPotterCover,
+        return InkWell(
+          onTap: (){
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => PreviewScreen(bookId: completedHistory[index].bookId,)));
+          },
+          child: _buildFinishedBookItem(
+            title:  completedHistory[index].title ?? '' ,
+            author:  completedHistory[index].authorName ?? '',
+            rating: Utils.convertCompletionRate( completedHistory[index].completionRate ?? '5').toDouble(),
+            finishedDate: Utils.convertToFormattedDate(completedHistory[index].finishDate ?? ''),
+            coverAsset: completedHistory[index].imageUrl ?? AssetHelper.harryPotterCover,
+          ),
         );
       },
     );
   }
 
-  
+
   Widget _buildReadingBookItem({
     required String title,
     required String author,
@@ -236,18 +267,17 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
       ),
       child: Row(
         children: [
-          
+
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: ImageHelper.loadFromAsset(
-              coverAsset,
+            child:  NetworkImageHandler(
+              imageUrl: coverAsset, // URL hình ảnh của bạn
               width: 70,
               height: 110,
-              fit: BoxFit.cover,
             ),
           ),
           SizedBox(width: 16),
-          
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -270,7 +300,7 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
                   ),
                 ),
                 SizedBox(height: 8),
-                
+
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -304,7 +334,7 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
                   ],
                 ),
                 SizedBox(height: 8),
-                
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -343,7 +373,7 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
     );
   }
 
-  
+
   Widget _buildBookCard({
     required String title,
     required String author,
@@ -365,17 +395,17 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          
+
           ClipRRect(
             borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-            child: ImageHelper.loadFromAsset(
-              coverAsset,
+            child: NetworkImageHandler(
+              imageUrl: coverAsset,
               width: double.infinity,
               height: 140,
-              fit: BoxFit.cover,
+              fit:  BoxFit.fitWidth,
             ),
           ),
-          
+
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -426,7 +456,7 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
     );
   }
 
-  
+
   Widget _buildFinishedBookItem({
     required String title,
     required String author,
@@ -450,18 +480,19 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
       ),
       child: Row(
         children: [
-          
+
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: ImageHelper.loadFromAsset(
-              coverAsset,
+            child: NetworkImageHandler(
+              imageUrl: coverAsset, // URL hình ảnh của bạn
               width: 70,
               height: 100,
               fit: BoxFit.cover,
             ),
+
           ),
           SizedBox(width: 16),
-          
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -484,13 +515,13 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
                   ),
                 ),
                 SizedBox(height: 6),
-                
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
-                        
+
                         Row(
                           children: List.generate(5, (index) {
                             return Icon(
@@ -524,7 +555,7 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
                   ],
                 ),
                 SizedBox(height: 8),
-                
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [

@@ -12,4 +12,5 @@ class UrlStatic{
   static const String API_FAVORISTES = 'favorites';
   static const String API_SUBCRIPTIONS = 'subscriptions';
   static const String API_NOTIFICATION = 'notifications';
+  static const String API_HISTORY = 'reading_history';
 }
