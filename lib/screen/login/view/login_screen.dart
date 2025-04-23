@@ -157,6 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       password: _passwordController.text,
                       tokenFCM: tokenFCM ?? "123",
                     );
+
                     if (isSend) {
                       Navigator.of(context).pushNamed(MainApp.routeName);
                     }

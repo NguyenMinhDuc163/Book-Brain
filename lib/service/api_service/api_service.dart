@@ -1,5 +1,6 @@
 import 'package:book_brain/service/api_service/BaseApiService.dart';
 import 'package:book_brain/service/api_service/request/RegisterRequest.dart';
+import 'package:book_brain/service/api_service/request/basse_request.dart';
 import 'package:book_brain/service/api_service/request/create_reivew_request.dart';
 import 'package:book_brain/service/api_service/request/delete_all_noti_request.dart';
 import 'package:book_brain/service/api_service/request/delete_notification_request.dart';
@@ -8,8 +9,10 @@ import 'package:book_brain/service/api_service/request/login_request.dart';
 import 'package:book_brain/service/api_service/request/subscriptions_request.dart';
 import 'package:book_brain/service/api_service/request/update_history_request.dart';
 import 'package:book_brain/service/api_service/response/all_review_response.dart';
+import 'package:book_brain/service/api_service/response/author_ranking_response.dart';
 import 'package:book_brain/service/api_service/response/base_response.dart';
 import 'package:book_brain/service/api_service/response/book_info_response.dart';
+import 'package:book_brain/service/api_service/response/book_ranking_response.dart';
 import 'package:book_brain/service/api_service/response/chapters_response.dart';
 import 'package:book_brain/service/api_service/response/create_favorites_response.dart';
 import 'package:book_brain/service/api_service/response/create_review_response.dart';
@@ -26,6 +29,7 @@ import 'package:book_brain/service/api_service/response/review_stats_response.da
 import 'package:book_brain/service/api_service/response/search_book_response.dart';
 import 'package:book_brain/service/api_service/response/subscriptions_response.dart';
 import 'package:book_brain/service/api_service/response/update_history_response.dart';
+import 'package:book_brain/service/api_service/response/update_ranking_response.dart';
 import 'package:book_brain/service/common/url_static.dart';
 
 import 'response/RegisterResponse.dart';
@@ -309,5 +313,44 @@ class ApiServices extends BaseApiService {
     );
   }
 
+// ranking
+  Future<BaseResponse<UpdateRankingResponse>> sendUpdateRanking(BaseRequest request) async {
+    return await sendRequest<UpdateRankingResponse>(
+      UrlStatic.API_RANKING_UPDATE,
+      method: 'POST',
+      data: request.toJson(),
+      fromJson: (json) => UpdateRankingResponse.fromJson(json),
+    );
+  }
 
+  Future<BaseResponse<BookRankingResponse>> getBookRanking({
+    required int limit,
+  }) async {
+    final queryParams = <String, dynamic>{};
+
+    queryParams["limit"] = limit;
+
+    return await sendRequest<BookRankingResponse>(
+      UrlStatic.API_BOOK_RANKING,
+      method: 'GET',
+      data: queryParams,
+      fromJson: (json) => BookRankingResponse.fromJson(json),
+    );
+  }
+
+
+  Future<BaseResponse<AuthorRankingResponse>> getAuthRanking({
+    required int limit,
+  }) async {
+    final queryParams = <String, dynamic>{};
+
+    queryParams["limit"] = limit;
+
+    return await sendRequest<AuthorRankingResponse>(
+      UrlStatic.API_AUTHOR_RANKING,
+      method: 'GET',
+      data: queryParams,
+      fromJson: (json) => AuthorRankingResponse.fromJson(json),
+    );
+  }
 }

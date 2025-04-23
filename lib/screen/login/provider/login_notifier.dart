@@ -16,7 +16,10 @@ class LoginNotifier extends BaseNotifier{
 
   Future<bool> login({required String username, required String password, required String tokenFCM}) async {
     return await execute(() async{
+      setLoading(true);
       bool isLogin = await loginService.login(username: username, password: password,tokenFCM: tokenFCM ?? "");
+      setLoading(false);
+
       notifyListeners(); // thông báo cho các widget khác biết rằng đã có sự thay đổi
 
       if (isLogin) {

@@ -13,4 +13,7 @@ class UrlStatic{
   static const String API_SUBCRIPTIONS = 'subscriptions';
   static const String API_NOTIFICATION = 'notifications';
   static const String API_HISTORY = 'reading_history';
+  static const String API_RANKING_UPDATE = 'rankings/update';
+  static const String API_AUTHOR_RANKING = 'rankings/authors';
+  static const String API_BOOK_RANKING = 'rankings/books';
 }
