@@ -1,7 +1,7 @@
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/screen/preview/view/preview_screen.dart';
-import 'package:book_brain/screen/search_result_screen/provider/search_notifier.dart';
-import 'package:book_brain/screen/search_result_screen/widget/book_widgets.dart';
+import 'package:book_brain/screen/search_screen/provider/search_notifier.dart';
+import 'package:book_brain/screen/search_screen/widget/book_widgets.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/widget/empty_data.dart';
@@ -165,21 +165,15 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                   ? BooksGridView(
                 books: presenter.searchBookResponse,
                 onTap: (book) {
-                  Navigator.pushNamed(
-                    context,
-                    PreviewScreen.routeName,
-                    arguments: book.title,
-                  );
+                  Navigator.of(context).push( MaterialPageRoute(builder:(context) => PreviewScreen(bookId: book.bookId,)));
                 },
               )
                   : BooksListView(
                 books: presenter.searchBookResponse,
                 onTap: (book) {
-                  Navigator.pushNamed(
-                    context,
-                    PreviewScreen.routeName,
-                    arguments: book.title,
-                  );
+                  Navigator.of(context).push( MaterialPageRoute(builder:(context) => PreviewScreen(bookId: book.bookId,)));
+
+
                 },
               ),
             ),

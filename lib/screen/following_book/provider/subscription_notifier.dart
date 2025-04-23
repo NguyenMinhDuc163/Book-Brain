@@ -13,6 +13,7 @@ class SubscriptionNotifier extends BaseNotifier{
 
   Future<bool> getListSubscription() async {
     return await execute(() async{
+      setLoading(true);
       subscriptions = (await subscriptionService.getListSubscription(page: 1, limit: 10, activeOnly: true))!;
       notifyListeners();
       print("subscriptions $subscriptions");

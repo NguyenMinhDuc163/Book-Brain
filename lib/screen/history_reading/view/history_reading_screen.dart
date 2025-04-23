@@ -31,10 +31,9 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
   @override
   void initState() {
     super.initState();
-    final presenter = Provider.of<HistoryNotifier>(context);
     Future.microtask(() {
       if (mounted) {
-        presenter.getData();
+        Provider.of<HistoryNotifier>(context).getData();
       }
     });
   }

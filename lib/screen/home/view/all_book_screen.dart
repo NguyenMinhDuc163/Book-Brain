@@ -1,68 +1,51 @@
-import 'package:book_brain/screen/following_book/provider/subscription_notifier.dart';
-import 'package:book_brain/screen/preview/view/preview_screen.dart';
-import 'package:book_brain/service/api_service/response/subscriptions_response.dart';
-import 'package:book_brain/utils/core/constants/dimension_constants.dart';
-import 'package:book_brain/utils/core/helpers/asset_helper.dart';
-import 'package:book_brain/utils/core/helpers/image_helper.dart';
-import 'package:book_brain/utils/utils.dart';
-import 'package:book_brain/utils/widget/empty_data.dart';
+import 'package:book_brain/screen/home/provider/home_notiffier.dart';
+import 'package:book_brain/service/api_service/response/book_info_response.dart';
 import 'package:flutter/material.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:provider/provider.dart';
-import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 
-class FollowingBookScreen extends StatefulWidget {
-  const FollowingBookScreen({super.key});
-  static const String routeName = '/following_book_sceen';
+import '../../../utils/core/constants/dimension_constants.dart';
+import '../../../utils/core/helpers/asset_helper.dart';
+import '../../../utils/core/helpers/image_helper.dart';
+import '../../../utils/widget/empty_data.dart';
+import '../../login/widget/app_bar_continer_widget.dart';
+import '../../preview/view/preview_screen.dart';
+
+class AllBookScreen extends StatefulWidget {
+  AllBookScreen({super.key, this.title});
+  static const routeName = "/all_book_screen";
+  String? title;
   @override
-  State<FollowingBookScreen> createState() => _FollowingBookScreenState();
+  State<AllBookScreen> createState() => _AllBookScreenState();
 }
 
-class _FollowingBookScreenState extends State<FollowingBookScreen> {
+class _AllBookScreenState extends State<AllBookScreen> {
   bool _isGridView = true;
-  String _searchQuery = '';
-  TextEditingController _searchController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(() {
-      if (mounted) {
-        Provider.of<SubscriptionNotifier>(context, listen: false).getData();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
-    final presenter = Provider.of<SubscriptionNotifier>(context);
+    final presenter = Provider.of<HomeNotiffier>(context);
 
     return KeyboardDismisser(
       gestures: const [GestureType.onTap],
       child: Scaffold(
         body: AppBarContainerWidget(
-          titleString: "Sách theo dõi",
-          bottomWidget: _buildSearchBar(),
+          titleString: widget.title ?? "",
           child: Column(
             children: [
               SizedBox(height: height_20),
-              _buildHeader(title:  "Danh sách sách theo dõi"),
+              _buildHeader(title: "Danh sách sách ${widget.title ?? ""}"),
               SizedBox(height: 16),
-      
+
               Expanded(
-                child: presenter.isLoading
-                    ? Center(
-                  child: CircularProgressIndicator(
-                    color: Color(0xFF6357CC),
-                  ),
-                )
-                    : _buildBookContent(presenter),
+                child:
+                    presenter.isLoading
+                        ? Center(
+                          child: CircularProgressIndicator(
+                            color: Color(0xFF6357CC),
+                          ),
+                        )
+                        : _buildBookContent(presenter.bookInfo),
               ),
             ],
           ),
@@ -71,49 +54,7 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
     );
   }
 
-  Widget _buildSearchBar() {
-    return Container(
-      height: 40,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      child: TextField(
-        controller: _searchController,
-        onChanged: (value) {
-          setState(() {
-            _searchQuery = value;
-          });
-        },
-        decoration: InputDecoration(
-          hintText: "Tìm kiếm sách theo dõi...",
-          prefixIcon: Icon(Icons.search, color: Color(0xff6357CC)),
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(vertical: 10),
-          suffixIcon: _searchQuery.isNotEmpty
-              ? IconButton(
-            icon: Icon(Icons.clear, color: Color(0xff6357CC)),
-            onPressed: () {
-              setState(() {
-                _searchQuery = '';
-                _searchController.clear();
-              });
-            },
-          )
-              : null,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader({required String title }) {
+  Widget _buildHeader({required String title}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -143,7 +84,9 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
           child: Row(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.horizontal(left: Radius.circular(18)),
+                borderRadius: BorderRadius.horizontal(
+                  left: Radius.circular(18),
+                ),
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
@@ -156,13 +99,17 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
                       padding: EdgeInsets.symmetric(horizontal: 12),
                       height: 36,
                       decoration: BoxDecoration(
-                        gradient: _isGridView
-                            ? LinearGradient(
-                          colors: [Color(0xFF8F67E8), Color(0xFF6357CC)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        )
-                            : null,
+                        gradient:
+                            _isGridView
+                                ? LinearGradient(
+                                  colors: [
+                                    Color(0xFF8F67E8),
+                                    Color(0xFF6357CC),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                )
+                                : null,
                         color: _isGridView ? null : Colors.white,
                       ),
                       child: Icon(
@@ -175,7 +122,9 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
                 ),
               ),
               ClipRRect(
-                borderRadius: BorderRadius.horizontal(right: Radius.circular(18)),
+                borderRadius: BorderRadius.horizontal(
+                  right: Radius.circular(18),
+                ),
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
@@ -188,13 +137,17 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
                       padding: EdgeInsets.symmetric(horizontal: 12),
                       height: 36,
                       decoration: BoxDecoration(
-                        gradient: !_isGridView
-                            ? LinearGradient(
-                          colors: [Color(0xFF8F67E8), Color(0xFF6357CC)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        )
-                            : null,
+                        gradient:
+                            !_isGridView
+                                ? LinearGradient(
+                                  colors: [
+                                    Color(0xFF8F67E8),
+                                    Color(0xFF6357CC),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                )
+                                : null,
                         color: !_isGridView ? null : Colors.white,
                       ),
                       child: Icon(
@@ -213,25 +166,15 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
     );
   }
 
-  Widget _buildBookContent(SubscriptionNotifier presenter) {
-    // Lọc danh sách theo từ khóa tìm kiếm
-    List<SubscriptionsResponse> filteredBooks = _searchQuery.isEmpty
-        ? presenter.subscriptions
-        : presenter.subscriptions.where((book) =>
-    (book.title?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false) ||
-        (book.authorName?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false)
-    ).toList();
-
-    if (filteredBooks.isEmpty) {
-      return _buildEmptyState();
+  Widget _buildBookContent(List<BookInfoResponse> book) {
+    if (book.isEmpty) {
+      return _buildEmptyState(book);
     }
 
-    return _isGridView
-        ? _buildGridView(filteredBooks)
-        : _buildListView(filteredBooks);
+    return _isGridView ? _buildGridView(book) : _buildListView(book);
   }
 
-  Widget _buildGridView(List<SubscriptionsResponse> books) {
+  Widget _buildGridView(List<BookInfoResponse> books) {
     return GridView.builder(
       padding: EdgeInsets.all(16),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -244,11 +187,10 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
       itemBuilder: (context, index) {
         return _buildGridItem(books[index]);
       },
-
     );
   }
 
-  Widget _buildListView(List<SubscriptionsResponse> books) {
+  Widget _buildListView(List<BookInfoResponse> books) {
     return ListView.builder(
       padding: EdgeInsets.all(16),
       itemCount: books.length,
@@ -258,10 +200,14 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
     );
   }
 
-  Widget _buildGridItem(SubscriptionsResponse book) {
+  Widget _buildGridItem(BookInfoResponse book) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => PreviewScreen(bookId: book.bookId,)));
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PreviewScreen(bookId: book.bookId),
+          ),
+        );
       },
       child: Container(
         decoration: BoxDecoration(
@@ -283,30 +229,34 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
               // Ảnh bìa sách
               (book.imageUrl ?? '') != ''
                   ? Image.network(
-                book.imageUrl ?? "",
-                width: double.infinity,
-                height: 160,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    ImageHelper.loadFromAsset(
-                      AssetHelper.harryPotterCover,
-                      width: double.infinity,
-                      height: 160,
-                      fit: BoxFit.cover,
-                    ),
-              )
+                    book.imageUrl ?? "",
+                    width: double.infinity,
+                    height: 160,
+                    fit: BoxFit.cover,
+                    errorBuilder:
+                        (context, error, stackTrace) =>
+                            ImageHelper.loadFromAsset(
+                              AssetHelper.defaultImage,
+                              width: double.infinity,
+                              height: 160,
+                              fit: BoxFit.cover,
+                            ),
+                  )
                   : ImageHelper.loadFromAsset(
-                AssetHelper.harryPotterCover,
-                width: double.infinity,
-                height: 160,
-                fit: BoxFit.cover,
-              ),
+                    AssetHelper.defaultImage,
+                    width: double.infinity,
+                    height: 160,
+                    fit: BoxFit.cover,
+                  ),
 
               // Thông tin sách
               Expanded(
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -322,10 +272,7 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
                       SizedBox(height: 2),
                       Text(
                         book.authorName ?? "",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[700],
-                        ),
+                        style: TextStyle(fontSize: 12, color: Colors.grey[700]),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -354,11 +301,14 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
     );
   }
 
-  Widget _buildListItem(SubscriptionsResponse book) {
+  Widget _buildListItem(BookInfoResponse book) {
     return GestureDetector(
-      onTap: (){
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => PreviewScreen(bookId: book.bookId,)));
-
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PreviewScreen(bookId: book.bookId),
+          ),
+        );
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 16),
@@ -380,26 +330,28 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
                 topLeft: Radius.circular(12),
                 bottomLeft: Radius.circular(12),
               ),
-              child: (book.imageUrl ?? '') != ''
-                  ? Image.network(
-                book.imageUrl ?? "",
-                width: 100,
-                height: 140,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    ImageHelper.loadFromAsset(
-                      AssetHelper.harryPotterCover,
-                      width: 100,
-                      height: 140,
-                      fit: BoxFit.cover,
-                    ),
-              )
-                  : ImageHelper.loadFromAsset(
-                AssetHelper.harryPotterCover,
-                width: 100,
-                height: 140,
-                fit: BoxFit.cover,
-              ),
+              child:
+                  (book.imageUrl ?? '') != ''
+                      ? Image.network(
+                        book.imageUrl ?? "",
+                        width: 100,
+                        height: 140,
+                        fit: BoxFit.cover,
+                        errorBuilder:
+                            (context, error, stackTrace) =>
+                                ImageHelper.loadFromAsset(
+                                  AssetHelper.defaultImage,
+                                  width: 100,
+                                  height: 140,
+                                  fit: BoxFit.cover,
+                                ),
+                      )
+                      : ImageHelper.loadFromAsset(
+                        AssetHelper.defaultImage,
+                        width: 100,
+                        height: 140,
+                        fit: BoxFit.cover,
+                      ),
             ),
             Expanded(
               child: Padding(
@@ -419,10 +371,7 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
                     SizedBox(height: 4),
                     Text(
                       book.authorName ?? "",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[700],
-                      ),
+                      style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                     ),
                     SizedBox(height: 8),
                     Row(
@@ -446,13 +395,6 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
                       ],
                     ),
                     SizedBox(height: 8),
-                    Text(
-                      "Theo dõi từ: ${_formatDate(Utils.formatDate(book.subscribedAt))}",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -463,40 +405,23 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
     );
   }
 
-  String _formatDate(String? dateString) {
-    if (dateString == null || dateString.isEmpty) return "N/A";
-
-    try {
-      DateTime date = DateTime.parse(dateString);
-      return "${date.day}/${date.month}/${date.year}";
-    } catch (e) {
-      return "N/A";
-    }
-  }
-
-  Widget _buildEmptyState() {
-    return _searchQuery.isNotEmpty
+  Widget _buildEmptyState(List<BookInfoResponse> book) {
+    return book.isNotEmpty
         ? Center(
-      child: EmptyDataWidget(
-        title: "Không tìm thấy sách phù hợp",
-        styleTitle: TextStyle(
-          fontSize: 14,
-          color: Colors.grey[600],
-        ),
-        height: height_200,
-        width: width_200,
-      ),
-    )
+          child: EmptyDataWidget(
+            title: "Không tìm thấy sách phù hợp",
+            styleTitle: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            height: height_200,
+            width: width_200,
+          ),
+        )
         : Center(
-      child: EmptyDataWidget(
-        title: "Bạn chưa theo dõi sách nào",
-        styleTitle: TextStyle(
-          fontSize: 14,
-          color: Colors.grey[600],
-        ),
-        height: height_200,
-        width: width_200,
-      ),
-    );
+          child: EmptyDataWidget(
+            title: "Bạn chưa theo dõi sách nào",
+            styleTitle: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            height: height_200,
+            width: width_200,
+          ),
+        );
   }
 }

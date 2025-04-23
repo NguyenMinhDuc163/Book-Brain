@@ -1,11 +1,12 @@
 import 'package:book_brain/screen/following_book/view/following_book_screen.dart';
 import 'package:book_brain/screen/home/provider/home_notiffier.dart';
+import 'package:book_brain/screen/home/view/all_book_screen.dart';
 import 'package:book_brain/screen/home/widget/book_item_widget.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/screen/notification/view/notification_screen.dart';
 import 'package:book_brain/screen/preview/view/preview_screen.dart';
 import 'package:book_brain/screen/ranking/view/ranking_screen.dart';
-import 'package:book_brain/screen/search_result_screen/view/search_screen.dart';
+import 'package:book_brain/screen/search_screen/view/search_screen.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/constants/textstyle_ext.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
@@ -266,19 +267,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   HorizontalBookList(
                     title: 'Top thinh hành',
                     books: presenter.bookInfo,
-                    onSeeAllPressed: () {},
+                    onSeeAllPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AllBookScreen(title: 'Top thinh hành',)));
+                    },
                   ),
 
                   HorizontalBookList(
                     title: 'Dành cho bạn',
                     books: presenter.bookInfo,
-                    onSeeAllPressed: () {},
+                    onSeeAllPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AllBookScreen(title: 'Dành cho bạn',)));
+
+                    },
                   ),
 
                   HorizontalBookList(
                     title: 'Mới xuất bản',
                     books: presenter.bookInfo,
-                    onSeeAllPressed: () {},
+                    onSeeAllPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AllBookScreen(title: 'Mới xuất bản',)));
+
+                    },
                   ),
                 ],
               ),

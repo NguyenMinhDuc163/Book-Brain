@@ -11,7 +11,7 @@ import 'package:provider/single_child_widget.dart';
 
 import '../screen/home/provider/home_notiffier.dart';
 import '../screen/reivew_book/provider/review_book_notifier.dart';
-import '../screen/search_result_screen/provider/search_notifier.dart';
+import '../screen/search_screen/provider/search_notifier.dart';
 
 class ProviderSetup {
   static List<SingleChildWidget> getProviders() {

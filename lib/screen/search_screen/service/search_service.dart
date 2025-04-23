@@ -1,5 +1,5 @@
 import 'package:book_brain/screen/preview/service/preview_interface.dart';
-import 'package:book_brain/screen/search_result_screen/service/search_interface.dart';
+import 'package:book_brain/screen/search_screen/service/search_interface.dart';
 import 'package:book_brain/service/api_service/api_service.dart';
 import 'package:book_brain/service/api_service/response/base_response.dart';
 import 'package:book_brain/service/api_service/response/detail_book_response.dart';

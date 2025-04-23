@@ -1,9 +1,8 @@
-import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:book_brain/screen/login/model/user_model.dart';
 import 'package:book_brain/screen/login/services/login_service.dart';
 import 'package:book_brain/utils/core/base/base_notifier.dart';
 import 'package:book_brain/utils/core/common/toast.dart';
+import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -21,10 +20,10 @@ class LoginNotifier extends BaseNotifier{
       notifyListeners(); // thông báo cho các widget khác biết rằng đã có sự thay đổi
 
       if (isLogin) {
-        showToastTop(message: "account_login.login_success".tr());
+        showToastTop(message: "Đăng nhập thành công");
         return true;
       } else {
-        showToastTop(message: "account_login.login_fail".tr());
+        showToastTop(message: "Dăng nhập thất bại");
         return false;
       }
     });

@@ -1,5 +1,6 @@
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
-import 'package:book_brain/screen/search_result_screen/view/search_result_screen.dart';
+import 'package:book_brain/screen/search_screen/view/search_result_screen.dart';
+import 'package:book_brain/screen/search_screen/view/search_screen.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
@@ -41,12 +42,12 @@ class _SearchScreenState extends State<SearchScreen> {
     {
       'title': 'Atomic Habits',
       'author': 'James Clear',
-      'cover': AssetHelper.harryPotterCover,
+      'cover': AssetHelper.defaultImage,
     },
     {
       'title': 'Đắc Nhân Tâm',
       'author': 'Dale Carnegie',
-      'cover': AssetHelper.harryPotterCover,
+      'cover': AssetHelper.defaultImage,
     },
   ];
 
