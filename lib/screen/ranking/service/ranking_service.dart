@@ -31,10 +31,14 @@ class RankingService implements IRankingInterface {
   }) async {
     final BaseResponse<BookRankingResponse> response = await apiServices
         .getBookRanking(limit: limit);
+    print("======> 1");
     if (response.code != null) {
       List<BookRankingResponse> data = response.data!;
+      print("======> 2");
       return data;
     }
+    print("======> 3 ${response.data.toString()}" );
+
     return null;
   }
 

@@ -1,9 +1,12 @@
+import 'package:book_brain/screen/preview/view/preview_screen.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/extentions/size_extension.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
+import 'package:book_brain/utils/core/helpers/network_image_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../service/api_service/response/book_ranking_response.dart';
 import '../../../utils/core/constants/color_constants.dart';
 import '../../../utils/core/helpers/image_helper.dart';
 import '../provider/ranking_notifier.dart';
@@ -17,15 +20,15 @@ class BookRankingScreen extends StatefulWidget {
 }
 
 class _BookRankingScreenState extends State<BookRankingScreen> {
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     Provider.of<RankingNotifier>(context, listen: false).getData();
+  //   });
+  // }
 
-  void initState() {
-    super.initState();
-    Future.microtask(
-          () => Provider.of<RankingNotifier>(context, listen: false).getData(),
-    );
-  }
-
-
+  @override
   @override
   Widget build(BuildContext context) {
     final presenter = Provider.of<RankingNotifier>(context);
@@ -34,31 +37,34 @@ class _BookRankingScreenState extends State<BookRankingScreen> {
       decoration: BoxDecoration(
         color: Colors.grey.shade100,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.grey.shade100,
-          width: 1, 
-        ),
+        border: Border.all(color: Colors.grey.shade100, width: 1),
       ),
       padding: EdgeInsets.all(kDefaultPadding),
-      child: ListView.builder(
-        itemCount: 50,
-        itemBuilder: (context, index) {
-          return _bookWidget(index + 1);
-        },
-      ),
+      child:
+          presenter.bookRanking == null || presenter.bookRanking!.isEmpty
+              ? Center(
+                child: CircularProgressIndicator(),
+              ) // Hiển thị loading khi chưa có dữ liệu
+              : ListView.builder(
+                itemCount: presenter.bookRanking!.length,
+                itemBuilder: (context, index) {
+                  return InkWell(
+                      onTap: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => PreviewScreen(bookId: presenter.bookRanking?[index].bookId ?? 1,)));
+                      },
+                      child: _bookWidget(index + 1, presenter.bookRanking![index]));
+                },
+              ),
     );
   }
 
-  Widget _bookWidget(int index ){
+  Widget _bookWidget(int index, BookRankingResponse book) {
     Color textColor = index == 1 ? ColorPalette.colorFF6B00 : Colors.black;
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.grey.shade100,
-          width: 1, 
-        ),
+        border: Border.all(color: Colors.grey.shade100, width: 1),
       ),
       padding: EdgeInsets.all(kDefaultPadding),
       margin: EdgeInsets.symmetric(vertical: kDefaultPadding),
@@ -67,11 +73,24 @@ class _BookRankingScreenState extends State<BookRankingScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
-              flex: 1,
-              child: Text(index.toString(), style: TextStyle(fontSize: 25.sp, fontWeight: FontWeight.bold, color: textColor),)),
+            flex: 1,
+            child: Text(
+              index.toString(),
+              style: TextStyle(
+                fontSize: 25.sp,
+                fontWeight: FontWeight.bold,
+                color: textColor,
+              ),
+            ),
+          ),
           Expanded(
-              flex: 3,
-              child: ImageHelper.loadFromAsset(AssetHelper.harryPotterCover, width: width_100, height: height_100)),
+            flex: 3,
+            child: NetworkImageHandler(
+              imageUrl: book.imageUrl,
+              width: 100.h,
+              height: 100.h,
+            ),
+          ),
           Expanded(
             flex: 7,
             child: Column(
@@ -79,8 +98,8 @@ class _BookRankingScreenState extends State<BookRankingScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               spacing: height_6,
               children: [
-                Text("Pobres criaturas"),
-                Text("J.K.Rowling"),
+                Text(book.title ?? ""),
+                Text(book.authorName ?? ""),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
@@ -88,45 +107,48 @@ class _BookRankingScreenState extends State<BookRankingScreen> {
                     children: [
                       elementWidget("320 trang"),
                       elementWidget("2021"),
-                      elementWidget("Viễn tưởng"),
+                      elementWidget(book.categoryName ?? ""),
                     ],
                   ),
                 ),
-            
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: width_8,
                   children: [
-                    Text("7.8", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+                    Text(
+                      book.rating ?? "5",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
                     Padding(
-                      padding:  EdgeInsets.only(top: height_5),
+                      padding: EdgeInsets.only(top: height_5),
                       child: RatingStars(
-                        rating: 3,
+                        rating: double.parse(book.rating.toString()),
                         activeStar: AssetHelper.icoStarSVG,
                         inactiveStar: AssetHelper.icoStarSVG,
                       ),
                     ),
                   ],
-                )
+                ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
   }
 
-  Widget elementWidget(String content){
+  Widget elementWidget(String content) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: width_8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.grey,
-          width: 1, 
-        ),
+        border: Border.all(color: Colors.grey, width: 1),
       ),
       child: Text(
         content,

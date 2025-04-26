@@ -46,7 +46,7 @@ class _RankingScreenState extends State<RankingScreen> {
                 title: Text("Tác giả", textAlign: TextAlign.center, maxLines: 2),
                 view: Padding(
                   padding: EdgeInsets.all(kDefaultPadding),
-                  child: RankingPodium(topUsers: topUsers),
+                  child: RankingPodium(topAuthor: presenter.authRanking  ?? []),
                 ),
               ),
               TabModel(

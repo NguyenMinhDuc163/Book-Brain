@@ -82,7 +82,7 @@ class EvaluationWidget extends StatelessWidget {
                     child: Row(
                       children: [
                         RatingStars(
-                          rating: i,
+                          rating: i.toDouble(), // Chuyển đổi từ int sang double
                           activeStar: AssetHelper.icoStarSVG,
                           inactiveStar: AssetHelper.icoStarSVG,
                           starWidth: width_10,

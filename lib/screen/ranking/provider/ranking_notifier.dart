@@ -5,8 +5,8 @@ import 'package:book_brain/utils/core/base/base_notifier.dart';
 
 class RankingNotifier extends BaseNotifier{
   RankingService rankingService = RankingService();
-  List<BookRankingResponse>? bookRanking = [];
-  List<AuthorRankingResponse>?  authRanking = [];
+  List<BookRankingResponse>? bookRanking ;
+  List<AuthorRankingResponse>?  authRanking ;
 
   Future<void> getData() async {
     await getRanking();
@@ -17,6 +17,8 @@ class RankingNotifier extends BaseNotifier{
     return await execute(() async{
       bookRanking = await rankingService.getBookRanking(limit: 5);
       authRanking = await rankingService.getAuthRanking(limit: 5);
+      // print("======> bookRanking: ${bookRanking?.length}");
+      // print("======> authRanking: ${authRanking?.length}");
       notifyListeners();
       return true;
     });
