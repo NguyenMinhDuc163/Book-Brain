@@ -2,9 +2,11 @@ import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/extentions/size_extension.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../utils/core/constants/color_constants.dart';
 import '../../../utils/core/helpers/image_helper.dart';
+import '../provider/ranking_notifier.dart';
 import '../widget/rating_stars_widget.dart';
 
 class BookRankingScreen extends StatefulWidget {
@@ -15,8 +17,19 @@ class BookRankingScreen extends StatefulWidget {
 }
 
 class _BookRankingScreenState extends State<BookRankingScreen> {
+
+  void initState() {
+    super.initState();
+    Future.microtask(
+          () => Provider.of<RankingNotifier>(context, listen: false).getData(),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    final presenter = Provider.of<RankingNotifier>(context);
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey.shade100,

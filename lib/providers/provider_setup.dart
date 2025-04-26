@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
 import '../screen/home/provider/home_notiffier.dart';
+import '../screen/ranking/provider/ranking_notifier.dart';
 import '../screen/reivew_book/provider/review_book_notifier.dart';
 import '../screen/search_screen/provider/search_notifier.dart';
 
@@ -27,6 +28,7 @@ class ProviderSetup {
       ChangeNotifierProvider(create: (_) => SubscriptionNotifier()),
       ChangeNotifierProvider(create: (_) => NotificationNotifier()),
       ChangeNotifierProvider(create: (_) => HistoryNotifier()),
+      ChangeNotifierProvider(create: (_) => RankingNotifier()),
       // Thêm các Provider khác ở đây
     ];
   }
