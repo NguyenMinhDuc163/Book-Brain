@@ -13,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
+import '../../../utils/widget/loading_widget.dart';
+
 class PreviewScreen extends StatefulWidget {
   PreviewScreen({super.key, this.bookId});
   static const String routeName = '/preview_screen';
@@ -374,6 +376,8 @@ class _PreviewScreenState extends State<PreviewScreen> {
               ),
             ],
           ),
+          presenter.isLoading ? const LoadingWidget() : const SizedBox(),
+
         ],
       ),
     );

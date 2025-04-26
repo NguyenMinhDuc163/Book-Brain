@@ -8,6 +8,7 @@ import '../../../utils/core/constants/dimension_constants.dart';
 import '../../../utils/core/helpers/asset_helper.dart';
 import '../../../utils/core/helpers/image_helper.dart';
 import '../../../utils/widget/empty_data.dart';
+import '../../../utils/widget/loading_widget.dart';
 import '../../login/widget/app_bar_continer_widget.dart';
 import '../../preview/view/preview_screen.dart';
 
@@ -29,26 +30,32 @@ class _AllBookScreenState extends State<AllBookScreen> {
     return KeyboardDismisser(
       gestures: const [GestureType.onTap],
       child: Scaffold(
-        body: AppBarContainerWidget(
-          titleString: widget.title ?? "",
-          child: Column(
-            children: [
-              SizedBox(height: height_20),
-              _buildHeader(title: "Danh sách sách ${widget.title ?? ""}"),
-              SizedBox(height: 16),
+        body: Stack(
+          children: [
+            AppBarContainerWidget(
+              titleString: widget.title ?? "",
+              child: Column(
+                children: [
+                  SizedBox(height: height_20),
+                  _buildHeader(title: "Danh sách sách ${widget.title ?? ""}"),
+                  SizedBox(height: 16),
 
-              Expanded(
-                child:
-                    presenter.isLoading
-                        ? Center(
-                          child: CircularProgressIndicator(
-                            color: Color(0xFF6357CC),
-                          ),
-                        )
-                        : _buildBookContent(presenter.bookInfo),
+                  Expanded(
+                    child:
+                        presenter.isLoading
+                            ? Center(
+                              child: CircularProgressIndicator(
+                                color: Color(0xFF6357CC),
+                              ),
+                            )
+                            : _buildBookContent(presenter.bookInfo),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            presenter.isLoading ? const LoadingWidget() : const SizedBox(),
+
+          ],
         ),
       ),
     );

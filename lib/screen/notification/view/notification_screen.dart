@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 import '../../../utils/core/constants/color_constants.dart';
+import '../../../utils/widget/loading_widget.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -267,54 +268,38 @@ class _NotificationScreenState extends State<NotificationScreen> {
     final presenter = Provider.of<NotificationNotifier>(context);
 
     return Scaffold(
-      body: AppBarContainerWidget(
-        titleString: "Thông báo",
-        backgroundColor: ColorPalette.lavenderWhite,
-        // actions: [
-        //   if (!_isSelectionMode && (presenter.listNotifications?.isNotEmpty ?? false))
-        //     IconButton(
-        //       icon: Icon(Icons.delete_outline),
-        //       onPressed: () {
-        //         setState(() {
-        //           _isSelectionMode = true;
-        //           _selectedNotifications.clear();
-        //         });
-        //       },
-        //     ),
-        //   if (_isSelectionMode)
-        //     IconButton(
-        //       icon: Icon(Icons.close),
-        //       onPressed: () {
-        //         setState(() {
-        //           _isSelectionMode = false;
-        //           _selectedNotifications.clear();
-        //         });
-        //       },
-        //     ),
-        // ],
-        child: presenter.isLoading
-            ? Center(
-          child: CircularProgressIndicator(
-            color: Color(0xFF6357CC),
-          ),
-        )
-            : (presenter.listNotifications == null || presenter.listNotifications!.isEmpty)
-            ? _buildEmptyState()
-            : Column(
-          children: [
-            if (_isSelectionMode) _buildSelectionHeader(presenter),
-            Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                itemCount: presenter.listNotifications?.length ?? 0,
-                itemBuilder: (context, index) {
-                  final notification = presenter.listNotifications![index];
-                  return _buildNotificationItem(notification);
-                },
+      body: Stack(
+        children: [
+          AppBarContainerWidget(
+            titleString: "Thông báo",
+            backgroundColor: ColorPalette.lavenderWhite,
+            child: presenter.isLoading
+                ? Center(
+              child: CircularProgressIndicator(
+                color: Color(0xFF6357CC),
               ),
+            )
+                : (presenter.listNotifications == null || presenter.listNotifications!.isEmpty)
+                ? _buildEmptyState()
+                : Column(
+              children: [
+                if (_isSelectionMode) _buildSelectionHeader(presenter),
+                Expanded(
+                  child: ListView.builder(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    itemCount: presenter.listNotifications?.length ?? 0,
+                    itemBuilder: (context, index) {
+                      final notification = presenter.listNotifications![index];
+                      return _buildNotificationItem(notification);
+                    },
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          presenter.isLoading ? const LoadingWidget() : const SizedBox(),
+
+        ],
       ),
     );
   }

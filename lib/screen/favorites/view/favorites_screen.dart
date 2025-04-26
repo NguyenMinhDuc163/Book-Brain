@@ -9,6 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../../utils/core/constants/dimension_constants.dart';
+import '../../../utils/widget/loading_widget.dart';
 
 class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({super.key});
@@ -35,72 +36,78 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   Widget build(BuildContext context) {
     final presenter = Provider.of<FavoritesNotifier>(context);
     return Scaffold(
-      body: AppBarContainerWidget(
-        titleString: "Yêu thích",
-        isShowBackButton: false,
-        bottomWidget: Container(
-          height: 40,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 8,
-                offset: Offset(0, 3),
+      body: Stack(
+        children: [
+          AppBarContainerWidget(
+            titleString: "Yêu thích",
+            isShowBackButton: false,
+            bottomWidget: Container(
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: Offset(0, 3),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: TextField(
-            controller: _searchController,
-            onChanged: (value) {
-              setState(() {
-                _searchQuery = value;
-              });
-            },
-            decoration: InputDecoration(
-              hintText: "Tìm kiếm sách yêu thích...",
-              prefixIcon: Icon(Icons.search, color: Color(0xff6357CC)),
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(vertical: 10),
-
-              suffixIcon: _searchQuery.isNotEmpty
-                  ? IconButton(
-                icon: Icon(Icons.clear, color: Color(0xff6357CC)),
-                onPressed: () {
+              child: TextField(
+                controller: _searchController,
+                onChanged: (value) {
                   setState(() {
-                    _searchQuery = '';
-                    _searchController.clear(); 
+                    _searchQuery = value;
                   });
                 },
-              )
-                  : null,
+                decoration: InputDecoration(
+                  hintText: "Tìm kiếm sách yêu thích...",
+                  prefixIcon: Icon(Icons.search, color: Color(0xff6357CC)),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(vertical: 10),
+
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                    icon: Icon(Icons.clear, color: Color(0xff6357CC)),
+                    onPressed: () {
+                      setState(() {
+                        _searchQuery = '';
+                        _searchController.clear();
+                      });
+                    },
+                  )
+                      : null,
+                ),
+              ),
+            ),
+
+            paddingContent: EdgeInsets.only(
+              left: kMediumPadding,
+              right: kMediumPadding,
+              top: 10,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(),
+                SizedBox(height: 16),
+
+                Expanded(
+                  child: presenter.isLoading
+                      ? _buildLoadingIndicator()
+                      : presenter.favorites.isEmpty
+                      ? _buildEmptyState()
+                      : _isGridView
+                      ? _buildGridView(presenter)
+                      : _buildListView(presenter),
+                ),
+              ],
             ),
           ),
-        ),
+          presenter.isLoading ? const LoadingWidget() : const SizedBox(),
 
-        paddingContent: EdgeInsets.only(
-          left: kMediumPadding,
-          right: kMediumPadding,
-          top: 10,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(),
-            SizedBox(height: 16),
-
-            Expanded(
-              child: presenter.isLoading
-                  ? _buildLoadingIndicator()
-                  : presenter.favorites.isEmpty
-                  ? _buildEmptyState()
-                  : _isGridView
-                  ? _buildGridView(presenter)
-                  : _buildListView(presenter),
-            ),
-          ],
-        ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async{

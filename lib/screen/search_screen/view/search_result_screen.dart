@@ -8,6 +8,8 @@ import 'package:book_brain/utils/widget/empty_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../utils/widget/loading_widget.dart';
+
 class SearchResultScreen extends StatefulWidget {
   final String keyword;
 
@@ -59,126 +61,132 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
     final presenter = Provider.of<SearchNotifier>(context);
 
     return Scaffold(
-      body: AppBarContainerWidget(
-        titleString: "Kết quả tìm kiếm",
-        bottomWidget: Container(
-          height: 40,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 8,
-                offset: Offset(0, 3),
+      body: Stack(
+        children: [
+          AppBarContainerWidget(
+            titleString: "Kết quả tìm kiếm",
+            bottomWidget: Container(
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: Offset(0, 3),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: "Tìm kiếm sách...",
-              prefixIcon: Icon(Icons.search, color: Color(0xff6357CC)),
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(vertical: 10),
-              suffixIcon: _searchController.text.isNotEmpty
-                  ? IconButton(
-                icon: Icon(Icons.clear, color: Color(0xff6357CC)),
-                onPressed: () {
-                  _clearSearch();
-                },
-              )
-                  : null,
-            ),
-            onChanged: (value) {
-              // Force rebuild để hiển thị/ẩn nút xóa
-              setState(() {});
-            },
-            onSubmitted: (value) {
-              if (value.trim().isNotEmpty) {
-                presenter.getSearchData(value);
-              }
-            },
-          ),
-        ),
-        paddingContent: EdgeInsets.symmetric(
-          horizontal: kMediumPadding,
-          vertical: 8,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            presenter.isLoading
-                ? Center(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 16.0),
-                child: CircularProgressIndicator(
-                  color: Color(0xFF6A5AE0),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: "Tìm kiếm sách...",
+                  prefixIcon: Icon(Icons.search, color: Color(0xff6357CC)),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(vertical: 10),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                    icon: Icon(Icons.clear, color: Color(0xff6357CC)),
+                    onPressed: () {
+                      _clearSearch();
+                    },
+                  )
+                      : null,
                 ),
+                onChanged: (value) {
+                  // Force rebuild để hiển thị/ẩn nút xóa
+                  setState(() {});
+                },
+                onSubmitted: (value) {
+                  if (value.trim().isNotEmpty) {
+                    presenter.getSearchData(value);
+                  }
+                },
               ),
-            )
-                : Column(
+            ),
+            paddingContent: EdgeInsets.symmetric(
+              horizontal: kMediumPadding,
+              vertical: 8,
+            ),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Kết quả cho "${_searchController.text}"',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF6A5AE0),
+                presenter.isLoading
+                    ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: CircularProgressIndicator(
+                      color: Color(0xFF6A5AE0),
+                    ),
                   ),
+                )
+                    : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Kết quả cho "${_searchController.text}"',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF6A5AE0),
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Tìm thấy ${presenter.searchBookResponse.length} sách',
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    ),
+                  ],
                 ),
-                SizedBox(height: 4),
-                Text(
-                  'Tìm thấy ${presenter.searchBookResponse.length} sách',
-                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                SizedBox(height: 16),
+
+                _buildToolbar(),
+                SizedBox(height: 16),
+
+                presenter.isLoading
+                    ? Expanded(
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: Color(0xFF6A5AE0),
+                    ),
+                  ),
+                )
+                    : presenter.searchBookResponse.isEmpty
+                    ? Expanded(
+                  child: EmptyDataWidget(
+                    title: "Không tìm thấy sách phù hợp",
+                    styleTitle: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                    height: height_100,
+                    width: width_100,
+                  ),
+                )
+                    : Expanded(
+                  child: _isGridView
+                      ? BooksGridView(
+                    books: presenter.searchBookResponse,
+                    onTap: (book) {
+                      Navigator.of(context).push( MaterialPageRoute(builder:(context) => PreviewScreen(bookId: book.bookId,)));
+                    },
+                  )
+                      : BooksListView(
+                    books: presenter.searchBookResponse,
+                    onTap: (book) {
+                      Navigator.of(context).push( MaterialPageRoute(builder:(context) => PreviewScreen(bookId: book.bookId,)));
+
+
+                    },
+                  ),
                 ),
               ],
             ),
-            SizedBox(height: 16),
+          ),
+          presenter.isLoading ? const LoadingWidget() : const SizedBox(),
 
-            _buildToolbar(),
-            SizedBox(height: 16),
-
-            presenter.isLoading
-                ? Expanded(
-              child: Center(
-                child: CircularProgressIndicator(
-                  color: Color(0xFF6A5AE0),
-                ),
-              ),
-            )
-                : presenter.searchBookResponse.isEmpty
-                ? Expanded(
-              child: EmptyDataWidget(
-                title: "Không tìm thấy sách phù hợp",
-                styleTitle: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                ),
-                height: height_100,
-                width: width_100,
-              ),
-            )
-                : Expanded(
-              child: _isGridView
-                  ? BooksGridView(
-                books: presenter.searchBookResponse,
-                onTap: (book) {
-                  Navigator.of(context).push( MaterialPageRoute(builder:(context) => PreviewScreen(bookId: book.bookId,)));
-                },
-              )
-                  : BooksListView(
-                books: presenter.searchBookResponse,
-                onTap: (book) {
-                  Navigator.of(context).push( MaterialPageRoute(builder:(context) => PreviewScreen(bookId: book.bookId,)));
-
-
-                },
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
+import '../../../utils/widget/loading_widget.dart';
 import '../provider/review_book_notifier.dart';
 import '../widget/evaluation_widget.dart';
 
@@ -207,56 +208,62 @@ class _ReviewBookScreenState extends State<ReviewBookScreen> {
   Widget build(BuildContext context) {
     final presenter = Provider.of<ReviewBookNotifier>(context);
     return Scaffold(
-      body: AppBarContainerWidget(
-        titleString: 'Reviews',
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // Hiển thị thống kê đánh giá
-              EvaluationWidget(
-                averageRating: presenter.statsReview?.averageRating,
-                totalReviews: presenter.statsReview?.totalReviews,
-                fiveStarCount: presenter.statsReview?.fiveStar,
-                fourStarCount: presenter.statsReview?.fourStar,
-                threeStarCount: presenter.statsReview?.threeStar,
-                twoStarCount: presenter.statsReview?.twoStar,
-                oneStarCount: presenter.statsReview?.oneStar,
-              ),
-              const SizedBox(height: kDefaultPadding),
+      body: Stack(
+        children: [
+          AppBarContainerWidget(
+            titleString: 'Reviews',
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  // Hiển thị thống kê đánh giá
+                  EvaluationWidget(
+                    averageRating: presenter.statsReview?.averageRating,
+                    totalReviews: presenter.statsReview?.totalReviews,
+                    fiveStarCount: presenter.statsReview?.fiveStar,
+                    fourStarCount: presenter.statsReview?.fourStar,
+                    threeStarCount: presenter.statsReview?.threeStar,
+                    twoStarCount: presenter.statsReview?.twoStar,
+                    oneStarCount: presenter.statsReview?.oneStar,
+                  ),
+                  const SizedBox(height: kDefaultPadding),
 
-              // Hiển thị danh sách đánh giá từ API
-              if (presenter.reviews != null && presenter.reviews!.isNotEmpty)
-                ...presenter.reviews!.map((review) => Column(
-                  children: [
-                    FeedBackWidget(
-                      avatar: (review.avatarUrl ?? '') != '' ? review.avatarUrl ?? "" : AssetHelper.avatar,
-                      name: review.username ?? '',
-                      rate: int.tryParse(review.rating.toString() ) ?? 5,
-                      comment: review.comment ?? "",
-                      image: const [], // Hiện tại API không có hình ảnh
-                      time: _getTimeAgo(review.createdAt.toString()),
-                      helpfulCount: int.tryParse(review.helpfulCount ?? '0') ?? 0,
-                    ),
-                    const SizedBox(height: kDefaultPadding),
-                  ],
-                )).toList()
-              else
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      "Chưa có đánh giá nào cho sách này",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontStyle: FontStyle.italic,
-                        color: Colors.grey[600],
+                  // Hiển thị danh sách đánh giá từ API
+                  if (presenter.reviews != null && presenter.reviews!.isNotEmpty)
+                    ...presenter.reviews!.map((review) => Column(
+                      children: [
+                        FeedBackWidget(
+                          avatar: (review.avatarUrl ?? '') != '' ? review.avatarUrl ?? "" : AssetHelper.avatar,
+                          name: review.username ?? '',
+                          rate: int.tryParse(review.rating.toString() ) ?? 5,
+                          comment: review.comment ?? "",
+                          image: const [], // Hiện tại API không có hình ảnh
+                          time: _getTimeAgo(review.createdAt.toString()),
+                          helpfulCount: int.tryParse(review.helpfulCount ?? '0') ?? 0,
+                        ),
+                        const SizedBox(height: kDefaultPadding),
+                      ],
+                    )).toList()
+                  else
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          "Chưa có đánh giá nào cho sách này",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontStyle: FontStyle.italic,
+                            color: Colors.grey[600],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-            ],
+                ],
+              ),
+            ),
           ),
-        ),
+          presenter.isLoading ? const LoadingWidget() : const SizedBox(),
+
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showReviewBottomSheet,

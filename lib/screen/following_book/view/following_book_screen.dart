@@ -11,6 +11,8 @@ import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:provider/provider.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 
+import '../../../utils/widget/loading_widget.dart';
+
 class FollowingBookScreen extends StatefulWidget {
   const FollowingBookScreen({super.key});
   static const String routeName = '/following_book_sceen';
@@ -46,26 +48,32 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
     return KeyboardDismisser(
       gestures: const [GestureType.onTap],
       child: Scaffold(
-        body: AppBarContainerWidget(
-          titleString: "Sách theo dõi",
-          bottomWidget: _buildSearchBar(),
-          child: Column(
-            children: [
-              SizedBox(height: height_20),
-              _buildHeader(title:  "Danh sách sách theo dõi"),
-              SizedBox(height: 16),
-      
-              Expanded(
-                child: presenter.isLoading
-                    ? Center(
-                  child: CircularProgressIndicator(
-                    color: Color(0xFF6357CC),
+        body: Stack(
+          children: [
+            AppBarContainerWidget(
+              titleString: "Sách theo dõi",
+              bottomWidget: _buildSearchBar(),
+              child: Column(
+                children: [
+                  SizedBox(height: height_20),
+                  _buildHeader(title:  "Danh sách sách theo dõi"),
+                  SizedBox(height: 16),
+
+                  Expanded(
+                    child: presenter.isLoading
+                        ? Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF6357CC),
+                      ),
+                    )
+                        : _buildBookContent(presenter),
                   ),
-                )
-                    : _buildBookContent(presenter),
+                ],
               ),
-            ],
-          ),
+            ),
+            presenter.isLoading ? const LoadingWidget() : const SizedBox(),
+
+          ],
         ),
       ),
     );

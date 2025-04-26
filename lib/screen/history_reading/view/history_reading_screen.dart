@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 
 import '../../../utils/core/constants/dimension_constants.dart';
 import '../../../utils/core/helpers/asset_helper.dart';
+import '../../../utils/widget/loading_widget.dart';
 
 class HistoryReadingScreen extends StatefulWidget {
   const HistoryReadingScreen({super.key});
@@ -41,90 +42,96 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
   Widget build(BuildContext context) {
     final presenter = Provider.of<HistoryNotifier>(context);
     return Scaffold(
-      body: AppBarContainerWidget(
-        titleString: "Lịch sử đọc sách",
-        bottomWidget: Container(
-          height: 50,
-          margin: EdgeInsets.symmetric(horizontal: 4),
-          child: Row(
-            children: List.generate(
-              _tabTitles.length,
-                  (index) => Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedIndex = index;
-                    });
-                  },
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 4),
-                    padding: EdgeInsets.all(height_5),
-                    decoration: BoxDecoration(
-                      color: _selectedIndex == index
-                          ? Colors.white
-                          : Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: _selectedIndex == index
-                          ? [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 4,
-                          offset: Offset(0, 2),
-                        )
-                      ]
-                          : [],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          _tabIcons[index],
-                          size: 18,
+      body: Stack(
+        children: [
+          AppBarContainerWidget(
+            titleString: "Lịch sử đọc sách",
+            bottomWidget: Container(
+              height: 50,
+              margin: EdgeInsets.symmetric(horizontal: 4),
+              child: Row(
+                children: List.generate(
+                  _tabTitles.length,
+                      (index) => Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedIndex = index;
+                        });
+                      },
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 4),
+                        padding: EdgeInsets.all(height_5),
+                        decoration: BoxDecoration(
                           color: _selectedIndex == index
-                              ? Color(0xFF6A5AE0)
-                              : Colors.white,
+                              ? Colors.white
+                              : Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: _selectedIndex == index
+                              ? [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 4,
+                              offset: Offset(0, 2),
+                            )
+                          ]
+                              : [],
                         ),
-                        SizedBox(width: 6),
-                        Text(
-                          _tabTitles[index],
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: _selectedIndex == index
-                                ? Color(0xFF6A5AE0)
-                                : Colors.white,
-                          ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              _tabIcons[index],
+                              size: 18,
+                              color: _selectedIndex == index
+                                  ? Color(0xFF6A5AE0)
+                                  : Colors.white,
+                            ),
+                            SizedBox(width: 6),
+                            Text(
+                              _tabTitles[index],
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: _selectedIndex == index
+                                    ? Color(0xFF6A5AE0)
+                                    : Colors.white,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ),
-        paddingContent: EdgeInsets.symmetric(
-          horizontal: kMediumPadding,
-          vertical: 20,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            _buildTabHeader(),
-
-            Expanded(
-              child: IndexedStack(
-                index: _selectedIndex,
-                children: [
-                  _buildAllReading(presenter.allHistory),
-                  _buildCurrentlyReading(presenter.currentHistory),
-                  _buildFinishedReading(presenter.completedHistory),
-                ],
-              ),
+            paddingContent: EdgeInsets.symmetric(
+              horizontal: kMediumPadding,
+              vertical: 20,
             ),
-          ],
-        ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                _buildTabHeader(),
+
+                Expanded(
+                  child: IndexedStack(
+                    index: _selectedIndex,
+                    children: [
+                      _buildAllReading(presenter.allHistory),
+                      _buildCurrentlyReading(presenter.currentHistory),
+                      _buildFinishedReading(presenter.completedHistory),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          presenter.isLoading ? const LoadingWidget() : const SizedBox(),
+
+        ],
       ),
     );
   }

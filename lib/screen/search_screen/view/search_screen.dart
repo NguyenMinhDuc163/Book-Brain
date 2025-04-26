@@ -111,31 +111,35 @@ class _SearchScreenState extends State<SearchScreen> {
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
       },
-      child: AppBarContainerWidget(
-        titleString: "Tìm kiếm sách",
-        bottomWidget: _buildSearchBar(),
-        paddingContent: EdgeInsets.symmetric(
-          horizontal: kMediumPadding,
-          vertical: 16,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (recentSearches.isNotEmpty) ...[
-                _buildRecentSearches(),
-                SizedBox(height: 20),
-              ],
+      child: Column(
+        children: [
+          AppBarContainerWidget(
+            titleString: "Tìm kiếm sách",
+            bottomWidget: _buildSearchBar(),
+            paddingContent: EdgeInsets.symmetric(
+              horizontal: kMediumPadding,
+              vertical: 16,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (recentSearches.isNotEmpty) ...[
+                    _buildRecentSearches(),
+                    SizedBox(height: 20),
+                  ],
 
-              _buildPopularCategories(),
-              SizedBox(height: 20),
+                  _buildPopularCategories(),
+                  SizedBox(height: 20),
 
-              _buildTrendingBooks(),
+                  _buildTrendingBooks(),
 
-              SizedBox(height: 20),
-            ],
+                  SizedBox(height: 20),
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

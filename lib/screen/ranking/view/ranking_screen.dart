@@ -8,6 +8,7 @@ import 'package:book_brain/utils/widget/tab_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../utils/widget/loading_widget.dart';
 import 'book_ranking_screen.dart';
 
 class RankingScreen extends StatefulWidget {
@@ -37,22 +38,28 @@ class _RankingScreenState extends State<RankingScreen> {
         title: "Bảng xếp hạng",
         backgroundColor: ColorPalette.color6A5AE0,
       ),
-      body: Tabwidget(
-        tabs: [
-          TabModel(
-            title: Text("Tác giả", textAlign: TextAlign.center, maxLines: 2),
-            view: Padding(
-              padding: EdgeInsets.all(kDefaultPadding),
-              child: RankingPodium(topUsers: topUsers),
-            ),
+      body: Stack(
+        children: [
+          Tabwidget(
+            tabs: [
+              TabModel(
+                title: Text("Tác giả", textAlign: TextAlign.center, maxLines: 2),
+                view: Padding(
+                  padding: EdgeInsets.all(kDefaultPadding),
+                  child: RankingPodium(topUsers: topUsers),
+                ),
+              ),
+              TabModel(
+                title: Text("Sách", textAlign: TextAlign.center, maxLines: 2),
+                view: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: kDefaultPadding),
+                  child: BookRankingScreen(),
+                ),
+              ),
+            ],
           ),
-          TabModel(
-            title: Text("Sách", textAlign: TextAlign.center, maxLines: 2),
-            view: Padding(
-              padding: EdgeInsets.symmetric(horizontal: kDefaultPadding),
-              child: BookRankingScreen(),
-            ),
-          ),
+          presenter.isLoading ? const LoadingWidget() : const SizedBox(),
+
         ],
       ),
     );

@@ -1,15 +1,14 @@
 import 'package:book_brain/screen/detail_book/provider/detail_book_notifier.dart';
 import 'package:book_brain/screen/detail_book/widget/bottom_sheet_selector.dart';
-import 'package:book_brain/screen/history_reading/service/history_service.dart';
 import 'package:book_brain/screen/reivew_book/service/review_book_service.dart';
 import 'package:book_brain/utils/core/common/toast.dart';
 import 'package:book_brain/utils/core/constants/color_constants.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
-import 'package:book_brain/utils/core/constants/mock_data.dart';
 import 'package:book_brain/utils/widget/base_appbar.dart';
 import 'package:flutter/material.dart';
-import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:provider/provider.dart';
+
+import '../../../utils/widget/loading_widget.dart';
 
 class DetailBookScreen extends StatefulWidget {
   DetailBookScreen({super.key, this.bookId, this.chapterId});
@@ -153,82 +152,87 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
           },
         ),
 
-        body: Column(
+        body: Stack(
           children: [
-            Container(
-              padding: EdgeInsets.all(kDefaultPadding),
-              child: Text(
-                "${presenter.bookDetail?.currentChapter?.title}",
-                style: TextStyle(fontSize: fontSize_15sp, color: colorRed),
-              ),
-            ),
-
-            Expanded(
-              child: RawScrollbar(
-                thumbColor: Colors.grey.withOpacity(0.5),
-                radius: Radius.circular(20),
-                thickness: 15,
-                thumbVisibility: true,
-                controller: _scrollController,
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  physics: BouncingScrollPhysics(),
-                  padding: EdgeInsets.symmetric(horizontal: width_25),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        presenter.bookDetail?.currentChapter?.content ?? '',
-                        style: TextStyle(fontSize: _fontSize, height: 1.5),
-                      ),
-
-                      SizedBox(height: height_20),
-
-                      BottomSheetSelector(
-                        title: 'Chọn chương sách',
-                        items: _chapters ?? [],
-                        selectedValue: _selectedChapter,
-                        onValueChanged: (value) {
-                          setState(() {
-                            _selectedChapter = value;
-
-                            final pattern = RegExp(r'Chương (\d+):');
-                            final match = pattern.firstMatch(value);
-                            if (match != null && match.groupCount >= 1) {
-                              int newChapterNumber =
-                                  int.tryParse(match.group(1) ?? "") ?? 1;
-
-                              _updateChapter(newChapterNumber,
-                                  presenter.bookDetail?.chapters.length ?? 1);
-                            }
-                          });
-                        },
-                        placeholder: 'Vui lòng chọn chương sách',
-                      ),
-
-                      SizedBox(height: height_12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buttonWidget(
-                            "Chương trước",
-                            () => _updateChapter(chapterNumber - 1,
-                                presenter.bookDetail?.chapters.length ?? 1),
-                          ),
-                          _buttonWidget(
-                            "Chương sau",
-                            () => _updateChapter(chapterNumber + 1,
-                                presenter.bookDetail?.chapters.length ?? 1),),
-
-                        ],
-                      ),
-
-                      SizedBox(height: height_50),
-                    ],
+            Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(kDefaultPadding),
+                  child: Text(
+                    "${presenter.bookDetail?.currentChapter?.title}",
+                    style: TextStyle(fontSize: fontSize_15sp, color: colorRed),
                   ),
                 ),
-              ),
+
+                Expanded(
+                  child: RawScrollbar(
+                    thumbColor: Colors.grey.withOpacity(0.5),
+                    radius: Radius.circular(20),
+                    thickness: 15,
+                    thumbVisibility: true,
+                    controller: _scrollController,
+                    child: SingleChildScrollView(
+                      controller: _scrollController,
+                      physics: BouncingScrollPhysics(),
+                      padding: EdgeInsets.symmetric(horizontal: width_25),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            presenter.bookDetail?.currentChapter?.content ?? '',
+                            style: TextStyle(fontSize: _fontSize, height: 1.5),
+                          ),
+
+                          SizedBox(height: height_20),
+
+                          BottomSheetSelector(
+                            title: 'Chọn chương sách',
+                            items: _chapters ?? [],
+                            selectedValue: _selectedChapter,
+                            onValueChanged: (value) {
+                              setState(() {
+                                _selectedChapter = value;
+
+                                final pattern = RegExp(r'Chương (\d+):');
+                                final match = pattern.firstMatch(value);
+                                if (match != null && match.groupCount >= 1) {
+                                  int newChapterNumber =
+                                      int.tryParse(match.group(1) ?? "") ?? 1;
+
+                                  _updateChapter(newChapterNumber,
+                                      presenter.bookDetail?.chapters.length ?? 1);
+                                }
+                              });
+                            },
+                            placeholder: 'Vui lòng chọn chương sách',
+                          ),
+
+                          SizedBox(height: height_12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              _buttonWidget(
+                                "Chương trước",
+                                () => _updateChapter(chapterNumber - 1,
+                                    presenter.bookDetail?.chapters.length ?? 1),
+                              ),
+                              _buttonWidget(
+                                "Chương sau",
+                                () => _updateChapter(chapterNumber + 1,
+                                    presenter.bookDetail?.chapters.length ?? 1),),
+
+                            ],
+                          ),
+
+                          SizedBox(height: height_50),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
+            presenter.isLoading ? const LoadingWidget() : const SizedBox(),
           ],
         ),
 
