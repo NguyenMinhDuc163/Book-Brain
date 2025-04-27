@@ -140,18 +140,6 @@ class _ReviewBookScreenState extends State<ReviewBookScreen> {
                       ),
                     ),
                     SizedBox(height: 16),
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.image),
-                          onPressed: () {
-                            // Chức năng thêm hình ảnh
-                          },
-                        ),
-                        Text('Thêm hình ảnh (tùy chọn)'),
-                      ],
-                    ),
-                    SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: _userRating > 0 ? () async {
                         // Lưu tham chiếu đến các giá trị cần thiết
@@ -211,7 +199,7 @@ class _ReviewBookScreenState extends State<ReviewBookScreen> {
       body: Stack(
         children: [
           AppBarContainerWidget(
-            titleString: 'Reviews',
+            titleString: 'Đánh giá',
             child: SingleChildScrollView(
               child: Column(
                 children: [

@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../utils/widget/loading_widget.dart';
+import '../../main_app.dart';
 import 'book_ranking_screen.dart';
 
 class RankingScreen extends StatefulWidget {

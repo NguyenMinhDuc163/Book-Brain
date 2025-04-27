@@ -20,15 +20,15 @@ class BookRankingScreen extends StatefulWidget {
 }
 
 class _BookRankingScreenState extends State<BookRankingScreen> {
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     Provider.of<RankingNotifier>(context, listen: false).getData();
-  //   });
-  // }
-
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<RankingNotifier>(context, listen: false).getData();
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final presenter = Provider.of<RankingNotifier>(context);
@@ -118,7 +118,7 @@ class _BookRankingScreenState extends State<BookRankingScreen> {
                   spacing: width_8,
                   children: [
                     Text(
-                      book.rating ?? "5",
+                      book.rankingScore ?? "5",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,

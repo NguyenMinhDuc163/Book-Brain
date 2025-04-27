@@ -12,12 +12,12 @@ class AuthorRankingResponse {
 
   final int? authorId;
   final String? name;
-  final int? totalBooks;
-  final dynamic totalViews;
+  final String? totalBooks;
+  final String? totalViews;
   final String? avgRating;
-  final int? totalFavorites;
-  final dynamic authorScore;
-  final int? overallRank;
+  final String? totalFavorites;
+  final String? authorScore;
+  final String? overallRank;
 
   factory AuthorRankingResponse.fromJson(Map<String, dynamic> json){
     return AuthorRankingResponse(

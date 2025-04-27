@@ -5,36 +5,27 @@ import 'package:book_brain/utils/core/base/base_notifier.dart';
 
 class RankingNotifier extends BaseNotifier{
   RankingService rankingService = RankingService();
-  List<BookRankingResponse>? bookRanking ;
-  List<AuthorRankingResponse>?  authRanking ;
+   List<BookRankingResponse>? bookRanking ;
+   List<AuthorRankingResponse>?  authRanking ;
 
   Future<void> getData() async {
-    await getRanking();
+    await getBookRanking();
+    await getAuthorRanking();
   }
 
 
-  Future<bool> getRanking() async {
+  Future<bool> getBookRanking() async {
     return await execute(() async{
       bookRanking = await rankingService.getBookRanking(limit: 5);
-      authRanking = await rankingService.getAuthRanking(limit: 5);
-      // print("======> bookRanking: ${bookRanking?.length}");
-      // print("======> authRanking: ${authRanking?.length}");
       notifyListeners();
       return true;
     });
   }
-
-  Future<bool> updateRanking() async {
+  Future<bool> getAuthorRanking() async {
     return await execute(() async{
-      setLoading(true);
-      bool result = await rankingService.updateRanking() ?? false;
-      if (result) {
-        bookRanking = await rankingService.getBookRanking(limit: 5);
-        authRanking = await rankingService.getAuthRanking(limit: 5);
-      }
-      setLoading(false);
+      authRanking = await rankingService.getAuthRanking(limit: 5);
       notifyListeners();
-      return result;
+      return true;
     });
   }
 

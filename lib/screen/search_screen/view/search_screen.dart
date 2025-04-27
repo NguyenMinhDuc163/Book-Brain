@@ -111,7 +111,7 @@ class _SearchScreenState extends State<SearchScreen> {
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
       },
-      child: Column(
+      child: Stack(
         children: [
           AppBarContainerWidget(
             titleString: "Tìm kiếm sách",

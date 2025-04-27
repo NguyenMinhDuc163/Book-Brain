@@ -28,10 +28,10 @@ class BookRankingResponse {
   final int? categoryId;
   final String? categoryName;
   final String? rankingScore;
-  final int? overallRank;
-  final int? favoriteCount;
+  final String? overallRank;
+  final String? favoriteCount;
   final String? avgRating;
-  final int? reviewCount;
+  final String? reviewCount;
 
   factory BookRankingResponse.fromJson(Map<String, dynamic> json){
     return BookRankingResponse(
