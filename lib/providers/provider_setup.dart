@@ -9,7 +9,7 @@ import 'package:book_brain/screen/preview/provider/preview_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
-import '../screen/home/provider/home_notiffier.dart';
+import '../screen/home/provider/home_notifier.dart';
 import '../screen/ranking/provider/ranking_notifier.dart';
 import '../screen/reivew_book/provider/review_book_notifier.dart';
 import '../screen/search_screen/provider/search_notifier.dart';
@@ -19,7 +19,7 @@ class ProviderSetup {
     return [
       ChangeNotifierProvider(create: (_) => LoginNotifier()),
       ChangeNotifierProvider(create: (_) => RegisterNotifier()),
-      ChangeNotifierProvider(create: (_) => HomeNotiffier()),
+      ChangeNotifierProvider(create: (_) => HomeNotifier()),
       ChangeNotifierProvider(create: (_) => PreviewNotifier()),
       ChangeNotifierProvider(create: (_) => SearchNotifier()),
       ChangeNotifierProvider(create: (_) => DetailBookNotifier()),

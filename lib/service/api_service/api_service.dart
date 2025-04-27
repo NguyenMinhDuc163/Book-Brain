@@ -5,6 +5,7 @@ import 'package:book_brain/service/api_service/request/create_reivew_request.dar
 import 'package:book_brain/service/api_service/request/delete_all_noti_request.dart';
 import 'package:book_brain/service/api_service/request/delete_notification_request.dart';
 import 'package:book_brain/service/api_service/request/favorites_request.dart';
+import 'package:book_brain/service/api_service/request/forgot_password_request.dart';
 import 'package:book_brain/service/api_service/request/login_request.dart';
 import 'package:book_brain/service/api_service/request/subscriptions_request.dart';
 import 'package:book_brain/service/api_service/request/update_history_request.dart';
@@ -22,6 +23,7 @@ import 'package:book_brain/service/api_service/response/delete_notification_resp
 import 'package:book_brain/service/api_service/response/delete_subscriptions_response.dart';
 import 'package:book_brain/service/api_service/response/detail_book_response.dart';
 import 'package:book_brain/service/api_service/response/favorites_response.dart';
+import 'package:book_brain/service/api_service/response/forgot_password_response.dart';
 import 'package:book_brain/service/api_service/response/history_response.dart';
 import 'package:book_brain/service/api_service/response/login_response.dart';
 import 'package:book_brain/service/api_service/response/notification_response.dart';
@@ -62,6 +64,14 @@ class ApiServices extends BaseApiService {
       UrlStatic.API_INFO_BOOK,
       method: 'GET',
       // data: {}, // Truyền queryParams vào đây
+      fromJson: (json) => BookInfoResponse.fromJson(json),
+    );
+  }
+  // get top trending
+  Future<BaseResponse<BookInfoResponse>> getTrending() async {
+    return await sendRequest<BookInfoResponse>(
+      UrlStatic.API_TRENDING_BOOK,
+      method: 'GET',
       fromJson: (json) => BookInfoResponse.fromJson(json),
     );
   }
@@ -351,6 +361,17 @@ class ApiServices extends BaseApiService {
       method: 'GET',
       data: queryParams,
       fromJson: (json) => AuthorRankingResponse.fromJson(json),
+    );
+  }
+
+
+  // lay lại mk
+  Future<BaseResponse<ForgotPasswordResponse>> forgotPassword(ForgotPasswordRequest request) async {
+    return await sendRequest<ForgotPasswordResponse>(
+      UrlStatic.API_FORGOT_PASSWORD,
+      method: 'POST',
+      data: request.toJson(),
+      fromJson: (json) => ForgotPasswordResponse.fromJson(json),
     );
   }
 }

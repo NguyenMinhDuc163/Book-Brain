@@ -1,5 +1,5 @@
 import 'package:book_brain/screen/following_book/view/following_book_screen.dart';
-import 'package:book_brain/screen/home/provider/home_notiffier.dart';
+import 'package:book_brain/screen/home/provider/home_notifier.dart';
 import 'package:book_brain/screen/home/view/all_book_screen.dart';
 import 'package:book_brain/screen/home/widget/book_item_widget.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
@@ -27,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     Future.microtask(() =>
-        Provider.of<HomeNotiffier>(context, listen: false).getData()
+        Provider.of<HomeNotifier>(context, listen: false).getData()
     );
   }
   Widget _buildItemCategory({
@@ -59,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final presenter = Provider.of<HomeNotiffier>(context);
+    final presenter = Provider.of<HomeNotifier>(context);
     return Stack(
       children: [
         AppBarContainerWidget(
@@ -212,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       SizedBox(height: kMediumPadding),
                       HorizontalBookList(
                         title: 'Top thinh hành',
-                        books: presenter.bookInfo,
+                        books: presenter.trendingBook,
                         onSeeAllPressed: () {
                           Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AllBookScreen(title: 'Top thinh hành',)));
                         },
@@ -227,14 +227,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                       ),
 
-                      HorizontalBookList(
-                        title: 'Mới xuất bản',
-                        books: presenter.bookInfo,
-                        onSeeAllPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AllBookScreen(title: 'Mới xuất bản',)));
-
-                        },
-                      ),
                     ],
                   ),
                 ),

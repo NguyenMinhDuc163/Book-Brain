@@ -1,6 +1,6 @@
 import 'package:book_brain/screen/change_password/view/change_password_screen.dart';
 import 'package:book_brain/screen/edit_profile/view/edit_profile_screen.dart';
-import 'package:book_brain/screen/home/provider/home_notiffier.dart';
+import 'package:book_brain/screen/home/provider/home_notifier.dart';
 import 'package:book_brain/screen/login/view/login_screen.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart' show AssetHelper;
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
@@ -25,12 +25,12 @@ class _SettingScreenState extends State<SettingScreen> {
   void initState() {
     super.initState();
     Future.microtask(() =>
-        Provider.of<HomeNotiffier>(context, listen: false).getData()
+        Provider.of<HomeNotifier>(context, listen: false).getData()
     );
   }
   @override
   Widget build(BuildContext context) {
-    final presenter = Provider.of<HomeNotiffier>(context);
+    final presenter = Provider.of<HomeNotifier>(context);
 
     return Scaffold(
       backgroundColor: Colors.grey.shade100,

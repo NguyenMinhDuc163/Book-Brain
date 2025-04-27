@@ -1,4 +1,4 @@
-import 'package:book_brain/screen/home/provider/home_notiffier.dart';
+import 'package:book_brain/screen/home/provider/home_notifier.dart';
 import 'package:book_brain/service/api_service/response/book_info_response.dart';
 import 'package:flutter/material.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
@@ -25,7 +25,7 @@ class _AllBookScreenState extends State<AllBookScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final presenter = Provider.of<HomeNotiffier>(context);
+    final presenter = Provider.of<HomeNotifier>(context);
 
     return KeyboardDismisser(
       gestures: const [GestureType.onTap],

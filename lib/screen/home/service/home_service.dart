@@ -17,4 +17,15 @@ class HomeService implements IHomeInterface {
     }
     return [];
   }
+
+  @override
+  Future<List<BookInfoResponse>> getBookTrending() async {
+    final BaseResponse<BookInfoResponse> response = await apiServices.getTrending(
+    );
+    if (response.code != null){
+      List<BookInfoResponse> data = response.data!;
+      return data;
+    }
+    return [];
+  }
 }

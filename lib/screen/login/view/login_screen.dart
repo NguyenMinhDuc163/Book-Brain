@@ -179,9 +179,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(height: kDefaultPadding),
                     InkWell(
                       onTap: () async {
-                        bool isLogin = await presenter.signInWithGoogle();
+                        // bool isLogin = await presenter.signInWithGoogle();
 
-                        if (!isLogin) return;
+                        // if (!isLogin) return;
 
                         Navigator.of(context).pushNamed(MainApp.routeName);
                       },

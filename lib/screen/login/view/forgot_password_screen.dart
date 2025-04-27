@@ -1,4 +1,5 @@
 
+import 'package:book_brain/screen/login/provider/forgot_password_notifier.dart';
 import 'package:book_brain/screen/login/view/login_screen.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/screen/login/widget/button_widget.dart';
@@ -48,7 +49,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     }
 
     try {
-      // await FirebaseAuth.instance.sendPasswordResetEmail(email: emailController.text);
+
       showToastTop(
         message: 'Email đặt lại mật khẩu đã được gửi thành công. Vui lòng kiểm tra email của bạn.',
       );
