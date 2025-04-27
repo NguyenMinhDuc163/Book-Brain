@@ -3,6 +3,7 @@ import 'package:book_brain/service/api_service/api_service.dart';
 import 'package:book_brain/service/api_service/request/login_request.dart';
 import 'package:book_brain/service/api_service/response/base_response.dart';
 import 'package:book_brain/service/api_service/response/login_response.dart';
+import 'package:book_brain/service/service_config/network_service.dart';
 import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
 
 class LoginService implements ILoginInterface {
@@ -12,12 +13,12 @@ class LoginService implements ILoginInterface {
   Future<bool> login({
     required String username,
     required String password,
-    required tokenFCM,
+    required String tokenFCM,
   }) async {
     LoginRequest request = LoginRequest(
       email: username,
       password: password,
-      fcmToken: tokenFCM,
+      fcmToken: tokenFCM ?? "",
     );
     final BaseResponse<LoginResponse> response = await apiServices.sendLogin(
       request,
@@ -26,7 +27,9 @@ class LoginService implements ILoginInterface {
     if (response.code != null) {
       for (var item in response.data!) {
         if (item.key == 'token') {
-          LocalStorageHelper.setValue("authToken", item.value);
+          await LocalStorageHelper.setValue("authToken", item.value);
+          String newToken = LocalStorageHelper.getValue("authToken");
+          NetworkService.instance.updateAuthToken(newToken);
           print("da luu token: ${LocalStorageHelper.getValue('authToken')}");
         }
 

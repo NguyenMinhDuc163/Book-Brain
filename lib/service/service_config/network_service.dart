@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
 import 'package:book_brain/service/base_connect.dart';
 import 'package:book_brain/utils/widget/loading_interceptor.dart';
+import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 
 class NetworkService {
   static final NetworkService _instance = NetworkService._internal();
@@ -32,7 +32,14 @@ class NetworkService {
 
   // Phương thức cập nhật URL cho Dio
   void updateBaseUrl(String newBaseUrl) {
-    dio.options.baseUrl = newBaseUrl;
+    // dio.options.baseUrl = newBaseUrl;
+    baseConnect.updateURL(newBaseUrl);
     print('--Dio baseUrl updated to: $newBaseUrl--');
   }
+
+  void updateAuthToken(String newToken) {
+    baseConnect.updateToken(newToken);
+  }
+
+
 }

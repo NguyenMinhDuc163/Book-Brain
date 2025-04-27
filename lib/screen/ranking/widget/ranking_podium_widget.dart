@@ -4,19 +4,22 @@ import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
 import 'package:flutter/material.dart';
 
+import '../../../service/api_service/response/author_ranking_response.dart';
+import '../../../utils/core/constants/avatar_colors.dart';
 import '../model/ranking_user.dart';
 
 class RankingPodium extends StatelessWidget {
-  final List<RankingUser> topUsers;
+  final List<AuthorRankingResponse> topAuthor;
 
   const RankingPodium({
     Key? key,
-    required this.topUsers,
+    required this.topAuthor,
   }) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
-    if (topUsers.length < 3) {
+    if (topAuthor.length < 3) {
       return Center(child: Text('Không đủ dữ liệu để hiển thị bảng xếp hạng'));
     }
 
@@ -24,7 +27,7 @@ class RankingPodium extends StatelessWidget {
       height: MediaQuery.of(context).size.height * 0.8,
       child: Stack(
         children: [
-          
+
           Container(
             width: double.infinity,
             decoration: BoxDecoration(
@@ -35,38 +38,38 @@ class RankingPodium extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
 
-                
+
                 SizedBox(
                   height: height_420,
                   child: Stack(
                     alignment: Alignment.bottomCenter,
                     children: [
-                      
+
                       Positioned(
                         left: 20,
                         bottom: height_100,
                         child: _buildPositionColumn(
-                          user: topUsers[1],
+                          author: topAuthor[1],
                           position: 2,
                         ),
                       ),
 
-                      
+
                       Positioned(
                         bottom: 60.h,
                         child: _buildPositionColumn(
-                          user: topUsers[0],
+                          author: topAuthor[0],
                           position: 1,
                           isCrowned: true,
                         ),
                       ),
 
-                      
+
                       Positioned(
                         right: 20,
                         bottom: height_100,
                         child: _buildPositionColumn(
-                          user: topUsers[2],
+                          author: topAuthor[2],
                           position: 3,
                         ),
                       ),
@@ -77,7 +80,7 @@ class RankingPodium extends StatelessWidget {
             ),
           ),
 
-          
+
           Align(
             alignment: Alignment.bottomCenter,
             child: Align(
@@ -87,15 +90,15 @@ class RankingPodium extends StatelessWidget {
                 minChildSize: 0.45,
                 maxChildSize: 1,
                 snap: true,
-                
+
                 builder: (BuildContext context, ScrollController scrollController) {
                   return Stack(
                     alignment: Alignment.topCenter,
                     clipBehavior: Clip.none,
                     children: [
-                      
+
                       Container(
-                        padding: EdgeInsets.only(top: 20), 
+                        padding: EdgeInsets.only(top: 20),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.only(
@@ -113,17 +116,17 @@ class RankingPodium extends StatelessWidget {
                         ),
                         child: Column(
                           children: [
-                            const SizedBox(height: 10), 
+                            const SizedBox(height: 10),
 
-                            
+
                             Expanded(
-                              child: topUsers != null && topUsers.isNotEmpty
+                              child: topAuthor != null && topAuthor.isNotEmpty
                                   ? ListView.builder(
                                 controller: scrollController,
                                 padding: EdgeInsets.all(kDefaultPadding),
-                                itemCount: topUsers.length,
+                                itemCount: topAuthor.length,
                                 itemBuilder: (context, index) {
-                                  return _buildRankingListItem(topUsers![index]);
+                                  return _buildRankingListItem(topAuthor![index], index);
                                 },
                               )
                                   : Center(child: Text("Không có dữ liệu xếp hạng khác")),
@@ -132,7 +135,7 @@ class RankingPodium extends StatelessWidget {
                         ),
                       ),
 
-                      
+
                       Positioned(
                         top: -2.5,
                         child: Container(
@@ -145,7 +148,7 @@ class RankingPodium extends StatelessWidget {
                         ),
                       ),
 
-                      
+
                       Positioned(
                         top: -15,
                         child: Container(
@@ -189,30 +192,31 @@ class RankingPodium extends StatelessWidget {
     );
   }
   Widget _buildPositionColumn({
-    required RankingUser user,
+    required AuthorRankingResponse author,
     required int position,
     bool isCrowned = false,
   }) {
-    
+    Color avatarColor = getColorFromName(author.name ?? "");
+    String initials = getInitials(author.name ?? "");
     double avatarSize = position == 1 ? 80 : 70;
 
-    
+
     double podiumHeight;
     switch (position) {
       case 1:
-        podiumHeight = 280; 
+        podiumHeight = 280;
         break;
       case 2:
-        podiumHeight = 200; 
+        podiumHeight = 200;
         break;
       case 3:
-        podiumHeight = 150; 
+        podiumHeight = 150;
         break;
       default:
         podiumHeight = 150;
     }
 
-    
+
     String rankImage;
     switch (position) {
       case 1:
@@ -228,18 +232,18 @@ class RankingPodium extends StatelessWidget {
         rankImage = AssetHelper.rank1;
     }
 
-    
 
-    String displayName = user.name;
+
+    String displayName = author.name ?? "";
     if (displayName.length > 12) {
-      
+
       List<String> nameParts = displayName.split(' ');
 
       if (nameParts.length > 1) {
-        
+
         String lastName = nameParts.last;
 
-        
+
         StringBuffer initialsBuffer = StringBuffer();
         for (int i = 0; i < nameParts.length - 1; i++) {
           if (nameParts[i].isNotEmpty) {
@@ -248,26 +252,26 @@ class RankingPodium extends StatelessWidget {
           }
         }
 
-        
+
         displayName = '${initialsBuffer.toString()} $lastName';
       }
     }
 
     return Column(
-      mainAxisSize: MainAxisSize.min, 
+      mainAxisSize: MainAxisSize.min,
       children: [
-        
+
         Stack(
           clipBehavior: Clip.none,
           children: [
-            
+
             CircleAvatar(
               radius: avatarSize / 2,
-              backgroundColor: user.avatarBackgroundColor,
+              backgroundColor: avatarColor,
               child: Icon(Icons.person, size: avatarSize * 0.6, color: Colors.white),
             ),
 
-            
+
             if (isCrowned)
               Positioned(
                 top: -20,
@@ -282,7 +286,7 @@ class RankingPodium extends StatelessWidget {
                 ),
               ),
 
-            
+
             Positioned(
               bottom: 0,
               right: -5,
@@ -290,7 +294,7 @@ class RankingPodium extends StatelessWidget {
                 width: 24,
                 height: 24,
                 decoration: BoxDecoration(
-                  color: user.flagColor ?? Colors.grey,
+                  color:  Colors.grey,
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white, width: 2),
                 ),
@@ -301,9 +305,9 @@ class RankingPodium extends StatelessWidget {
 
         SizedBox(height: 8),
 
-        
+
         Container(
-          width: position == 1 ? 100 : 80, 
+          width: position == 1 ? 100 : 80,
           child: Text(
             displayName,
             style: TextStyle(
@@ -312,14 +316,14 @@ class RankingPodium extends StatelessWidget {
               fontSize: position == 1 ? 18 : 16,
             ),
             textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis, 
+            overflow: TextOverflow.ellipsis,
             maxLines: 2,
           ),
         ),
 
         SizedBox(height: 4),
 
-        
+
         Container(
           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
@@ -327,7 +331,7 @@ class RankingPodium extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
-            user.score,
+            author.authorScore.toString(),
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -337,7 +341,7 @@ class RankingPodium extends StatelessWidget {
 
         SizedBox(height: 16),
 
-        
+
         ImageHelper.loadFromAsset(
           rankImage,
           width: position == 1 ? 200 : 100,
@@ -347,8 +351,10 @@ class RankingPodium extends StatelessWidget {
     );
   }
 
-  
-  Widget _buildRankingListItem(RankingUser user) {
+
+  Widget _buildRankingListItem(AuthorRankingResponse author, int index) {
+    Color avatarColor = getColorFromName(author.name ?? "");
+    String initials = getInitials(author.name ?? "");
     return Container(
       margin: EdgeInsets.symmetric(vertical: 6),
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -365,7 +371,7 @@ class RankingPodium extends StatelessWidget {
       ),
       child: Row(
         children: [
-          
+
           Container(
             width: 30,
             height: 30,
@@ -375,7 +381,7 @@ class RankingPodium extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: Text(
-              "${user.rank ?? '?'}",
+              "${index + 1 ?? '?'}",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.black54,
@@ -384,17 +390,17 @@ class RankingPodium extends StatelessWidget {
           ),
           SizedBox(width: 12),
 
-          
+
           Stack(
             clipBehavior: Clip.none,
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundColor: user.avatarBackgroundColor,
+                backgroundColor: avatarColor,
                 child: Icon(Icons.person, color: Colors.white),
               ),
 
-              
+
               Positioned(
                 bottom: 0,
                 right: -5,
@@ -402,7 +408,7 @@ class RankingPodium extends StatelessWidget {
                   width: 16,
                   height: 16,
                   decoration: BoxDecoration(
-                    color: user.flagColor ?? Colors.grey,
+                    color:  Colors.grey,
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 2),
                   ),
@@ -413,13 +419,13 @@ class RankingPodium extends StatelessWidget {
 
           SizedBox(width: 12),
 
-          
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  user.name,
+                  author.name ?? "",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -427,7 +433,7 @@ class RankingPodium extends StatelessWidget {
                 ),
                 SizedBox(height: 2),
                 Text(
-                  user.score,
+                  author.authorScore.toString(),
                   style: TextStyle(
                     color: Colors.grey.shade600,
                     fontSize: 14,

@@ -7,6 +7,10 @@ import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/router_names.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
+
+import '../../../utils/widget/loading_widget.dart';
+import '../provider/login_notifier.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -66,42 +70,49 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AppBarContainerWidget(
-      titleString: 'Quên mật khẩu',
-      child: Column(
-        children: [
-          SizedBox(
-            height: kDefaultPadding * 5,
-          ),
-          TextField(
-            controller: emailController,
-            style: TextStyle(fontSize: 18, color: Colors.black),
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
-              labelText: 'Email',
-              hintText: 'Nhập email của bạn',
-              prefixIcon: Container(
-                width: 1,
-                child: Icon(FontAwesomeIcons.envelope),
+    final presenter = Provider.of<LoginNotifier>(context);
+    return Stack(
+      children: [
+        AppBarContainerWidget(
+          titleString: 'Quên mật khẩu',
+          child: Column(
+            children: [
+              SizedBox(
+                height: kDefaultPadding * 5,
               ),
-              border: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.white, width: 1),
-                borderRadius: BorderRadius.all(Radius.circular(6)),
+              TextField(
+                controller: emailController,
+                style: TextStyle(fontSize: 18, color: Colors.black),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  labelText: 'Email',
+                  hintText: 'Nhập email của bạn',
+                  prefixIcon: Container(
+                    width: 1,
+                    child: Icon(FontAwesomeIcons.envelope),
+                  ),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white, width: 1),
+                    borderRadius: BorderRadius.all(Radius.circular(6)),
+                  ),
+                ),
+                keyboardType: TextInputType.emailAddress,
               ),
-            ),
-            keyboardType: TextInputType.emailAddress,
+              SizedBox(
+                height: kDefaultPadding,
+              ),
+              ButtonWidget(
+                title: 'Send',
+                isign: _isForgot,
+                ontap: () => resetPassword(context),
+              ),
+            ],
           ),
-          SizedBox(
-            height: kDefaultPadding,
-          ),
-          ButtonWidget(
-            title: 'Send',
-            isign: _isForgot,
-            ontap: () => resetPassword(context),
-          ),
-        ],
-      ),
+        ),
+        presenter.isLoading ? const LoadingWidget() : const SizedBox(),
+
+      ],
     );
   }
 }

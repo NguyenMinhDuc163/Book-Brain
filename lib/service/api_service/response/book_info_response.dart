@@ -1,4 +1,6 @@
-class BookInfoResponse {
+import 'base_response.dart';
+
+class BookInfoResponse extends BaseResponse{
   BookInfoResponse({
     required this.bookId,
     required this.title,

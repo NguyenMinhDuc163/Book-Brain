@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
-import 'package:book_brain/utils/core/constants/textstyle_ext.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:book_brain/screen/search_screen/view/search_result_screen.dart';
+import 'package:book_brain/screen/search_screen/view/search_screen.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
-import 'package:book_brain/screen/search_result_screen/view/search_result_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -18,27 +18,43 @@ class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _keywordController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
 
-  
-  List<String> recentSearches = [
-    'Harry Potter',
-    'Nguyễn Nhật Ánh',
-  ];
+  List<String> recentSearches = ['Harry Potter', 'Nguyễn Nhật Ánh'];
 
   List<Map<String, dynamic>> popularCategories = [
-    {'name': 'Tiểu thuyết', 'icon': FontAwesomeIcons.bookOpen, 'color': Color(0xFF9C70EB)},
-    {'name': 'Tâm lý học', 'icon': FontAwesomeIcons.brain, 'color': Color(0xFF6695EF)},
-    {'name': 'Kinh doanh', 'icon': FontAwesomeIcons.briefcase, 'color': Color(0xFF38C9A7)},
+    {
+      'name': 'Tiểu thuyết',
+      'icon': FontAwesomeIcons.bookOpen,
+      'color': Color(0xFF9C70EB),
+    },
+    {
+      'name': 'Tâm lý học',
+      'icon': FontAwesomeIcons.brain,
+      'color': Color(0xFF6695EF),
+    },
+    {
+      'name': 'Kinh doanh',
+      'icon': FontAwesomeIcons.briefcase,
+      'color': Color(0xFF38C9A7),
+    },
   ];
 
   List<Map<String, dynamic>> trendingBooks = [
-    {'title': 'Atomic Habits', 'author': 'James Clear', 'cover': AssetHelper.harryPotterCover},
-    {'title': 'Đắc Nhân Tâm', 'author': 'Dale Carnegie', 'cover': AssetHelper.harryPotterCover},
+    {
+      'title': 'Atomic Habits',
+      'author': 'James Clear',
+      'cover': AssetHelper.defaultImage,
+    },
+    {
+      'title': 'Đắc Nhân Tâm',
+      'author': 'Dale Carnegie',
+      'cover': AssetHelper.defaultImage,
+    },
   ];
 
   @override
   void initState() {
     super.initState();
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _searchFocusNode.requestFocus();
@@ -56,6 +72,17 @@ class _SearchScreenState extends State<SearchScreen> {
   void _search() {
     final String keyword = _keywordController.text.trim();
     if (keyword.isNotEmpty) {
+      // Thêm từ khóa vào danh sách tìm kiếm gần đây nếu chưa có
+      if (!recentSearches.contains(keyword)) {
+        setState(() {
+          recentSearches.insert(0, keyword);
+          // Giữ danh sách không quá dài
+          if (recentSearches.length > 5) {
+            recentSearches.removeLast();
+          }
+        });
+      }
+
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -71,6 +98,12 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
+  void _clearSearch() {
+    setState(() {
+      _keywordController.clear();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -78,38 +111,35 @@ class _SearchScreenState extends State<SearchScreen> {
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
       },
-      child: AppBarContainerWidget(
-        titleString: "Tìm kiếm sách",
-        bottomWidget: _buildSearchBar(),
-        paddingContent: EdgeInsets.symmetric(
-          horizontal: kMediumPadding,
-          vertical: 16,
-        ),
-        child: SingleChildScrollView( 
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              
-              
-              
+      child: Stack(
+        children: [
+          AppBarContainerWidget(
+            titleString: "Tìm kiếm sách",
+            bottomWidget: _buildSearchBar(),
+            paddingContent: EdgeInsets.symmetric(
+              horizontal: kMediumPadding,
+              vertical: 16,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (recentSearches.isNotEmpty) ...[
+                    _buildRecentSearches(),
+                    SizedBox(height: 20),
+                  ],
 
-              
-              if (recentSearches.isNotEmpty) ...[
-                _buildRecentSearches(),
-                SizedBox(height: 20),
-              ],
+                  _buildPopularCategories(),
+                  SizedBox(height: 20),
 
-              
-              _buildPopularCategories(),
-              SizedBox(height: 20),
+                  _buildTrendingBooks(),
 
-              
-              _buildTrendingBooks(),
-              
-              SizedBox(height: 20),
-            ],
+                  SizedBox(height: 20),
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -133,44 +163,44 @@ class _SearchScreenState extends State<SearchScreen> {
         onSubmitted: (_) => _search(),
         decoration: InputDecoration(
           hintText: 'Tìm kiếm tên sách, tác giả...',
-          hintStyle: TextStyle(
-            color: Colors.grey[400],
-            fontSize: 16,
-          ),
+          hintStyle: TextStyle(color: Colors.grey[400], fontSize: 16),
           prefixIcon: Icon(
             FontAwesomeIcons.magnifyingGlass,
             color: Color(0xFF6A5AE0),
             size: 16,
           ),
-          suffixIcon: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              
-              Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: GestureDetector(
-                  onTap: () {
-                    
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Color(0xFF6A5AE0).withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      FontAwesomeIcons.microphone,
-                      color: Color(0xFF6A5AE0),
-                      size: 16,
-                    ),
-                  ),
+          suffixIcon: _keywordController.text.isNotEmpty
+              ? IconButton(
+            icon: Icon(Icons.clear, color: Color(0xFF6A5AE0)),
+            onPressed: _clearSearch,
+          )
+              : Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: GestureDetector(
+              onTap: () {
+                // Xử lý khi người dùng nhấn vào biểu tượng tìm kiếm bằng giọng nói
+              },
+              child: Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Color(0xFF6A5AE0).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  FontAwesomeIcons.x,
+                  color: Color(0xFF6A5AE0),
+                  size: 16,
                 ),
               ),
-            ],
+            ),
           ),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         ),
+        onChanged: (value) {
+          // Force rebuild để hiển thị/ẩn nút xóa
+          setState(() {});
+        },
       ),
     );
   }
@@ -199,10 +229,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 },
                 child: Text(
                   'Xóa tất cả',
-                  style: TextStyle(
-                    color: Color(0xFF6A5AE0),
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Color(0xFF6A5AE0), fontSize: 14),
                 ),
               ),
           ],
@@ -211,7 +238,8 @@ class _SearchScreenState extends State<SearchScreen> {
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: recentSearches.map((search) {
+          children:
+          recentSearches.map((search) {
             return GestureDetector(
               onTap: () {
                 _keywordController.text = search;
@@ -227,18 +255,11 @@ class _SearchScreenState extends State<SearchScreen> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      Icons.history,
-                      color: Colors.grey[600],
-                      size: 16,
-                    ),
+                    Icon(Icons.history, color: Colors.grey[600], size: 16),
                     SizedBox(width: 8),
                     Text(
                       search,
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(color: Colors.black87, fontSize: 14),
                     ),
                     SizedBox(width: 8),
                     GestureDetector(
@@ -273,17 +294,17 @@ class _SearchScreenState extends State<SearchScreen> {
             color: Colors.black87,
           ),
         ),
-        
-        
+
         GridView.count(
           shrinkWrap: true,
           padding: EdgeInsets.only(top: height_12),
-          physics: NeverScrollableScrollPhysics(), 
+          physics: NeverScrollableScrollPhysics(),
           crossAxisCount: 3,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
           childAspectRatio: 1,
-          children: popularCategories.map((category) {
+          children:
+          popularCategories.map((category) {
             return GestureDetector(
               onTap: () {
                 _keywordController.text = category['name'];
@@ -350,7 +371,7 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
         SizedBox(height: 16),
         SizedBox(
-          height: 180, 
+          height: 180,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: trendingBooks.length,
@@ -367,9 +388,8 @@ class _SearchScreenState extends State<SearchScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      
                       Container(
-                        height: 130, 
+                        height: 130,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
@@ -389,7 +409,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       ),
                       SizedBox(height: 8),
-                      
+
                       Text(
                         book['title'],
                         style: TextStyle(
@@ -399,13 +419,10 @@ class _SearchScreenState extends State<SearchScreen> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      
+
                       Text(
                         book['author'],
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
