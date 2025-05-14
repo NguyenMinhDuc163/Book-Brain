@@ -4,6 +4,7 @@ import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
 import 'package:book_brain/utils/widget/dash_line_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class FeedBackWidget extends StatefulWidget {
   const FeedBackWidget({
@@ -15,6 +16,7 @@ class FeedBackWidget extends StatefulWidget {
     required this.image,
     required this.time,
     this.helpfulCount = 0,
+    this.onMorePressed,
   }) : super(key: key);
 
   final String avatar;
@@ -22,8 +24,9 @@ class FeedBackWidget extends StatefulWidget {
   final int rate;
   final String comment;
   final List<String> image;
-  final String time; // Thay đổi: thời gian giờ là String thay vì int
-  final int helpfulCount; // Thêm số lượt "hữu ích"
+  final String time;
+  final int helpfulCount;
+  final VoidCallback? onMorePressed;
 
   @override
   _FeedBackWidgetState createState() => _FeedBackWidgetState();
@@ -33,14 +36,42 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
   bool _isLiked = false;
   bool _isDisLike = false;
 
+  String _formatDateTime(String? dateTimeString) {
+    if (dateTimeString == null) return "Vừa xong";
+
+    try {
+      DateTime dateTime = DateTime.parse(dateTimeString);
+      DateTime now = DateTime.now();
+      Duration difference = now.difference(dateTime);
+
+      if (difference.inDays > 365) {
+        return "${(difference.inDays / 365).floor()} năm trước";
+      } else if (difference.inDays > 30) {
+        return "${(difference.inDays / 30).floor()} tháng trước";
+      } else if (difference.inDays > 0) {
+        return "${difference.inDays} ngày trước";
+      } else if (difference.inHours > 0) {
+        return "${difference.inHours} giờ trước";
+      } else if (difference.inMinutes > 0) {
+        return "${difference.inMinutes} phút trước";
+      } else {
+        return "Vừa xong";
+      }
+    } catch (e) {
+      return "Vừa xong";
+    }
+  }
+
   List<Widget> _buildStarIcons() {
     List<Widget> starWidgets = [];
 
     for (int i = 0; i < widget.rate; i++) {
-      starWidgets.add(Padding(
-        padding: EdgeInsets.only(right: 2),
-        child: ImageHelper.loadFromAsset(AssetHelper.icoStar),
-      ));
+      starWidgets.add(
+        Padding(
+          padding: EdgeInsets.only(right: 2),
+          child: ImageHelper.loadFromAsset(AssetHelper.icoStar),
+        ),
+      );
     }
 
     return starWidgets;
@@ -48,10 +79,7 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
 
   Widget _buildCollapsed() {
     if (widget.comment.length <= 100) {
-      return Text(
-        widget.comment,
-        softWrap: true,
-      );
+      return Text(widget.comment, softWrap: true);
     }
     return Text(
       widget.comment.substring(0, 100) + '...',
@@ -62,10 +90,7 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
   }
 
   Widget _buildExpanded() {
-    return Text(
-      widget.comment,
-      softWrap: true,
-    );
+    return Text(widget.comment, softWrap: true);
   }
 
   @override
@@ -79,16 +104,16 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Avatar (hỗ trợ cả local asset và network image)
               CircleAvatar(
                 radius: 20,
-                backgroundImage: widget.avatar.contains('http')
-                    ? NetworkImage(widget.avatar) as ImageProvider
-                    : AssetImage(widget.avatar),
+                backgroundImage:
+                    widget.avatar.contains('http')
+                        ? NetworkImage(widget.avatar) as ImageProvider
+                        : AssetImage(widget.avatar),
                 onBackgroundImageError: (_, __) {
                   // Fallback khi lỗi load ảnh
                   AssetImage(AssetHelper.avatar);
@@ -102,43 +127,46 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
                     widget.name,
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
-                  Text(
-                    widget.time,
-                    style: TextStyle(fontSize: 10),
-                  )
+                  Text(widget.time, style: TextStyle(fontSize: 10)),
                 ],
               ),
               Spacer(),
-              Row(
-                children: _buildStarIcons(),
-              )
+              Row(children: _buildStarIcons()),
             ],
           ),
 
           SizedBox(height: 12),
 
-
           if (widget.image.isNotEmpty)
             Wrap(
               spacing: 8,
-              children: widget.image
-                  .map((e) => ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(8)),
-                child: SizedBox(
-                  width: 80,
-                  height: 80,
-                  child: e.startsWith('http')
-                      ? Image.network(e, fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          ImageHelper.loadFromAsset(AssetHelper.defaultImage))
-                      : ImageHelper.loadFromAsset(e),
-                ),
-              ))
-                  .toList(),
+              children:
+                  widget.image
+                      .map(
+                        (e) => ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          child: SizedBox(
+                            width: 80,
+                            height: 80,
+                            child:
+                                e.startsWith('http')
+                                    ? Image.network(
+                                      e,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              ImageHelper.loadFromAsset(
+                                                AssetHelper.defaultImage,
+                                              ),
+                                    )
+                                    : ImageHelper.loadFromAsset(e),
+                          ),
+                        ),
+                      )
+                      .toList(),
             ),
 
           SizedBox(height: 12),
-
 
           ExpandableNotifier(
             child: Column(
@@ -175,56 +203,31 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
 
           DashLineWidget(),
 
-
           Row(
             children: [
-              // Thêm số lượt "hữu ích"
+              // Thông tin về thời gian đánh giá
               Row(
                 children: [
-                  IconButton(
-                    icon: Icon(
-                      _isLiked ? Icons.thumb_up : Icons.thumb_up_alt_outlined,
-                      color: _isLiked ? Colors.blue : Colors.black,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        if (_isDisLike) _isDisLike = false;
-                        _isLiked = !_isLiked;
-                      });
-                    },
+                  Icon(Icons.access_time, size: 16, color: Colors.grey[600]),
+                  SizedBox(width: 4),
+                  Text(
+                    _formatDateTime(widget.time),
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
-                  if (widget.helpfulCount > 0 || _isLiked)
-                    Text(
-                      '${widget.helpfulCount + (_isLiked ? 1 : 0)}',
-                      style: TextStyle(
-                        color: _isLiked ? Colors.blue : Colors.black54,
-                        fontWeight: _isLiked ? FontWeight.bold : FontWeight.normal,
-                      ),
-                    ),
                 ],
               ),
-              IconButton(
-                icon: Icon(
-                  _isDisLike ? Icons.thumb_down : Icons.thumb_down_off_alt_outlined,
-                  color: _isDisLike ? Colors.blue : Colors.black,
-                ),
-                onPressed: () {
-                  setState(() {
-                    if (_isLiked) _isLiked = false;
-                    _isDisLike = !_isDisLike;
-                  });
-                },
-              ),
               Spacer(),
+              // Nút tùy chọn
               IconButton(
                 icon: Icon(Icons.more_horiz),
-                onPressed: () {
-                  // Hiển thị menu báo cáo hoặc thêm lựa chọn khác
-                  _showReportOptionsDialog(context);
-                },
+                onPressed:
+                    widget.onMorePressed ??
+                    () {
+                      _showReportOptionsDialog(context);
+                    },
               ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -240,7 +243,6 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
             SimpleDialogOption(
               onPressed: () {
                 Navigator.pop(context);
-                // Hiển thị form báo cáo
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Đã báo cáo đánh giá này')),
                 );

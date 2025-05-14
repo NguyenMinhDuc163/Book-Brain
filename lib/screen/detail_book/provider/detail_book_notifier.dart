@@ -37,6 +37,7 @@ class DetailBookNotifier extends BaseNotifier{
         readingStatus: chapNumber == bookDetail?.totalChapters ? "completed" :"reading",
         completionRate: rate,
         notes: note ?? "",
+        currentChapterId: chapNumber?? 1,
       );
       notifyListeners();
       return true;

@@ -51,4 +51,15 @@ class ReviewBookNotifier extends BaseNotifier {
       return isSubmit;
     });
   }
+
+  Future<bool> deleteReview({required int reviewId}) async {
+    return await execute(() async {
+      bool isSubmit = await reviewBookService.deleteReview(
+        reviewId: reviewId,
+      );
+
+      notifyListeners();
+      return isSubmit;
+    });
+  }
 }

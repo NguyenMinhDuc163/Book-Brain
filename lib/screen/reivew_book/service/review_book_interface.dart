@@ -18,4 +18,8 @@ abstract class IReviewBookInterface {
     required int rating,
     required String comment,
   });
+
+  Future<bool> deleteReview({
+    required int reviewId,
+  });
 }

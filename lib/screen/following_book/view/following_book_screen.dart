@@ -56,23 +56,23 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
               child: Column(
                 children: [
                   SizedBox(height: height_20),
-                  _buildHeader(title:  "Danh sách sách theo dõi"),
+                  _buildHeader(title: "Danh sách sách theo dõi"),
                   SizedBox(height: 16),
 
                   Expanded(
-                    child: presenter.isLoading
-                        ? Center(
-                      child: CircularProgressIndicator(
-                        color: Color(0xFF6357CC),
-                      ),
-                    )
-                        : _buildBookContent(presenter),
+                    child:
+                        presenter.isLoading
+                            ? Center(
+                              child: CircularProgressIndicator(
+                                color: Color(0xFF6357CC),
+                              ),
+                            )
+                            : _buildBookContent(presenter),
                   ),
                 ],
               ),
             ),
             presenter.isLoading ? const LoadingWidget() : const SizedBox(),
-
           ],
         ),
       ),
@@ -105,23 +105,24 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
           prefixIcon: Icon(Icons.search, color: Color(0xff6357CC)),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(vertical: 10),
-          suffixIcon: _searchQuery.isNotEmpty
-              ? IconButton(
-            icon: Icon(Icons.clear, color: Color(0xff6357CC)),
-            onPressed: () {
-              setState(() {
-                _searchQuery = '';
-                _searchController.clear();
-              });
-            },
-          )
-              : null,
+          suffixIcon:
+              _searchQuery.isNotEmpty
+                  ? IconButton(
+                    icon: Icon(Icons.clear, color: Color(0xff6357CC)),
+                    onPressed: () {
+                      setState(() {
+                        _searchQuery = '';
+                        _searchController.clear();
+                      });
+                    },
+                  )
+                  : null,
         ),
       ),
     );
   }
 
-  Widget _buildHeader({required String title }) {
+  Widget _buildHeader({required String title}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -151,7 +152,9 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
           child: Row(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.horizontal(left: Radius.circular(18)),
+                borderRadius: BorderRadius.horizontal(
+                  left: Radius.circular(18),
+                ),
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
@@ -164,13 +167,17 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
                       padding: EdgeInsets.symmetric(horizontal: 12),
                       height: 36,
                       decoration: BoxDecoration(
-                        gradient: _isGridView
-                            ? LinearGradient(
-                          colors: [Color(0xFF8F67E8), Color(0xFF6357CC)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        )
-                            : null,
+                        gradient:
+                            _isGridView
+                                ? LinearGradient(
+                                  colors: [
+                                    Color(0xFF8F67E8),
+                                    Color(0xFF6357CC),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                )
+                                : null,
                         color: _isGridView ? null : Colors.white,
                       ),
                       child: Icon(
@@ -183,7 +190,9 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
                 ),
               ),
               ClipRRect(
-                borderRadius: BorderRadius.horizontal(right: Radius.circular(18)),
+                borderRadius: BorderRadius.horizontal(
+                  right: Radius.circular(18),
+                ),
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
@@ -196,13 +205,17 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
                       padding: EdgeInsets.symmetric(horizontal: 12),
                       height: 36,
                       decoration: BoxDecoration(
-                        gradient: !_isGridView
-                            ? LinearGradient(
-                          colors: [Color(0xFF8F67E8), Color(0xFF6357CC)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        )
-                            : null,
+                        gradient:
+                            !_isGridView
+                                ? LinearGradient(
+                                  colors: [
+                                    Color(0xFF8F67E8),
+                                    Color(0xFF6357CC),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                )
+                                : null,
                         color: !_isGridView ? null : Colors.white,
                       ),
                       child: Icon(
@@ -223,12 +236,22 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
 
   Widget _buildBookContent(SubscriptionNotifier presenter) {
     // Lọc danh sách theo từ khóa tìm kiếm
-    List<SubscriptionsResponse> filteredBooks = _searchQuery.isEmpty
-        ? presenter.subscriptions
-        : presenter.subscriptions.where((book) =>
-    (book.title?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false) ||
-        (book.authorName?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false)
-    ).toList();
+    List<SubscriptionsResponse> filteredBooks =
+        _searchQuery.isEmpty
+            ? presenter.subscriptions
+            : presenter.subscriptions
+                .where(
+                  (book) =>
+                      (book.title?.toLowerCase().contains(
+                            _searchQuery.toLowerCase(),
+                          ) ??
+                          false) ||
+                      (book.authorName?.toLowerCase().contains(
+                            _searchQuery.toLowerCase(),
+                          ) ??
+                          false),
+                )
+                .toList();
 
     if (filteredBooks.isEmpty) {
       return _buildEmptyState();
@@ -252,7 +275,6 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
       itemBuilder: (context, index) {
         return _buildGridItem(books[index]);
       },
-
     );
   }
 
@@ -268,8 +290,16 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
 
   Widget _buildGridItem(SubscriptionsResponse book) {
     return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => PreviewScreen(bookId: book.bookId,)));
+      onTap: () async {
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PreviewScreen(bookId: book.bookId),
+          ),
+        );
+        // Load lại dữ liệu khi quay lại
+        if (mounted) {
+          Provider.of<SubscriptionNotifier>(context, listen: false).getData();
+        }
       },
       child: Container(
         decoration: BoxDecoration(
@@ -291,30 +321,34 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
               // Ảnh bìa sách
               (book.imageUrl ?? '') != ''
                   ? Image.network(
-                book.imageUrl ?? "",
-                width: double.infinity,
-                height: 160,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    ImageHelper.loadFromAsset(
-                      AssetHelper.harryPotterCover,
-                      width: double.infinity,
-                      height: 160,
-                      fit: BoxFit.cover,
-                    ),
-              )
+                    book.imageUrl ?? "",
+                    width: double.infinity,
+                    height: 160,
+                    fit: BoxFit.cover,
+                    errorBuilder:
+                        (context, error, stackTrace) =>
+                            ImageHelper.loadFromAsset(
+                              AssetHelper.harryPotterCover,
+                              width: double.infinity,
+                              height: 160,
+                              fit: BoxFit.cover,
+                            ),
+                  )
                   : ImageHelper.loadFromAsset(
-                AssetHelper.harryPotterCover,
-                width: double.infinity,
-                height: 160,
-                fit: BoxFit.cover,
-              ),
+                    AssetHelper.harryPotterCover,
+                    width: double.infinity,
+                    height: 160,
+                    fit: BoxFit.cover,
+                  ),
 
               // Thông tin sách
               Expanded(
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -330,10 +364,7 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
                       SizedBox(height: 2),
                       Text(
                         book.authorName ?? "",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[700],
-                        ),
+                        style: TextStyle(fontSize: 12, color: Colors.grey[700]),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -364,9 +395,16 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
 
   Widget _buildListItem(SubscriptionsResponse book) {
     return GestureDetector(
-      onTap: (){
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => PreviewScreen(bookId: book.bookId,)));
-
+      onTap: () async {
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PreviewScreen(bookId: book.bookId),
+          ),
+        );
+        // Load lại dữ liệu khi quay lại
+        if (mounted) {
+          Provider.of<SubscriptionNotifier>(context, listen: false).getData();
+        }
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 16),
@@ -388,26 +426,28 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
                 topLeft: Radius.circular(12),
                 bottomLeft: Radius.circular(12),
               ),
-              child: (book.imageUrl ?? '') != ''
-                  ? Image.network(
-                book.imageUrl ?? "",
-                width: 100,
-                height: 140,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    ImageHelper.loadFromAsset(
-                      AssetHelper.harryPotterCover,
-                      width: 100,
-                      height: 140,
-                      fit: BoxFit.cover,
-                    ),
-              )
-                  : ImageHelper.loadFromAsset(
-                AssetHelper.harryPotterCover,
-                width: 100,
-                height: 140,
-                fit: BoxFit.cover,
-              ),
+              child:
+                  (book.imageUrl ?? '') != ''
+                      ? Image.network(
+                        book.imageUrl ?? "",
+                        width: 100,
+                        height: 140,
+                        fit: BoxFit.cover,
+                        errorBuilder:
+                            (context, error, stackTrace) =>
+                                ImageHelper.loadFromAsset(
+                                  AssetHelper.harryPotterCover,
+                                  width: 100,
+                                  height: 140,
+                                  fit: BoxFit.cover,
+                                ),
+                      )
+                      : ImageHelper.loadFromAsset(
+                        AssetHelper.harryPotterCover,
+                        width: 100,
+                        height: 140,
+                        fit: BoxFit.cover,
+                      ),
             ),
             Expanded(
               child: Padding(
@@ -427,10 +467,7 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
                     SizedBox(height: 4),
                     Text(
                       book.authorName ?? "",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[700],
-                      ),
+                      style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                     ),
                     SizedBox(height: 8),
                     Row(
@@ -456,10 +493,7 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
                     SizedBox(height: 8),
                     Text(
                       "Theo dõi từ: ${_formatDate(Utils.formatDate(book.subscribedAt))}",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                     ),
                   ],
                 ),
@@ -485,26 +519,20 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
   Widget _buildEmptyState() {
     return _searchQuery.isNotEmpty
         ? Center(
-      child: EmptyDataWidget(
-        title: "Không tìm thấy sách phù hợp",
-        styleTitle: TextStyle(
-          fontSize: 14,
-          color: Colors.grey[600],
-        ),
-        height: height_200,
-        width: width_200,
-      ),
-    )
+          child: EmptyDataWidget(
+            title: "Không tìm thấy sách phù hợp",
+            styleTitle: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            height: height_200,
+            width: width_200,
+          ),
+        )
         : Center(
-      child: EmptyDataWidget(
-        title: "Bạn chưa theo dõi sách nào",
-        styleTitle: TextStyle(
-          fontSize: 14,
-          color: Colors.grey[600],
-        ),
-        height: height_200,
-        width: width_200,
-      ),
-    );
+          child: EmptyDataWidget(
+            title: "Bạn chưa theo dõi sách nào",
+            styleTitle: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            height: height_200,
+            width: width_200,
+          ),
+        );
   }
 }

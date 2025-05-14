@@ -27,18 +27,72 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isSigin = false;
   bool _isCliclSignUp = false;
 
-  final TextEditingController _emailController = TextEditingController(
-    text: kDebugMode ? 'traj10x@gmail.com' : '',
-  );
-  final TextEditingController _passwordController = TextEditingController(
-    text: kDebugMode ? '123456' : '',
-  );
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
 
   @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+
+  void _loadSavedCredentials() {
+    final savedEmail = LocalStorageHelper.getValue("saved_email");
+    final savedPassword = LocalStorageHelper.getValue("saved_password");
+    final isRememberMe = LocalStorageHelper.getValue("remember_me") == "true";
+
+    setState(() {
+      _isCheck = isRememberMe;
+      if (isRememberMe && savedEmail != null && savedPassword != null) {
+        _emailController.text = savedEmail;
+        _passwordController.text = savedPassword;
+      } else if (kDebugMode) {
+        // Chỉ set giá trị mặc định trong chế độ debug
+        _emailController.text = 'traj10x@gmail.com';
+        _passwordController.text = '123456';
+      }
+    });
+  }
+
+  void _saveCredentials() {
+    if (_isCheck) {
+      LocalStorageHelper.setValue("saved_email", _emailController.text);
+      LocalStorageHelper.setValue("saved_password", _passwordController.text);
+      LocalStorageHelper.setValue("remember_me", "true");
+    } else {
+      // Xóa thông tin đã lưu nếu không chọn nhớ mật khẩu
+      LocalStorageHelper.setValue("saved_email", null);
+      LocalStorageHelper.setValue("saved_password", null);
+      LocalStorageHelper.setValue("remember_me", null);
+    }
+  }
+
+  void _onRememberMeChanged(bool? value) {
+    setState(() {
+      _isCheck = value ?? false;
+      // Lưu trạng thái ngay khi checkbox thay đổi
+      LocalStorageHelper.setValue("remember_me", _isCheck ? "true" : null);
+      if (!_isCheck) {
+        // Nếu bỏ chọn, xóa thông tin đã lưu
+        LocalStorageHelper.setValue("saved_email", null);
+        LocalStorageHelper.setValue("saved_password", null);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final presenter = Provider.of<LoginNotifier>(context);
+
     final model = presenter.userModel;
     return Scaffold(
       body: GestureDetector(
@@ -112,34 +166,32 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: [
                             Checkbox(
                               value: _isCheck,
-                              onChanged: (bool? val) {
-                                setState(() {
-                                  _isCheck = val ?? false;
-                                });
-                              },
+                              onChanged: _onRememberMeChanged,
                             ),
-
-                            Text('Nhớ mật khẩu', style: TextStyle(fontSize: 14)),
+                            Text(
+                              'Nhớ mật khẩu',
+                              style: TextStyle(fontSize: 14),
+                            ),
                           ],
                         ),
                         SizedBox(width: kMediumPadding),
-                        InkWell(
-                          child: Text(
-                            'Quên mật khẩu',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: _isPressed ? Colors.purple : Colors.blue,
-                            ),
-                          ),
-                          onTap: () {
-                            setState(() {
-                              if (!_isPressed) _isPressed = true;
-                              Navigator.of(
-                                context,
-                              ).pushNamed(ForgotPasswordScreen.routeName);
-                            });
-                          },
-                        ),
+                        // InkWell(
+                        //   child: Text(
+                        //     'Quên mật khẩu',
+                        //     style: TextStyle(
+                        //       fontSize: 14,
+                        //       color: _isPressed ? Colors.purple : Colors.blue,
+                        //     ),
+                        //   ),
+                        //   onTap: () {
+                        //     setState(() {
+                        //       if (!_isPressed) _isPressed = true;
+                        //       Navigator.of(
+                        //         context,
+                        //       ).pushNamed(ForgotPasswordScreen.routeName);
+                        //     });
+                        //   },
+                        // ),
                       ],
                     ),
                     SizedBox(height: kDefaultPadding),
@@ -148,7 +200,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       title: 'Đăng nhập',
                       isign: _isSigin,
                       ontap: () async {
-                        final tokenFCM = LocalStorageHelper.getValue('fcm_token');
+                        final tokenFCM = LocalStorageHelper.getValue(
+                          'fcm_token',
+                        );
 
                         bool isSend = await presenter.login(
                           username: _emailController.text,
@@ -157,6 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         );
 
                         if (isSend) {
+                          _saveCredentials(); // Lưu thông tin đăng nhập nếu đăng nhập thành công
                           Navigator.of(context).pushNamed(MainApp.routeName);
                         }
                       },
@@ -164,7 +219,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(height: kDefaultPadding),
                     Row(
                       children: const [
-                        Expanded(child: Divider(color: Colors.grey, thickness: 1)),
+                        Expanded(
+                          child: Divider(color: Colors.grey, thickness: 1),
+                        ),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 10.0),
                           child: Text(
@@ -172,7 +229,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: TextStyle(fontSize: 14),
                           ),
                         ),
-                        Expanded(child: Divider(color: Colors.grey, thickness: 1)),
+                        Expanded(
+                          child: Divider(color: Colors.grey, thickness: 1),
+                        ),
                         SizedBox(height: kDefaultPadding),
                       ],
                     ),
@@ -190,7 +249,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey.shade300, width: 1),
+                          border: Border.all(
+                            color: Colors.grey.shade300,
+                            width: 1,
+                          ),
 
                           boxShadow: [
                             BoxShadow(
@@ -201,7 +263,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ],
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        padding: EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 16,
+                        ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -233,11 +298,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             'Đăng ký',
                             style: TextStyle(
                               fontSize: 14,
-                              color: _isCliclSignUp ? Colors.purple : Colors.blue,
+                              color:
+                                  _isCliclSignUp ? Colors.purple : Colors.blue,
                             ),
                           ),
                           onTap: () {
-                            Navigator.of(context).pushNamed(SignUpScreen.routeName);
+                            Navigator.of(
+                              context,
+                            ).pushNamed(SignUpScreen.routeName);
                           },
                         ),
                       ],

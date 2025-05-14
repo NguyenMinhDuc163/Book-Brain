@@ -15,5 +15,6 @@ abstract class IHistoryInterface {
     required String readingStatus,
     required double completionRate,
     required String notes,
+    required int currentChapterId,
   });
 }

@@ -7,6 +7,7 @@ import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/widget/empty_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:async';
 
 import '../../../utils/widget/loading_widget.dart';
 
@@ -22,22 +23,25 @@ class SearchResultScreen extends StatefulWidget {
 }
 
 class _SearchResultScreenState extends State<SearchResultScreen> {
-  String _sortOption = 'Phổ biến';
+  String _sortOption = 'A-Z';
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   bool _isGridView = true;
+  Timer? _debounce;
   final List<String> _sortOptions = [
-    'Phổ biến',
-    'Mới nhất',
-    'Đánh giá cao',
     'A-Z',
+    'Z-A',
+    'Đánh giá cao',
+    'Lượt xem nhiều',
   ];
 
   @override
   void initState() {
     super.initState();
     _searchController.text = widget.keyword;
+    _scrollController.addListener(_onScroll);
     Future.microtask(
-          () => Provider.of<SearchNotifier>(
+      () => Provider.of<SearchNotifier>(
         context,
         listen: false,
       ).getData(widget.keyword),
@@ -47,13 +51,38 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
+    _debounce?.cancel();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      final presenter = Provider.of<SearchNotifier>(context, listen: false);
+      if (presenter.hasMore && !presenter.isLoading) {
+        presenter.loadMore();
+      }
+    }
+  }
+
+  void _onSearchChanged(String value) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      if (value.trim().isNotEmpty) {
+        Provider.of<SearchNotifier>(
+          context,
+          listen: false,
+        ).getSearchData(value);
+      }
+    });
   }
 
   void _clearSearch() {
     setState(() {
       _searchController.clear();
     });
+    Provider.of<SearchNotifier>(context, listen: false).getSearchData('');
   }
 
   @override
@@ -81,22 +110,21 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  hintText: "Tìm kiếm sách...",
+                  hintText: "Tìm kiếm theo tên sách, tác giả...",
                   prefixIcon: Icon(Icons.search, color: Color(0xff6357CC)),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(vertical: 10),
-                  suffixIcon: _searchController.text.isNotEmpty
-                      ? IconButton(
-                    icon: Icon(Icons.clear, color: Color(0xff6357CC)),
-                    onPressed: () {
-                      _clearSearch();
-                    },
-                  )
-                      : null,
+                  suffixIcon:
+                      _searchController.text.isNotEmpty
+                          ? IconButton(
+                            icon: Icon(Icons.clear, color: Color(0xff6357CC)),
+                            onPressed: _clearSearch,
+                          )
+                          : null,
                 ),
                 onChanged: (value) {
-                  // Force rebuild để hiển thị/ẩn nút xóa
                   setState(() {});
+                  _onSearchChanged(value);
                 },
                 onSubmitted: (value) {
                   if (value.trim().isNotEmpty) {
@@ -114,31 +142,34 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
               children: [
                 presenter.isLoading
                     ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 16.0),
-                    child: CircularProgressIndicator(
-                      color: Color(0xFF6A5AE0),
-                    ),
-                  ),
-                )
-                    : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Kết quả cho "${_searchController.text}"',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF6A5AE0),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: CircularProgressIndicator(
+                          color: Color(0xFF6A5AE0),
+                        ),
                       ),
+                    )
+                    : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Kết quả cho "${_searchController.text}"',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF6A5AE0),
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Tìm thấy ${presenter.searchBookResponse.length} sách',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Tìm thấy ${presenter.searchBookResponse.length} sách',
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
                 SizedBox(height: 16),
 
                 _buildToolbar(),
@@ -146,46 +177,70 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
 
                 presenter.isLoading
                     ? Expanded(
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: Color(0xFF6A5AE0),
-                    ),
-                  ),
-                )
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: Color(0xFF6A5AE0),
+                        ),
+                      ),
+                    )
                     : presenter.searchBookResponse.isEmpty
                     ? Expanded(
-                  child: EmptyDataWidget(
-                    title: "Không tìm thấy sách phù hợp",
-                    styleTitle: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
-                    height: height_100,
-                    width: width_100,
-                  ),
-                )
+                      child: EmptyDataWidget(
+                        title: "Không tìm thấy sách phù hợp",
+                        styleTitle: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                        height: height_100,
+                        width: width_100,
+                      ),
+                    )
                     : Expanded(
-                  child: _isGridView
-                      ? BooksGridView(
-                    books: presenter.searchBookResponse,
-                    onTap: (book) {
-                      Navigator.of(context).push( MaterialPageRoute(builder:(context) => PreviewScreen(bookId: book.bookId,)));
-                    },
-                  )
-                      : BooksListView(
-                    books: presenter.searchBookResponse,
-                    onTap: (book) {
-                      Navigator.of(context).push( MaterialPageRoute(builder:(context) => PreviewScreen(bookId: book.bookId,)));
-
-
-                    },
+                      child:
+                          _isGridView
+                              ? BooksGridView(
+                                books: presenter.searchBookResponse,
+                                onTap: (book) {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) => PreviewScreen(
+                                            bookId: book.bookId,
+                                          ),
+                                    ),
+                                  );
+                                },
+                                scrollController: _scrollController,
+                              )
+                              : BooksListView(
+                                books: presenter.searchBookResponse,
+                                onTap: (book) {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) => PreviewScreen(
+                                            bookId: book.bookId,
+                                          ),
+                                    ),
+                                  );
+                                },
+                                scrollController: _scrollController,
+                              ),
+                    ),
+                if (presenter.isLoading &&
+                    presenter.searchBookResponse.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF6A5AE0),
+                      ),
+                    ),
                   ),
-                ),
               ],
             ),
           ),
           presenter.isLoading ? const LoadingWidget() : const SizedBox(),
-
         ],
       ),
     );
@@ -219,9 +274,11 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                   onSelected: (String value) {
                     setState(() {
                       _sortOption = value;
-                      // Thêm logic sắp xếp dữ liệu ở đây
-                      final presenter = Provider.of<SearchNotifier>(context, listen: false);
                     });
+                    Provider.of<SearchNotifier>(
+                      context,
+                      listen: false,
+                    ).sortBooks(value);
                   },
                   itemBuilder: (context) {
                     return _sortOptions.map((String option) {
@@ -242,9 +299,9 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight:
-                                option == _sortOption
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
+                                    option == _sortOption
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
                               ),
                             ),
                           ],
@@ -321,26 +378,26 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                             ),
                             decoration: BoxDecoration(
                               color:
-                              _isGridView
-                                  ? Color(0xFF6A5AE0)
-                                  : Colors.white,
+                                  _isGridView
+                                      ? Color(0xFF6A5AE0)
+                                      : Colors.white,
                               gradient:
-                              _isGridView
-                                  ? LinearGradient(
-                                colors: [
-                                  Color(0xFF8F67E8),
-                                  Color(0xFF6357CC),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              )
-                                  : null,
+                                  _isGridView
+                                      ? LinearGradient(
+                                        colors: [
+                                          Color(0xFF8F67E8),
+                                          Color(0xFF6357CC),
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      )
+                                      : null,
                             ),
                             child: Icon(
                               Icons.grid_view_rounded,
                               size: 20,
                               color:
-                              _isGridView ? Colors.white : Colors.grey[600],
+                                  _isGridView ? Colors.white : Colors.grey[600],
                             ),
                           ),
                         ),
@@ -366,28 +423,28 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                             ),
                             decoration: BoxDecoration(
                               color:
-                              !_isGridView
-                                  ? Color(0xFF6A5AE0)
-                                  : Colors.white,
+                                  !_isGridView
+                                      ? Color(0xFF6A5AE0)
+                                      : Colors.white,
                               gradient:
-                              !_isGridView
-                                  ? LinearGradient(
-                                colors: [
-                                  Color(0xFF8F67E8),
-                                  Color(0xFF6357CC),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              )
-                                  : null,
+                                  !_isGridView
+                                      ? LinearGradient(
+                                        colors: [
+                                          Color(0xFF8F67E8),
+                                          Color(0xFF6357CC),
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      )
+                                      : null,
                             ),
                             child: Icon(
                               Icons.view_list_rounded,
                               size: 20,
                               color:
-                              !_isGridView
-                                  ? Colors.white
-                                  : Colors.grey[600],
+                                  !_isGridView
+                                      ? Colors.white
+                                      : Colors.grey[600],
                             ),
                           ),
                         ),

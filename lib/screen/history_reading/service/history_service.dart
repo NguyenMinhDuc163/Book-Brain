@@ -28,12 +28,13 @@ class HistoryService implements IHistoryInterface {
   }
 
   @override
-  Future<bool?> updateHistory({required int bookId, required String readingStatus, required double completionRate, required String notes}) async{
+  Future<bool?> updateHistory({required int bookId, required String readingStatus, required double completionRate, required String notes, required int currentChapterId}) async{
     final UpdateHistoryRequest request = UpdateHistoryRequest(
       bookId: bookId,
       readingStatus: readingStatus,
       completionRate: completionRate,
       notes: notes,
+      currentChapterId: currentChapterId,
     );
 
     final BaseResponse<UpdateHistoryResponse> response = await apiServices

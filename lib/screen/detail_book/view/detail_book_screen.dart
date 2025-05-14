@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../utils/widget/loading_widget.dart';
+import '../../main_app.dart';
 
 class DetailBookScreen extends StatefulWidget {
   DetailBookScreen({super.key, this.bookId, this.chapterId});
@@ -149,6 +150,11 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
           onBack: (){
             presenter.setHistoryBook(note: noteController.text, chapNumber: chapterNumber);
             Navigator.of(context).pop();
+          },
+          onHomeTap: (){
+            presenter.setHistoryBook(note: noteController.text, chapNumber: chapterNumber);
+            Navigator.pushNamedAndRemoveUntil(context, MainApp.routeName, (route) => false);
+
           },
         ),
 

@@ -19,117 +19,215 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  bool _isSelectionMode = false;
-  List<NotificationResponse> _selectedNotifications = [];
-
   @override
   void initState() {
     super.initState();
     Future.microtask(
-          () => Provider.of<NotificationNotifier>(
-        context,
-        listen: false,
-      ).getData(),
+      () => Provider.of<NotificationNotifier>(context, listen: false).getData(),
     );
   }
 
   // Hàm hiển thị bottom sheet chi tiết thông báo
-  void _showNotificationDetails(NotificationResponse notification) {
+  void _showNotificationDetails(NotificationResponse notification) async {
+    // Đánh dấu thông báo đã đọc
+    if (notification.isRead != true) {
+      final presenter = Provider.of<NotificationNotifier>(
+        context,
+        listen: false,
+      );
+      await presenter.markNotification(notification.notificationId ?? 0);
+      // Cập nhật lại danh sách thông báo
+      await presenter.getNotification();
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      backgroundColor: Colors.transparent,
       builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.6,
-          minChildSize: 0.3,
-          maxChildSize: 0.9,
-          expand: false,
-          builder: (context, scrollController) {
-            return Container(
-              padding: EdgeInsets.all(kDefaultPadding),
-              child: ListView(
-                controller: scrollController,
-                children: [
-                  // Tiêu đề
-                  Text(
-                    notification.title ?? '',
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.7,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            children: [
+              // Handle bar
+              Container(
+                margin: EdgeInsets.only(top: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Expanded(
+                child: ListView(
+                  padding: EdgeInsets.all(20),
+                  children: [
+                    // Icon và tiêu đề
+                    Row(
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: Color(0xFF6357CC).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Icon(
+                            notification.chapterUrl != null &&
+                                    notification.chapterUrl!.isNotEmpty
+                                ? Icons.menu_book
+                                : Icons.notifications,
+                            color: Color(0xFF6357CC),
+                            size: 24,
+                          ),
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: Text(
+                            notification.title ?? '',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  SizedBox(height: 10),
-                  // Chi tiết sách
-                  if (notification.bookTitle != null && notification.bookTitle!.isNotEmpty)
+                    SizedBox(height: 20),
+                    // Thông tin sách và chương
+                    if (notification.bookTitle != null &&
+                        notification.bookTitle!.isNotEmpty)
+                      Container(
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[50],
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey[200]!),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (notification.bookTitle != null &&
+                                notification.bookTitle!.isNotEmpty)
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.book,
+                                    size: 16,
+                                    color: Colors.grey[600],
+                                  ),
+                                  SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      "Sách: ${notification.bookTitle}",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey[800],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            if (notification.chapterTitle != null &&
+                                notification.chapterTitle!.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.menu_book,
+                                      size: 16,
+                                      color: Colors.grey[600],
+                                    ),
+                                    SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        "Chương: ${notification.chapterTitle}",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.grey[800],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    SizedBox(height: 16),
+                    // Thời gian
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.access_time,
+                          size: 16,
+                          color: Colors.grey[500],
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          _formatDateTime(notification.createdAt),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    // Nội dung chi tiết
                     Text(
-                      "Sách: ${notification.bookTitle}",
+                      notification.message ?? '',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.black87,
+                        height: 1.5,
                       ),
                     ),
-                  if (notification.chapterTitle != null && notification.chapterTitle!.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 5.0),
-                      child: Text(
-                        "Chương: ${notification.chapterTitle}",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black87,
+                    SizedBox(height: 24),
+                    // Nút đọc ngay nếu có chương
+                    if (notification.chapterUrl != null &&
+                        notification.chapterUrl!.isNotEmpty)
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          // Thêm code để mở trang đọc chương tại đây
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF6357CC),
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.menu_book, size: 20),
+                            SizedBox(width: 8),
+                            Text(
+                              'Đóng',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  SizedBox(height: 10),
-                  // Thời gian
-                  Text(
-                    _formatDateTime(notification.createdAt),
-                    style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                        fontStyle: FontStyle.italic
-                    ),
-                  ),
-                  SizedBox(height: 15),
-                  // Nội dung chi tiết
-                  Text(
-                    notification.message ?? '',
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black87,
-                        height: 1.5
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  // Nút đọc ngay nếu có chương
-                  if (notification.chapterUrl != null && notification.chapterUrl!.isNotEmpty)
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        // Thêm code để mở trang đọc chương tại đây
-                      },
-                      child: Text('Đọc ngay'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF6357CC),
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
-                  SizedBox(height: 10),
-                  // Nút đóng
-                  OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text('Đóng'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.grey[800],
-                    ),
-                  )
-                ],
+                  ],
+                ),
               ),
-            );
-          },
+            ],
+          ),
         );
       },
     );
@@ -145,47 +243,24 @@ class _NotificationScreenState extends State<NotificationScreen> {
   void _confirmDeleteNotification(NotificationResponse notification) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Xóa thông báo"),
-        content: Text("Bạn có chắc muốn xóa thông báo này không?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("Hủy"),
+      builder:
+          (context) => AlertDialog(
+            title: Text("Xóa thông báo"),
+            content: Text("Bạn có chắc muốn xóa thông báo này không?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text("Hủy"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _deleteNotification(notification);
+                },
+                child: Text("Xóa", style: TextStyle(color: Colors.red)),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _deleteNotification(notification);
-            },
-            child: Text("Xóa", style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Hiển thị xác nhận xóa nhiều thông báo
-  void _confirmDeleteMultipleNotifications() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Xóa thông báo"),
-        content: Text("Bạn có chắc muốn xóa ${_selectedNotifications.length} thông báo đã chọn không?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("Hủy"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _deleteSelectedNotifications();
-            },
-            child: Text("Xóa", style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
     );
   }
 
@@ -193,74 +268,60 @@ class _NotificationScreenState extends State<NotificationScreen> {
   void _confirmDeleteAllNotifications() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Xóa tất cả thông báo"),
-        content: Text("Bạn có chắc muốn xóa tất cả thông báo không?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("Hủy"),
+      builder:
+          (context) => AlertDialog(
+            title: Text("Xóa tất cả thông báo"),
+            content: Text("Bạn có chắc muốn xóa tất cả thông báo không?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text("Hủy"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _deleteAllNotifications();
+                },
+                child: Text("Xóa tất cả", style: TextStyle(color: Colors.red)),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _deleteAllNotifications();
-            },
-            child: Text("Xóa tất cả", style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
     );
   }
 
   // Xóa một thông báo
   void _deleteNotification(NotificationResponse notification) async {
     final presenter = Provider.of<NotificationNotifier>(context, listen: false);
-    bool isSucc =  await presenter.deleteNotification(notification.notificationId ?? 1);
-    if(!isSucc) {
+    bool isSucc = await presenter.deleteNotification(
+      notification.notificationId ?? 1,
+    );
+    if (!isSucc) {
       showToastTop(message: "Xóa thông báo thất bại");
       return;
     }
-    await presenter.getNotification();
-  }
-
-  // Xóa các thông báo đã chọn
-  void _deleteSelectedNotifications() async {
-    final presenter = Provider.of<NotificationNotifier>(context, listen: false);
-
-
-    bool isSucc = await presenter.deleteAllNotification();
-
-    setState(() {
-      _isSelectionMode = false;
-      _selectedNotifications.clear();
-    });
-
-    if(!isSucc){
-      showToastTop(message: "Xóa thông báo thất bại");
-      return;
-    }
-
     await presenter.getNotification();
   }
 
   // Xóa tất cả thông báo
   void _deleteAllNotifications() async {
     final presenter = Provider.of<NotificationNotifier>(context, listen: false);
-    await presenter.deleteAllNotification();
+    bool isSucc = await presenter.deleteAllNotification();
+    if (!isSucc) {
+      showToastTop(message: "Xóa tất cả thông báo thất bại");
+      return;
+    }
+    await presenter.getNotification();
+  }
 
-    // Cập nhật UI
-    setState(() {
-      _isSelectionMode = false;
-      _selectedNotifications.clear();
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Đã xóa tất cả thông báo'),
-        duration: Duration(seconds: 2),
-      ),
-    );
+  // Đánh dấu đã đọc tất cả
+  void _markAllAsRead() async {
+    final presenter = Provider.of<NotificationNotifier>(context, listen: false);
+    bool isSucc = await presenter.markAllNotification();
+    if (!isSucc) {
+      showToastTop(message: "Đánh dấu đã đọc thất bại");
+      return;
+    }
+    await presenter.getNotification();
   }
 
   @override
@@ -273,89 +334,42 @@ class _NotificationScreenState extends State<NotificationScreen> {
           AppBarContainerWidget(
             titleString: "Thông báo",
             backgroundColor: ColorPalette.lavenderWhite,
-            child: presenter.isLoading
-                ? Center(
-              child: CircularProgressIndicator(
-                color: Color(0xFF6357CC),
-              ),
-            )
-                : (presenter.listNotifications == null || presenter.listNotifications!.isEmpty)
-                ? _buildEmptyState()
-                : Column(
+            bottomWidget: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                if (_isSelectionMode) _buildSelectionHeader(presenter),
-                Expanded(
-                  child: ListView.builder(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    itemCount: presenter.listNotifications?.length ?? 0,
-                    itemBuilder: (context, index) {
-                      final notification = presenter.listNotifications![index];
-                      return _buildNotificationItem(notification);
-                    },
-                  ),
+                IconButton(
+                  icon: Icon(Icons.done_all, color: Colors.white),
+                  onPressed: _markAllAsRead,
+                  tooltip: 'Đánh dấu đã đọc tất cả',
+                ),
+                IconButton(
+                  icon: Icon(Icons.delete_outline, color: Colors.white),
+                  onPressed: _confirmDeleteAllNotifications,
+                  tooltip: 'Xóa tất cả',
                 ),
               ],
             ),
+            child:
+                presenter.isLoading
+                    ? Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF6357CC),
+                      ),
+                    )
+                    : (presenter.listNotifications == null ||
+                        presenter.listNotifications!.isEmpty)
+                    ? _buildEmptyState()
+                    : ListView.builder(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      itemCount: presenter.listNotifications?.length ?? 0,
+                      itemBuilder: (context, index) {
+                        final notification =
+                            presenter.listNotifications![index];
+                        return _buildNotificationItem(notification);
+                      },
+                    ),
           ),
           presenter.isLoading ? const LoadingWidget() : const SizedBox(),
-
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSelectionHeader(NotificationNotifier presenter) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: Colors.white,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Checkbox(
-                value: _selectedNotifications.length == presenter.listNotifications!.length,
-                onChanged: (value) {
-                  setState(() {
-                    if (value == true) {
-                      _selectedNotifications = List.from(presenter.listNotifications!);
-                    } else {
-                      _selectedNotifications.clear();
-                    }
-                  });
-                },
-              ),
-              Text(
-                "Đã chọn ${_selectedNotifications.length}/${presenter.listNotifications!.length}",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              TextButton.icon(
-                icon: Icon(Icons.delete, color: Colors.red),
-                label: Text(
-                  "Xóa đã chọn",
-                  style: TextStyle(color: Colors.red),
-                ),
-                onPressed: _selectedNotifications.isEmpty
-                    ? null
-                    : _confirmDeleteMultipleNotifications,
-              ),
-              SizedBox(width: 8),
-              TextButton.icon(
-                icon: Icon(Icons.delete_forever, color: Colors.red),
-                label: Text(
-                  "Xóa tất cả",
-                  style: TextStyle(color: Colors.red),
-                ),
-                onPressed: _confirmDeleteAllNotifications,
-              ),
-            ],
-          ),
         ],
       ),
     );
@@ -363,56 +377,54 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   Widget _buildNotificationItem(NotificationResponse notification) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 8.0),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: GestureDetector(
-        onTap: _isSelectionMode
-            ? () {
-          setState(() {
-            if (_selectedNotifications.contains(notification)) {
-              _selectedNotifications.remove(notification);
-            } else {
-              _selectedNotifications.add(notification);
-            }
-          });
-        }
-            : () => _showNotificationDetails(notification),
-        onLongPress: !_isSelectionMode
-            ? () {
-          setState(() {
-            _isSelectionMode = true;
-            _selectedNotifications = [notification];
-          });
-        }
-            : null,
+        onTap: () => _showNotificationDetails(notification),
         child: Container(
           padding: EdgeInsets.all(16),
           width: double.infinity,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: notification.isRead != true
-                ? Border.all(color: Color(0xFF6357CC), width: 1.5)
-                : null,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: Offset(0, 2),
+              ),
+            ],
+            border:
+                notification.isRead != true
+                    ? Border.all(color: Color(0xFF6357CC), width: 1.5)
+                    : null,
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (_isSelectionMode)
-                Padding(
-                  padding: const EdgeInsets.only(right: 12.0),
-                  child: Checkbox(
-                    value: _selectedNotifications.contains(notification),
-                    onChanged: (value) {
-                      setState(() {
-                        if (value == true) {
-                          _selectedNotifications.add(notification);
-                        } else {
-                          _selectedNotifications.remove(notification);
-                        }
-                      });
-                    },
-                  ),
+              // Icon thông báo
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color:
+                      notification.isRead != true
+                          ? Color(0xFF6357CC).withOpacity(0.1)
+                          : Colors.grey.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
                 ),
+                child: Icon(
+                  notification.chapterUrl != null &&
+                          notification.chapterUrl!.isNotEmpty
+                      ? Icons.menu_book
+                      : Icons.notifications,
+                  color:
+                      notification.isRead != true
+                          ? Color(0xFF6357CC)
+                          : Colors.grey,
+                  size: 20,
+                ),
+              ),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -434,31 +446,81 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             notification.title ?? '',
                             style: TextStyle(
                               fontSize: 16,
-                              fontWeight: notification.isRead != true ? FontWeight.bold : FontWeight.normal,
+                              fontWeight:
+                                  notification.isRead != true
+                                      ? FontWeight.bold
+                                      : FontWeight.w500,
+                              color:
+                                  notification.isRead != true
+                                      ? Colors.black87
+                                      : Colors.black54,
                             ),
                           ),
                         ),
-                        if (!_isSelectionMode)
-                          IconButton(
-                            icon: Icon(Icons.delete_outline, size: 20, color: Colors.grey),
-                            onPressed: () => _confirmDeleteNotification(notification),
+                        IconButton(
+                          icon: Icon(
+                            Icons.delete_outline,
+                            size: 20,
+                            color: Colors.grey[400],
                           ),
+                          onPressed:
+                              () => _confirmDeleteNotification(notification),
+                          padding: EdgeInsets.zero,
+                          constraints: BoxConstraints(),
+                        ),
                       ],
                     ),
-                    SizedBox(height: 4),
+                    SizedBox(height: 6),
                     Text(
                       notification.message ?? '',
-                      style: TextStyle(fontSize: 14),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black54,
+                        height: 1.4,
+                      ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: 4),
-                    Text(
-                      _formatDateTime(notification.createdAt),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
+                    SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.access_time,
+                          size: 14,
+                          color: Colors.grey[400],
+                        ),
+                        SizedBox(width: 4),
+                        Text(
+                          _formatDateTime(notification.createdAt),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[500],
+                          ),
+                        ),
+                        if (notification.chapterUrl != null &&
+                            notification.chapterUrl!.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Color(0xFF6357CC).withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                'Có chương mới',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0xFF6357CC),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ],
                 ),
@@ -472,14 +534,35 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   Widget _buildEmptyState() {
     return Center(
-      child: EmptyDataWidget(
-        title: "Không có thông báo nào",
-        styleTitle: TextStyle(
-          fontSize: 14,
-          color: Colors.grey[600],
-        ),
-        height: height_200,
-        width: width_200,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            'assets/images/empty_notification.png',
+            width: 200,
+            height: 200,
+            errorBuilder:
+                (context, error, stackTrace) => Icon(
+                  Icons.notifications_off_outlined,
+                  size: 100,
+                  color: Colors.grey[400],
+                ),
+          ),
+          SizedBox(height: 16),
+          Text(
+            "Không có thông báo nào",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey[600],
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            "Các thông báo mới sẽ xuất hiện ở đây",
+            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+          ),
+        ],
       ),
     );
   }

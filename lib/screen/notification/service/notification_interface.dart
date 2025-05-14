@@ -14,4 +14,8 @@ abstract class INotificationInterface {
   Future<bool?> deleteNotification({required int notificationId});
 
   Future<bool?> deleteAllNotification();
+
+  Future<bool?> markReadNotification({required int notificationId});
+
+  Future<bool?> markReaAllNotification();
 }

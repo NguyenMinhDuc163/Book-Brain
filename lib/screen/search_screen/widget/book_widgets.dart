@@ -5,13 +5,19 @@ import 'package:flutter/material.dart';
 class BooksGridView extends StatelessWidget {
   final List<SearchBookResponse> books;
   final Function(SearchBookResponse book) onTap;
+  final ScrollController? scrollController;
 
-  const BooksGridView({Key? key, required this.books, required this.onTap})
-    : super(key: key);
+  const BooksGridView({
+    Key? key,
+    required this.books,
+    required this.onTap,
+    this.scrollController,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
+      controller: scrollController,
       padding: EdgeInsets.only(bottom: 16),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -64,7 +70,6 @@ class BookGridItem extends StatelessWidget {
                   height: 140,
                 ),
               ),
-              Positioned(top: 8, right: 8, child: _buildRatingBadge(rate)),
             ],
           ),
           Padding(
@@ -116,13 +121,19 @@ class BookGridItem extends StatelessWidget {
 class BooksListView extends StatelessWidget {
   final List<SearchBookResponse> books;
   final Function(SearchBookResponse book) onTap;
+  final ScrollController? scrollController;
 
-  const BooksListView({Key? key, required this.books, required this.onTap})
-    : super(key: key);
+  const BooksListView({
+    Key? key,
+    required this.books,
+    required this.onTap,
+    this.scrollController,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      controller: scrollController,
       padding: EdgeInsets.only(bottom: 16),
       itemCount: books.length,
       itemBuilder: (context, index) {
@@ -173,7 +184,6 @@ class BookListItem extends StatelessWidget {
                   height: 130,
                 ),
               ),
-              Positioned(top: 8, left: 8, child: _buildRatingBadge(rate)),
             ],
           ),
           Expanded(

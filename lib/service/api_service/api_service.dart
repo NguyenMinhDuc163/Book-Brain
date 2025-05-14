@@ -1,6 +1,7 @@
 import 'package:book_brain/service/api_service/BaseApiService.dart';
 import 'package:book_brain/service/api_service/request/RegisterRequest.dart';
 import 'package:book_brain/service/api_service/request/basse_request.dart';
+import 'package:book_brain/service/api_service/request/change_password_request.dart';
 import 'package:book_brain/service/api_service/request/create_reivew_request.dart';
 import 'package:book_brain/service/api_service/request/delete_all_noti_request.dart';
 import 'package:book_brain/service/api_service/request/delete_notification_request.dart';
@@ -9,6 +10,7 @@ import 'package:book_brain/service/api_service/request/forgot_password_request.d
 import 'package:book_brain/service/api_service/request/login_request.dart';
 import 'package:book_brain/service/api_service/request/subscriptions_request.dart';
 import 'package:book_brain/service/api_service/request/update_history_request.dart';
+import 'package:book_brain/service/api_service/request/update_profile_request.dart';
 import 'package:book_brain/service/api_service/response/all_review_response.dart';
 import 'package:book_brain/service/api_service/response/author_ranking_response.dart';
 import 'package:book_brain/service/api_service/response/base_response.dart';
@@ -31,9 +33,11 @@ import 'package:book_brain/service/api_service/response/review_stats_response.da
 import 'package:book_brain/service/api_service/response/search_book_response.dart';
 import 'package:book_brain/service/api_service/response/subscriptions_response.dart';
 import 'package:book_brain/service/api_service/response/update_history_response.dart';
+import 'package:book_brain/service/api_service/response/update_profile_response.dart';
 import 'package:book_brain/service/api_service/response/update_ranking_response.dart';
 import 'package:book_brain/service/common/url_static.dart';
 
+import 'request/delete_review_request.dart';
 import 'response/RegisterResponse.dart';
 
 class ApiServices extends BaseApiService {
@@ -173,7 +177,14 @@ class ApiServices extends BaseApiService {
     );
   }
 
-
+  Future<BaseResponse<CreateReviewResponse>> sendDeleteReview(DeleteReview request) async {
+    return await sendRequest<CreateReviewResponse>(
+      UrlStatic.API_DELETE_REVIEW,
+      method: 'POST',
+      data: request.toJson(),
+      fromJson: (json) => CreateReviewResponse.fromJson(json),
+    );
+  }
   /// chuc nang yeu thich
   Future<BaseResponse<FavoritesResponse>> getFavorites({
     required int page,
@@ -244,7 +255,7 @@ class ApiServices extends BaseApiService {
   Future<BaseResponse<DeleteSubscriptionsResponse>> sendDeleteSubscription(SubscriptionsRequest request) async {
     return await sendRequest<DeleteSubscriptionsResponse>(
       UrlStatic.API_SUBCRIPTIONS,
-      method: 'API_SUBCRIPTIONS',
+      method: 'POST',
       data: request.toJson(),
       fromJson: (json) => DeleteSubscriptionsResponse.fromJson(json),
     );
@@ -272,7 +283,7 @@ class ApiServices extends BaseApiService {
     );
   }
 
-  Future<BaseResponse<DeleteNotificationResponse>> sendDeleteNotification(DeleteNotificationRequest request) async {
+  Future<BaseResponse<DeleteNotificationResponse>> sendNotification(DeleteNotificationRequest request) async {
     return await sendRequest<DeleteNotificationResponse>(
       UrlStatic.API_NOTIFICATION,
       method: 'POST',
@@ -281,7 +292,7 @@ class ApiServices extends BaseApiService {
     );
   }
 
-  Future<BaseResponse<DeleteAllNotificaitonResponse>> sendDeleteAllNotification(DeleteAllNotiRequest request) async {
+  Future<BaseResponse<DeleteAllNotificaitonResponse>> sendAllNotification(DeleteAllNotiRequest request) async {
     return await sendRequest<DeleteAllNotificaitonResponse>(
       UrlStatic.API_NOTIFICATION,
       method: 'POST',
@@ -368,10 +379,29 @@ class ApiServices extends BaseApiService {
   // lay lại mk
   Future<BaseResponse<ForgotPasswordResponse>> forgotPassword(ForgotPasswordRequest request) async {
     return await sendRequest<ForgotPasswordResponse>(
-      UrlStatic.API_FORGOT_PASSWORD,
+      UrlStatic.API_CHANGE_PASSWORD,
       method: 'POST',
       data: request.toJson(),
       fromJson: (json) => ForgotPasswordResponse.fromJson(json),
+    );
+  }
+  // update profile
+  Future<BaseResponse<UpdateProfileResponse>> updateProfile(UpdateProfileRequest request) async {
+    return await sendRequest<UpdateProfileResponse>(
+      UrlStatic.API_UPDATE_PROFILE,
+      method: 'POST',
+      data: request.toJson(),
+      fromJson: (json) => UpdateProfileResponse.fromJson(json),
+    );
+  }
+
+
+  Future<BaseResponse<UpdateProfileResponse>> changePassword(ChangePasswordRequest request) async {
+    return await sendRequest<UpdateProfileResponse>(
+      UrlStatic.API_CHANGE_PASSWORD,
+      method: 'POST',
+      data: request.toJson(),
+      fromJson: (json) => UpdateProfileResponse.fromJson(json),
     );
   }
 }

@@ -40,7 +40,7 @@ class BaseAppbar extends StatelessWidget implements PreferredSizeWidget{
             color: textColor ?? Colors.white, // Màu của icon home
           ),
           onPressed: () {
-            onHomeTap ??Navigator.pushNamedAndRemoveUntil(context, MainApp.routeName, (route) => false);
+            onHomeTap?.call() ??Navigator.pushNamedAndRemoveUntil(context, MainApp.routeName, (route) => false);
 
           },
         ),

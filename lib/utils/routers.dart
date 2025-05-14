@@ -1,4 +1,3 @@
-import 'package:book_brain/screen/change_password/view/change_password_screen.dart';
 import 'package:book_brain/screen/detail_book/view/detail_book_screen.dart';
 import 'package:book_brain/screen/edit_profile/view/edit_profile_screen.dart';
 import 'package:book_brain/screen/favorites/view/favorites_screen.dart';
@@ -18,6 +17,7 @@ import 'package:flutter/material.dart';
 
 import '../screen/notification/view/notification_screen.dart';
 import '../screen/ranking/view/ranking_screen.dart';
+import '../screen/setting/view/change_password_screen.dart';
 final Map<String, WidgetBuilder> routes = {
   // noi tong hop ca routes
   LoginScreen.routeName: (context) => const LoginScreen(),

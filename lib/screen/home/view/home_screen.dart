@@ -26,10 +26,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() =>
-        Provider.of<HomeNotifier>(context, listen: false).getData()
+    Future.microtask(
+      () => Provider.of<HomeNotifier>(context, listen: false).getData(),
     );
   }
+
   Widget _buildItemCategory({
     required Widget icon,
     required Color color,
@@ -79,7 +80,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(kItemPadding),
                     color: Colors.white,
                   ),
-                  child: Icon(FontAwesomeIcons.user, color: Colors.black, size: 30),
+                  child: Icon(
+                    FontAwesomeIcons.user,
+                    color: Colors.black,
+                    size: 30,
+                  ),
                 ),
                 SizedBox(width: width_16),
                 Column(
@@ -89,7 +94,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       presenter.userName ?? "Nguyễn Minh Đức",
-                      style: TextStyles.defaultStyle.fontHeader.whiteTextColor.bold,
+                      style:
+                          TextStyles
+                              .defaultStyle
+                              .fontHeader
+                              .whiteTextColor
+                              .bold,
                     ),
                     Text(
                       'Bạn sẽ đọc cuốn sách nào hôm nay?',
@@ -100,16 +110,26 @@ class _HomeScreenState extends State<HomeScreen> {
                 Spacer(),
                 IconButton(
                   icon: Badge.count(
-                    count: 1,
+                    count: presenter.unreadNotificationCount,
+                    isLabelVisible: presenter.unreadNotificationCount > 0,
                     child: Icon(
                       FontAwesomeIcons.bell,
                       color: Colors.white,
                       size: height_20,
                     ),
                   ),
-
-                  onPressed: () {
-                    Navigator.pushNamed(context, NotificationScreen.routeName);
+                  onPressed: () async {
+                    await Navigator.pushNamed(
+                      context,
+                      NotificationScreen.routeName,
+                    );
+                    // Cập nhật lại số lượng thông báo khi quay lại
+                    if (mounted) {
+                      Provider.of<HomeNotifier>(
+                        context,
+                        listen: false,
+                      ).getUnreadNotificationCount();
+                    }
                   },
                 ),
               ],
@@ -214,7 +234,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         title: 'Top thinh hành',
                         books: presenter.trendingBook,
                         onSeeAllPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AllBookScreen(title: 'Top thinh hành',)));
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder:
+                                  (context) =>
+                                      AllBookScreen(title: 'Top thinh hành'),
+                            ),
+                          );
                         },
                       ),
 
@@ -222,11 +248,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         title: 'Dành cho bạn',
                         books: presenter.bookInfo,
                         onSeeAllPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AllBookScreen(title: 'Dành cho bạn',)));
-
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder:
+                                  (context) =>
+                                      AllBookScreen(title: 'Dành cho bạn'),
+                            ),
+                          );
                         },
                       ),
-
                     ],
                   ),
                 ),
@@ -235,10 +265,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         presenter.isLoading ? const LoadingWidget() : const SizedBox(),
-
       ],
     );
   }
-
-
 }

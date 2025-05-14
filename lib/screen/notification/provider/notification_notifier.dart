@@ -30,6 +30,7 @@ class NotificationNotifier extends BaseNotifier{
       return true;
     });
   }
+
   Future<bool> deleteAllNotification() async {
     return await execute(() async{
       await notifications.deleteAllNotification();
@@ -39,4 +40,21 @@ class NotificationNotifier extends BaseNotifier{
     });
   }
 
+  Future<bool> markNotification(int notificationId) async {
+    return await execute(() async{
+      await notifications.markReadNotification(notificationId: notificationId);
+      notifyListeners();
+      print("listNotifications $listNotifications");
+      return true;
+    });
+  }
+
+  Future<bool> markAllNotification() async {
+    return await execute(() async{
+      await notifications.markReaAllNotification();
+      notifyListeners();
+      print("listNotifications $listNotifications");
+      return true;
+    });
+  }
 }

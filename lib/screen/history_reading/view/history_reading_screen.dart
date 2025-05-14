@@ -1,3 +1,4 @@
+import 'package:book_brain/screen/detail_book/view/detail_book_screen.dart';
 import 'package:book_brain/screen/history_reading/provider/history_notifier.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/screen/preview/view/preview_screen.dart';
@@ -183,8 +184,15 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
       itemBuilder: (context, index) {
         return InkWell(
           onTap: (){
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => PreviewScreen(bookId: allHistory[index].bookId,)));
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder:
+                    (context) => DetailBookScreen(
+                  bookId:  allHistory[index].bookId ?? 1,
+                  chapterId:  allHistory[index].currentChapterId,
+                ),
+              ),
+            );
           },
           child: _buildReadingBookItem(
             title: allHistory[index].title ?? '',
@@ -212,8 +220,13 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
       itemBuilder: (context, index) {
         return InkWell(
           onTap: (){
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => PreviewScreen(bookId: currentHistory[index].bookId,)));
+            MaterialPageRoute(
+              builder:
+                  (context) => DetailBookScreen(
+                bookId:  currentHistory[index].bookId ?? 1,
+                chapterId:  currentHistory[index].currentChapterId,
+              ),
+            );
           },
           child: _buildBookCard(
             title:  currentHistory[index].title ?? '',
@@ -234,9 +247,14 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
       itemBuilder: (context, index) {
         return InkWell(
           onTap: (){
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => PreviewScreen(bookId: completedHistory[index].bookId,)));
-          },
+            MaterialPageRoute(
+              builder:
+                  (context) => DetailBookScreen(
+                bookId:  completedHistory[index].bookId ?? 1,
+                chapterId:  completedHistory[index].currentChapterId,
+              ),
+            );
+            },
           child: _buildFinishedBookItem(
             title:  completedHistory[index].title ?? '' ,
             author:  completedHistory[index].authorName ?? '',
@@ -562,61 +580,6 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
                 ),
                 SizedBox(height: 8),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () {},
-                      style: TextButton.styleFrom(
-                        minimumSize: Size.zero,
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            "Đánh giá",
-                            style: TextStyle(
-                              color: Colors.grey[700],
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          SizedBox(width: 2),
-                          Icon(
-                            Icons.rate_review_outlined,
-                            size: 14,
-                            color: Colors.grey[700],
-                          ),
-                        ],
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {},
-                      style: TextButton.styleFrom(
-                        minimumSize: Size.zero,
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            "Đọc lại",
-                            style: TextStyle(
-                              color: Color(0xFF6A5AE0),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          SizedBox(width: 2),
-                          Icon(
-                            Icons.refresh,
-                            size: 14,
-                            color: Color(0xFF6A5AE0),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
               ],
             ),
           ),

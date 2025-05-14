@@ -1,14 +1,16 @@
-import 'package:book_brain/screen/change_password/view/change_password_screen.dart';
 import 'package:book_brain/screen/edit_profile/view/edit_profile_screen.dart';
 import 'package:book_brain/screen/home/provider/home_notifier.dart';
 import 'package:book_brain/screen/login/view/login_screen.dart';
-import 'package:book_brain/utils/core/helpers/asset_helper.dart' show AssetHelper;
-import 'package:book_brain/utils/core/helpers/image_helper.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
+import 'package:book_brain/utils/core/constants/dimension_constants.dart';
+import 'package:book_brain/utils/core/helpers/asset_helper.dart'
+    show AssetHelper;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'change_password_screen.dart' show ChangePasswordScreen;
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -24,10 +26,11 @@ class _SettingScreenState extends State<SettingScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() =>
-        Provider.of<HomeNotifier>(context, listen: false).getData()
+    Future.microtask(
+      () => Provider.of<HomeNotifier>(context, listen: false).getData(),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     final presenter = Provider.of<HomeNotifier>(context);
@@ -39,15 +42,19 @@ class _SettingScreenState extends State<SettingScreen> {
         isShowBackButton: false,
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: kDefaultPadding, vertical: kDefaultPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: kDefaultPadding,
+              vertical: kDefaultPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildProfileSection(username: presenter.userName, email: presenter.email),
+                _buildProfileSection(
+                  username: presenter.userName ?? "",
+                  email: presenter.email ?? "",
+                ),
                 SizedBox(height: kDefaultPadding),
                 _buildAccountSection(),
-                SizedBox(height: kDefaultPadding),
-                _buildPreferencesSection(),
                 SizedBox(height: kDefaultPadding),
                 _buildAboutSection(),
                 SizedBox(height: kDefaultPadding * 2),
@@ -60,7 +67,10 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  Widget _buildProfileSection({required String username,required String email}) {
+  Widget _buildProfileSection({
+    required String username,
+    required String email,
+  }) {
     return Container(
       padding: EdgeInsets.all(kMediumPadding),
       decoration: BoxDecoration(
@@ -79,10 +89,7 @@ class _SettingScreenState extends State<SettingScreen> {
           Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(
-                color: Color(0xFF6A5AE0),
-                width: 2,
-              ),
+              border: Border.all(color: Color(0xFF6A5AE0), width: 2),
             ),
             child: CircleAvatar(
               radius: 30,
@@ -106,10 +113,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 SizedBox(height: 4),
                 Text(
                   email,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -172,7 +176,7 @@ class _SettingScreenState extends State<SettingScreen> {
               _buildSettingItem(
                 "Chỉnh sửa thông tin",
                 Color(0xFF6A5AE0),
-                    () => Navigator.push(
+                () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => EditProfileScreen()),
                 ),
@@ -182,70 +186,13 @@ class _SettingScreenState extends State<SettingScreen> {
               _buildSettingItem(
                 "Đổi mật khẩu",
                 Color(0xFF6A5AE0),
-                    () => Navigator.push(
+                () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ChangePasswordScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => ChangePasswordScreen(),
+                  ),
                 ),
                 subtitle: "Cập nhật mật khẩu của bạn",
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPreferencesSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
-          child: Text(
-            "Tùy chọn",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey[700],
-            ),
-          ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              _buildSwitchItem(
-                "Chế độ tối",
-                FontAwesomeIcons.moon,
-                _isDarkMode,
-                    (value) {
-                  setState(() {
-                    _isDarkMode = value;
-                  });
-                },
-                Color(0xFF414BBF),
-              ),
-              _buildDivider(),
-              _buildSwitchItem(
-                "Thông báo",
-                FontAwesomeIcons.bell,
-                _notificationsEnabled,
-                    (value) {
-                  setState(() {
-                    _notificationsEnabled = value;
-                  });
-                },
-                Color(0xFFE9873D),
               ),
             ],
           ),
@@ -283,24 +230,36 @@ class _SettingScreenState extends State<SettingScreen> {
           ),
           child: Column(
             children: [
-              _buildSettingItem(
-                "Về Book Brain",
-                Color(0xFF38C9A7),
-                    () {},
-                subtitle: "Phiên bản 1.0.0",
-              ),
+              _buildSettingItem("Về Book Brain", Color(0xFF38C9A7), () async {
+                final Uri url = Uri.parse(
+                  'https://github.com/NguyenMinhDuc163/Book-Brain/blob/main/README.md',
+                );
+                if (!await launchUrl(
+                  url,
+                  mode: LaunchMode.externalApplication,
+                )) {
+                  throw 'Could not launch URL}';
+                }
+              }, subtitle: "Phiên bản 1.0.0"),
               _buildDivider(),
-              _buildSettingItem(
-                "Hỗ trợ",
-                Color(0xFF6A5AE0),
-                    () {},
-                subtitle: "Liên hệ hỗ trợ kỹ thuật",
-              ),
+              _buildSettingItem("Hỗ trợ", Color(0xFF6A5AE0), () {
+                launchEmail(context);
+              }, subtitle: "Liên hệ hỗ trợ kỹ thuật"),
               _buildDivider(),
               _buildSettingItem(
                 "Điều khoản sử dụng",
                 Color(0xFF38C9A7),
-                    () {},
+                () async {
+                  final Uri url = Uri.parse(
+                    'https://www.freeprivacypolicy.com/live/e98e0bef-5336-4269-8197-71cd770e1c24',
+                  );
+                  if (!await launchUrl(
+                    url,
+                    mode: LaunchMode.externalApplication,
+                  )) {
+                    throw 'Could not launch URL}';
+                  }
+                },
               ),
             ],
           ),
@@ -316,33 +275,36 @@ class _SettingScreenState extends State<SettingScreen> {
         onPressed: () {
           showDialog(
             context: context,
-            builder: (context) => AlertDialog(
-              title: Text("Đăng xuất"),
-              content: Text("Bạn có chắc chắn muốn đăng xuất không?"),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text("Hủy"),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()),
+            builder:
+                (context) => AlertDialog(
+                  title: Text("Đăng xuất"),
+                  content: Text("Bạn có chắc chắn muốn đăng xuất không?"),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text("Hủy"),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LoginScreen(),
+                          ),
                           (route) => false,
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF6A5AE0),
-                  ),
-                  child: Text(
-                    "Đăng xuất",
-                    style: TextStyle(color: Colors.white),
-                  ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF6A5AE0),
+                      ),
+                      child: Text(
+                        "Đăng xuất",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
           );
         },
         style: ElevatedButton.styleFrom(
@@ -377,7 +339,12 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  Widget _buildSettingItem(String title, Color iconColor, VoidCallback onTap, {String? subtitle}) {
+  Widget _buildSettingItem(
+    String title,
+    Color iconColor,
+    VoidCallback onTap, {
+    String? subtitle,
+  }) {
     IconData getIconData(String title) {
       switch (title) {
         case "Chỉnh sửa thông tin":
@@ -411,11 +378,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 color: iconColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: FaIcon(
-                getIconData(title),
-                size: 16,
-                color: iconColor,
-              ),
+              child: FaIcon(getIconData(title), size: 16, color: iconColor),
             ),
             SizedBox(width: 16),
             Expanded(
@@ -434,10 +397,7 @@ class _SettingScreenState extends State<SettingScreen> {
                     SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                     ),
                   ],
                 ],
@@ -455,12 +415,12 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   Widget _buildSwitchItem(
-      String title,
-      IconData iconData,
-      bool value,
-      Function(bool) onChanged,
-      Color iconColor,
-      ) {
+    String title,
+    IconData iconData,
+    bool value,
+    Function(bool) onChanged,
+    Color iconColor,
+  ) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
@@ -471,11 +431,7 @@ class _SettingScreenState extends State<SettingScreen> {
               color: iconColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: FaIcon(
-              iconData,
-              size: 16,
-              color: iconColor,
-            ),
+            child: FaIcon(iconData, size: 16, color: iconColor),
           ),
           SizedBox(width: 16),
           Expanded(
@@ -502,10 +458,31 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget _buildDivider() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16),
-      child: Divider(
-        color: Colors.grey.shade200,
-        height: 1,
-      ),
+      child: Divider(color: Colors.grey.shade200, height: 1),
     );
+  }
+
+  Future<void> launchEmail(BuildContext context) async {
+    final Uri emailLaunchUri = Uri(
+      scheme: 'mailto',
+      path: 'ngminhduc1603@gmail.com',
+      queryParameters: {
+        'subject': 'Báo cáo sự cố - Book Brain',
+        'body': 'Mô tả sự cố: \n\nThời gian: ${DateTime.now().toString()}\n\n',
+      },
+    );
+
+    if (await canLaunchUrl(emailLaunchUri)) {
+      await launchUrl(emailLaunchUri);
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Không thể mở ứng dụng email'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

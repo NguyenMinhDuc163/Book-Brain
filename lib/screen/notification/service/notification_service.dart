@@ -19,7 +19,7 @@ class NotificationService implements INotificationInterface {
     final DeleteAllNotiRequest request = DeleteAllNotiRequest(
       action: "delete_all",
     );
-    final BaseResponse<DeleteAllNotificaitonResponse> response = await apiServices.sendDeleteAllNotification(request);
+    final BaseResponse<DeleteAllNotificaitonResponse> response = await apiServices.sendAllNotification(request);
     if (response.code != null) {
       return true;
     }
@@ -32,13 +32,37 @@ class NotificationService implements INotificationInterface {
       action: "delete",
       notificationId: notificationId,
     );
-    final BaseResponse<DeleteNotificationResponse> response = await apiServices.sendDeleteNotification(request);
+    final BaseResponse<DeleteNotificationResponse> response = await apiServices.sendNotification(request);
     if (response.code != null) {
       return true;
     }
     return false;
   }
 
+  @override
+  Future<bool?> markReaAllNotification() async{
+    final DeleteAllNotiRequest request = DeleteAllNotiRequest(
+      action: "mark_all_read",
+    );
+    final BaseResponse<DeleteAllNotificaitonResponse> response = await apiServices.sendAllNotification(request);
+    if (response.code != null) {
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  Future<bool?> markReadNotification({required int notificationId}) async{
+    final DeleteNotificationRequest request = DeleteNotificationRequest(
+      action: "mark_read",
+      notificationId: notificationId,
+    );
+    final BaseResponse<DeleteNotificationResponse> response = await apiServices.sendNotification(request);
+    if (response.code != null) {
+      return true;
+    }
+    return false;
+  }
   @override
   Future<List<NotificationResponse>?> getListNotification({required int page, required int limit, required bool unreadOnly}) async{
     final BaseResponse<NotificationResponse> response = await apiServices
@@ -49,4 +73,6 @@ class NotificationService implements INotificationInterface {
     }
     return null;
   }
+
+
 }

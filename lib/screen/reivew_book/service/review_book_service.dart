@@ -2,6 +2,7 @@ import 'package:book_brain/screen/preview/service/preview_interface.dart';
 import 'package:book_brain/screen/reivew_book/service/review_book_interface.dart';
 import 'package:book_brain/service/api_service/api_service.dart';
 import 'package:book_brain/service/api_service/request/create_reivew_request.dart';
+import 'package:book_brain/service/api_service/request/delete_review_request.dart';
 import 'package:book_brain/service/api_service/response/all_review_response.dart';
 import 'package:book_brain/service/api_service/response/base_response.dart';
 import 'package:book_brain/service/api_service/response/chapters_response.dart';
@@ -66,5 +67,18 @@ class ReviewBookService implements IReviewBookInterface {
       return data[0];
     }
     return null;
+  }
+
+  @override
+  Future<bool> deleteReview({required int reviewId}) async{
+    final DeleteReview request = DeleteReview(
+      reviewId: reviewId,
+    );
+    final BaseResponse<CreateReviewResponse> response = await apiServices
+        .sendDeleteReview(request);
+    if (response.code != null) {
+      return true;
+    }
+    return false;
   }
 }

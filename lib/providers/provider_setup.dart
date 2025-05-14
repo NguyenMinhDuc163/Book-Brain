@@ -1,4 +1,5 @@
 import 'package:book_brain/screen/detail_book/provider/detail_book_notifier.dart';
+import 'package:book_brain/screen/edit_profile/provider/profile_notifier.dart';
 import 'package:book_brain/screen/favorites/provider/favorites_notifier.dart';
 import 'package:book_brain/screen/following_book/provider/subscription_notifier.dart';
 import 'package:book_brain/screen/history_reading/provider/history_notifier.dart';
@@ -29,6 +30,7 @@ class ProviderSetup {
       ChangeNotifierProvider(create: (_) => NotificationNotifier()),
       ChangeNotifierProvider(create: (_) => HistoryNotifier()),
       ChangeNotifierProvider(create: (_) => RankingNotifier()),
+      ChangeNotifierProvider(create: (_) => ProfileNotifier()),
       // Thêm các Provider khác ở đây
     ];
   }
