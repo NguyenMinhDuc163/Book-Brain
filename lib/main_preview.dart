@@ -65,7 +65,7 @@ class MyApp extends StatelessWidget {
           builder: DevicePreview.appBuilder,
           theme: ThemeData.light(),
           darkTheme: ThemeData.dark(),
-          title: 'Fire Guard',
+          title: 'Book Brain',
           localizationsDelegates: context.localizationDelegates,
           supportedLocales: context.supportedLocales,
           home: const LoginScreen(),

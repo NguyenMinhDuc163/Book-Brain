@@ -4,6 +4,7 @@ import 'package:book_brain/screen/reivew_book/service/review_book_service.dart';
 import 'package:book_brain/utils/core/common/toast.dart';
 import 'package:book_brain/utils/core/constants/color_constants.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
+import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
 import 'package:book_brain/utils/widget/base_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -32,6 +33,11 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
   String? _selectedText;
   Map<String, String> _notes =
       {}; // Lưu trữ ghi chú với key là vị trí bắt đầu của text
+
+  // Thêm key cho LocalStorage
+  static const String _fontSizeKey = 'book_font_size';
+  static const String _backgroundColorKey = 'book_background_color';
+  static const String _backgroundOpacityKey = 'book_background_opacity';
 
   Color _backgroundColor = ColorPalette.backgroundColor;
   double _backgroundOpacity = 1.0;
@@ -65,6 +71,9 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
       chapterNumber = widget.chapterId!;
     }
 
+    // Khôi phục cài đặt từ LocalStorage
+    _restoreSettings();
+
     Future.microtask(
       () => Provider.of<DetailBookNotifier>(
         context,
@@ -79,6 +88,39 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
         chapterId: widget.chapterId ?? 1,
       ),
     );
+  }
+
+  // Thêm phương thức khôi phục cài đặt
+  void _restoreSettings() {
+    final fontSize = LocalStorageHelper.getValue(_fontSizeKey);
+    if (fontSize != null) {
+      setState(() {
+        _fontSize = fontSize;
+      });
+    }
+
+    final backgroundColor = LocalStorageHelper.getValue(_backgroundColorKey);
+    if (backgroundColor != null) {
+      setState(() {
+        _backgroundColor = Color(backgroundColor);
+      });
+    }
+
+    final backgroundOpacity = LocalStorageHelper.getValue(
+      _backgroundOpacityKey,
+    );
+    if (backgroundOpacity != null) {
+      setState(() {
+        _backgroundOpacity = backgroundOpacity;
+      });
+    }
+  }
+
+  // Thêm phương thức lưu cài đặt
+  void _saveSettings() {
+    LocalStorageHelper.setValue(_fontSizeKey, _fontSize);
+    LocalStorageHelper.setValue(_backgroundColorKey, _backgroundColor.value);
+    LocalStorageHelper.setValue(_backgroundOpacityKey, _backgroundOpacity);
   }
 
   @override
@@ -707,6 +749,7 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
                       _backgroundColor = tempColor;
                       _backgroundOpacity = tempOpacity;
                     });
+                    _saveSettings(); // Lưu cài đặt khi áp dụng
                     Navigator.of(context).pop();
                   },
                 ),
@@ -773,6 +816,7 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
                 setState(() {
                   _fontSize = tempFontSize;
                 });
+                _saveSettings(); // Lưu cài đặt khi áp dụng
                 Navigator.of(context).pop();
               },
             ),
@@ -941,6 +985,13 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
           note.endPosition != null) {
         int startIndex = note.startPosition!;
         int endIndex = note.endPosition!;
+
+        // Kiểm tra tính hợp lệ của vị trí
+        if (startIndex < 0 ||
+            endIndex > text.length ||
+            startIndex >= endIndex) {
+          continue; // Bỏ qua ghi chú không hợp lệ
+        }
 
         // Thêm text trước ghi chú
         if (startIndex > currentIndex) {

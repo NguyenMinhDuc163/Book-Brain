@@ -212,7 +212,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         if (isSend) {
                           _saveCredentials(); // Lưu thông tin đăng nhập nếu đăng nhập thành công
-                          Navigator.of(context).pushNamed(MainApp.routeName);
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                            MainApp.routeName,
+                            (route) =>
+                                false, // Xóa tất cả các màn hình trước đó
+                          );
                         }
                       },
                     ),

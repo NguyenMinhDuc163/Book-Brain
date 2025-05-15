@@ -65,7 +65,7 @@ class MyApp extends StatelessWidget {
 
       builder: (context, child) {
         return MaterialApp(
-          title: 'Fire Guard',
+          title: 'Book Brain',
           localizationsDelegates: context.localizationDelegates,
           supportedLocales: context.supportedLocales,
           locale: context.locale,

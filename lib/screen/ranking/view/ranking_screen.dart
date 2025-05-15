@@ -38,16 +38,22 @@ class _RankingScreenState extends State<RankingScreen> {
       appBar: BaseAppbar(
         title: "Bảng xếp hạng",
         backgroundColor: ColorPalette.color6A5AE0,
+        isShowBack: false,
+        textColor: Colors.white,
       ),
       body: Stack(
         children: [
           Tabwidget(
             tabs: [
               TabModel(
-                title: Text("Tác giả", textAlign: TextAlign.center, maxLines: 2),
+                title: Text(
+                  "Tác giả",
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                ),
                 view: Padding(
                   padding: EdgeInsets.all(kDefaultPadding),
-                  child: RankingPodium(topAuthor: presenter.authRanking  ?? []),
+                  child: RankingPodium(topAuthor: presenter.authRanking ?? []),
                 ),
               ),
               TabModel(
@@ -60,7 +66,6 @@ class _RankingScreenState extends State<RankingScreen> {
             ],
           ),
           presenter.isLoading ? const LoadingWidget() : const SizedBox(),
-
         ],
       ),
     );
