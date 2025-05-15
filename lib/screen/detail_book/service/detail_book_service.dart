@@ -1,5 +1,6 @@
 import 'package:book_brain/screen/detail_book/service/detail_book_interface.dart';
 import 'package:book_brain/service/api_service/api_service.dart';
+import 'package:book_brain/service/api_service/request/delete_note_request.dart';
 import 'package:book_brain/service/api_service/request/save_note_request.dart';
 import 'package:book_brain/service/api_service/response/base_response.dart';
 import 'package:book_brain/service/api_service/response/note_response.dart';
@@ -30,6 +31,18 @@ class DetailBookService implements IDetailBookInterface {
       noteContent: noteContent,
     );
     final BaseResponse<NoteResponse> response = await apiServices.sentNoteBook(request);
+    if (response.code != null) {
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  Future<bool?> deleteNoteBook({required int noteId}) async{
+    final DeleteNoteRequest request = DeleteNoteRequest(
+      noteId: noteId
+    );
+    final BaseResponse<NoteResponse> response = await apiServices.deleteNote(request);
     if (response.code != null) {
       return true;
     }

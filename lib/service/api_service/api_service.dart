@@ -1,9 +1,10 @@
 import 'package:book_brain/service/api_service/BaseApiService.dart';
 import 'package:book_brain/service/api_service/request/RegisterRequest.dart';
-import 'package:book_brain/service/api_service/request/basse_request.dart';
+import 'package:book_brain/service/api_service/request/base_request.dart';
 import 'package:book_brain/service/api_service/request/change_password_request.dart';
 import 'package:book_brain/service/api_service/request/create_reivew_request.dart';
 import 'package:book_brain/service/api_service/request/delete_all_noti_request.dart';
+import 'package:book_brain/service/api_service/request/delete_note_request.dart';
 import 'package:book_brain/service/api_service/request/delete_notification_request.dart';
 import 'package:book_brain/service/api_service/request/favorites_request.dart';
 import 'package:book_brain/service/api_service/request/forgot_password_request.dart';
@@ -434,9 +435,16 @@ class ApiServices extends BaseApiService {
       fromJson: (json) => NoteResponse.fromJson(json),
     );
   }
+  Future<BaseResponse<NoteResponse>> deleteNote(DeleteNoteRequest request) async {
+    return await sendRequest<NoteResponse>(
+      UrlStatic.API_DELETE_NOTE,
+      method: 'POST',
+      data: request.toJson(),
+      fromJson: (json) => NoteResponse.fromJson(json),
+    );
+  }
 
-
-  Future<BaseResponse<BookInfoResponse>> getRecommentBook({
+  Future<BaseResponse<BookInfoResponse>> getRecommendBook({
     required int userId,
     required int limit,
   }) async {
@@ -444,7 +452,6 @@ class ApiServices extends BaseApiService {
 
     queryParams["user_id"] = userId;
     queryParams["limit"] = limit;
-    print("====> query $queryParams");
     return await sendRequest<BookInfoResponse>(
       UrlStatic.API_RECOMMENDATION_BOOK,
       method: 'GET',

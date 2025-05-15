@@ -1,7 +1,5 @@
 import 'package:book_brain/screen/history_reading/service/history_service.dart';
-import 'package:book_brain/screen/home/service/home_service.dart';
 import 'package:book_brain/screen/preview/service/preview_service.dart';
-import 'package:book_brain/service/api_service/response/book_info_response.dart';
 import 'package:book_brain/service/api_service/response/chapters_response.dart';
 import 'package:book_brain/service/api_service/response/detail_book_response.dart';
 import 'package:book_brain/service/api_service/response/note_response.dart';
@@ -63,6 +61,14 @@ class DetailBookNotifier extends BaseNotifier{
   Future<bool> saveNoteBook({required int bookId, required int chapterId, required int startPosition, required int endPosition, required String selectedText, required String noteContent}) async {
     return await execute(() async{
       bool? isSUCC =await detailBookService.saveNoteBook(bookId: bookId, chapterId: chapterId, startPosition: startPosition, endPosition: endPosition, selectedText: selectedText, noteContent: noteContent);
+      notifyListeners();
+      return isSUCC ?? false;
+    });
+  }
+
+  Future<bool> deleteNoteBook({required int noteId}) async {
+    return await execute(() async{
+      bool? isSUCC =await detailBookService.deleteNoteBook(noteId: noteId);
       notifyListeners();
       return isSUCC ?? false;
     });

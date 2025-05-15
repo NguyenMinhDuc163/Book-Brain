@@ -13,9 +13,10 @@ import '../../login/widget/app_bar_continer_widget.dart';
 import '../../preview/view/preview_screen.dart';
 
 class AllBookScreen extends StatefulWidget {
-  AllBookScreen({super.key, this.title});
+  AllBookScreen({super.key, this.title, required this.book});
   static const routeName = "/all_book_screen";
   String? title;
+  List<BookInfoResponse> book;
   @override
   State<AllBookScreen> createState() => _AllBookScreenState();
 }
@@ -37,7 +38,7 @@ class _AllBookScreenState extends State<AllBookScreen> {
               child: Column(
                 children: [
                   SizedBox(height: height_20),
-                  _buildHeader(title: "Danh sách sách ${widget.title ?? ""}"),
+                  _buildHeader(title: "${widget.title ?? ""}"),
                   SizedBox(height: 16),
 
                   Expanded(
@@ -48,7 +49,7 @@ class _AllBookScreenState extends State<AllBookScreen> {
                                 color: Color(0xFF6357CC),
                               ),
                             )
-                            : _buildBookContent(presenter.bookInfo),
+                            : _buildBookContent(widget.book),
                   ),
                 ],
               ),

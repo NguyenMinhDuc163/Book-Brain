@@ -32,7 +32,7 @@ class HomeService implements IHomeInterface {
 
   @override
   Future<List<BookInfoResponse>> getRecommendation({required int userID, required int limit}) async{
-    final BaseResponse<BookInfoResponse> response = await apiServices.getRecommentBook(
+    final BaseResponse<BookInfoResponse> response = await apiServices.getRecommendBook(
       userId: userID,
       limit: limit,
     );

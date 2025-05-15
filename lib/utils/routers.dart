@@ -37,7 +37,7 @@ final Map<String, WidgetBuilder> routes = {
   DetailBookScreen.routeName: (context) =>  DetailBookScreen(),
   ReviewBookScreen.routeName: (context) =>  ReviewBookScreen(),
   NotificationScreen.routeName: (context) => const NotificationScreen(),
-  AllBookScreen.routeName: (context) =>  AllBookScreen(),
+  AllBookScreen.routeName: (context) =>  AllBookScreen(book: [],),
 };
 
 MaterialPageRoute<dynamic>? generateRoutes(RouteSettings settings) {

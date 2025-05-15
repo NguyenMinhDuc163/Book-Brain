@@ -204,7 +204,7 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Thêm ghi chú"),
+          title: Text("Thêm ghi chú",),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,7 +247,7 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF6357CC),
               ),
-              child: Text("Lưu"),
+              child: Text("Lưu",  style: TextStyle(color: Colors.white)),
               onPressed: () async {
                 if (_selectedText != null) {
                   final presenter = Provider.of<DetailBookNotifier>(
@@ -310,12 +310,14 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
   void _showNoteContent(BuildContext context, String text) {
     final presenter = Provider.of<DetailBookNotifier>(context, listen: false);
     String? noteContent;
+    int? noteId;
 
     // Tìm ghi chú từ server
     final noteList = presenter.noteBook ?? [];
     for (var note in noteList) {
       if (note.selectedText == text) {
         noteContent = note.noteContent;
+        noteId = note.noteId;
         break;
       }
     }
@@ -362,6 +364,69 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
                 Navigator.of(context).pop();
               },
             ),
+            if (noteId !=
+                null) // Chỉ hiện nút xóa nếu có noteId (ghi chú từ server)
+              TextButton(
+                child: Text("Xóa", style: TextStyle(color: Colors.red)),
+                onPressed: () async {
+                  // Hiển thị dialog xác nhận xóa
+                  bool? confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text("Xác nhận xóa"),
+                        content: Text("Bạn có chắc chắn muốn xóa ghi chú này?"),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text("Hủy"),
+                            onPressed: () {
+                              Navigator.of(context).pop(false);
+                            },
+                          ),
+                          TextButton(
+                            child: Text(
+                              "Xóa",
+                              style: TextStyle(color: Colors.red),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop(true);
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+
+                  if (confirm == true && noteId != null) {
+                    // Thực hiện xóa ghi chú
+                    bool success = await presenter.deleteNoteBook(
+                      noteId: noteId,
+                    );
+                    if (success) {
+                      // Cập nhật lại danh sách ghi chú
+                      await presenter.getNoteBook(
+                        bookId: widget.bookId ?? 1,
+                        chapterId: chapterNumber,
+                      );
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Đã xóa ghi chú"),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                      Navigator.of(context).pop(); // Đóng dialog ghi chú
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Không thể xóa ghi chú"),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    }
+                  }
+                },
+              ),
           ],
         );
       },

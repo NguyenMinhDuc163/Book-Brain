@@ -6,6 +6,7 @@ class NoteResponse {
     required this.noteContent,
     required this.startPosition,
     required this.endPosition,
+    required this.noteId,
   });
 
   final int? bookId;
@@ -14,6 +15,7 @@ class NoteResponse {
   final String? noteContent;
   final int? startPosition;
   final int? endPosition;
+  final int? noteId;
 
   factory NoteResponse.fromJson(Map<String, dynamic> json){
     return NoteResponse(
@@ -23,6 +25,7 @@ class NoteResponse {
       noteContent: json["noteContent"],
       startPosition: json["startPosition"],
       endPosition: json["endPosition"],
+      noteId: json["noteId"],
     );
   }
 
@@ -33,10 +36,11 @@ class NoteResponse {
     "noteContent": noteContent,
     "startPosition": startPosition,
     "endPosition": endPosition,
+    "noteId": noteId,
   };
 
   @override
   String toString(){
-    return "$bookId, $chapterId, $selectedText, $noteContent, $startPosition, $endPosition, ";
+    return "$bookId, $chapterId, $selectedText, $noteContent, $startPosition, $endPosition, $noteId ";
   }
 }

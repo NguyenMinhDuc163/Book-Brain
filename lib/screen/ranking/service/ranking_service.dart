@@ -1,7 +1,7 @@
 import 'package:book_brain/screen/preview/service/preview_interface.dart';
 import 'package:book_brain/screen/ranking/service/ranking_interface.dart';
 import 'package:book_brain/service/api_service/api_service.dart';
-import 'package:book_brain/service/api_service/request/basse_request.dart';
+import 'package:book_brain/service/api_service/request/base_request.dart';
 import 'package:book_brain/service/api_service/response/author_ranking_response.dart';
 import 'package:book_brain/service/api_service/response/base_response.dart';
 import 'package:book_brain/service/api_service/response/book_ranking_response.dart';

@@ -23,7 +23,12 @@ class HistoryNotifier extends BaseNotifier {
 
   Future<bool> getCurrentHistory() async {
     return await execute(() async {
-      currentHistory = (await historyService.getHistory(limit: 10, page: 1, status: "reading"))!;
+      currentHistory =
+          (await historyService.getHistory(
+            limit: 10,
+            page: 1,
+            status: "reading",
+          ))!;
 
       notifyListeners();
       return true;
@@ -32,12 +37,15 @@ class HistoryNotifier extends BaseNotifier {
 
   Future<bool> getCompletedHistory() async {
     return await execute(() async {
-      completedHistory = (await historyService.getHistory(limit: 10, page: 1, status: "completed"))!;
+      completedHistory =
+          (await historyService.getHistory(
+            limit: 10,
+            page: 1,
+            status: "completed",
+          ))!;
 
       notifyListeners();
       return true;
     });
   }
-
-
 }

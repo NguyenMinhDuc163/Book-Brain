@@ -22,4 +22,5 @@ class UrlStatic {
   static const String API_CHANGE_PASSWORD = 'auth/change_password';
   static const String API_UPDATE_PROFILE = 'auth/update';
   static const String API_NOTE_BOOK = 'book_notes';
+  static const String API_DELETE_NOTE = 'book_notes/delete';
 }

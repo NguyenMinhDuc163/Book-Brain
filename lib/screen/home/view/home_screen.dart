@@ -238,7 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             MaterialPageRoute(
                               builder:
                                   (context) =>
-                                      AllBookScreen(title: 'Top thinh hành'),
+                                      AllBookScreen(title: 'Top thinh hành', book: presenter.trendingBook,),
                             ),
                           );
                         },
@@ -252,7 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             MaterialPageRoute(
                               builder:
                                   (context) =>
-                                      AllBookScreen(title: 'Dành cho bạn'),
+                                      AllBookScreen(title: 'Dành cho bạn', book: presenter.recommenlist,),
                             ),
                           );
                         },

@@ -18,4 +18,9 @@ abstract class IDetailBookInterface {
     required int bookId,
     required int chapterId,
   });
+
+
+  Future<bool?>deleteNoteBook({
+    required int noteId,
+  });
 }
