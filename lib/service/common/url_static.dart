@@ -3,6 +3,7 @@ class UrlStatic {
   static const String API_REGISTER = 'auth/register';
   static const String API_INFO_BOOK = 'books';
   static const String API_TRENDING_BOOK = 'books/trending';
+  static const String API_RECOMMENDATION_BOOK = 'recommendations';
   static const String API_SEARCH_BOOK = 'books/search';
   static const String API_DETAIL_BOOK = 'detailBook';
   static const String API_CHAPTERS_BOOK = 'books/chapters';

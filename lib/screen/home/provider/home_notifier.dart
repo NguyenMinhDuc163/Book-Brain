@@ -2,6 +2,7 @@ import 'package:book_brain/screen/home/service/home_service.dart';
 import 'package:book_brain/screen/notification/service/notification_service.dart';
 import 'package:book_brain/service/api_service/response/book_info_response.dart';
 import 'package:book_brain/service/api_service/response/notification_response.dart';
+import 'package:book_brain/service/api_service/response/recoment_response.dart';
 import 'package:book_brain/utils/core/base/base_notifier.dart';
 import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ class HomeNotifier extends BaseNotifier {
   List<BookInfoResponse> bookInfo = [];
   List<BookInfoResponse> trendingBook = [];
   List<NotificationResponse> notifications = [];
+  List<BookInfoResponse> recommenlist = [];
   int unreadNotificationCount = 0;
   String? userName;
   String? email;
@@ -23,6 +25,7 @@ class HomeNotifier extends BaseNotifier {
         getInfoBook(),
         getTrendingBook(),
         getUnreadNotificationCount(),
+        getRecommentBook(),
         loadUserInfo(),
       ]);
     });
@@ -72,6 +75,16 @@ class HomeNotifier extends BaseNotifier {
   Future<bool> getTrendingBook() async {
     return await execute(() async {
       trendingBook = await homeService.getBookTrending();
+      notifyListeners();
+
+      return true;
+    });
+  }
+
+  Future<bool> getRecommentBook() async {
+    return await execute(() async {
+      int userID = LocalStorageHelper.getValue("userId");
+      recommenlist = await homeService.getRecommendation(userID: userID, limit: 10);
       notifyListeners();
 
       return true;

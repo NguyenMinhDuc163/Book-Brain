@@ -246,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       HorizontalBookList(
                         title: 'Dành cho bạn',
-                        books: presenter.bookInfo,
+                        books: presenter.recommenlist,
                         onSeeAllPressed: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(

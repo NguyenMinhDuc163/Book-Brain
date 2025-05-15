@@ -30,6 +30,7 @@ import 'package:book_brain/service/api_service/response/forgot_password_response
 import 'package:book_brain/service/api_service/response/history_response.dart';
 import 'package:book_brain/service/api_service/response/login_response.dart';
 import 'package:book_brain/service/api_service/response/notification_response.dart';
+import 'package:book_brain/service/api_service/response/recoment_response.dart';
 import 'package:book_brain/service/api_service/response/review_stats_response.dart';
 import 'package:book_brain/service/api_service/response/search_book_response.dart';
 import 'package:book_brain/service/api_service/response/subscriptions_response.dart';
@@ -434,4 +435,21 @@ class ApiServices extends BaseApiService {
     );
   }
 
+
+  Future<BaseResponse<BookInfoResponse>> getRecommentBook({
+    required int userId,
+    required int limit,
+  }) async {
+    final queryParams = <String, dynamic>{};
+
+    queryParams["user_id"] = userId;
+    queryParams["limit"] = limit;
+    print("====> query $queryParams");
+    return await sendRequest<BookInfoResponse>(
+      UrlStatic.API_RECOMMENDATION_BOOK,
+      method: 'GET',
+      data: queryParams,
+      fromJson: (json) => BookInfoResponse.fromJson(json),
+    );
+  }
 }

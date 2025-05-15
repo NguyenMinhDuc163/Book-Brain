@@ -2,6 +2,7 @@ import 'package:book_brain/screen/home/service/home_interface.dart';
 import 'package:book_brain/service/api_service/api_service.dart';
 import 'package:book_brain/service/api_service/response/base_response.dart';
 import 'package:book_brain/service/api_service/response/book_info_response.dart';
+import 'package:book_brain/service/api_service/response/recoment_response.dart';
 
 class HomeService implements IHomeInterface {
   final ApiServices apiServices = ApiServices();
@@ -21,6 +22,19 @@ class HomeService implements IHomeInterface {
   @override
   Future<List<BookInfoResponse>> getBookTrending() async {
     final BaseResponse<BookInfoResponse> response = await apiServices.getTrending(
+    );
+    if (response.code != null){
+      List<BookInfoResponse> data = response.data!;
+      return data;
+    }
+    return [];
+  }
+
+  @override
+  Future<List<BookInfoResponse>> getRecommendation({required int userID, required int limit}) async{
+    final BaseResponse<BookInfoResponse> response = await apiServices.getRecommentBook(
+      userId: userID,
+      limit: limit,
     );
     if (response.code != null){
       List<BookInfoResponse> data = response.data!;
