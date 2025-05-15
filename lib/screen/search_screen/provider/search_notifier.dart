@@ -40,21 +40,31 @@ class SearchNotifier extends BaseNotifier {
   }
 
   Future<bool> loadMore() async {
-    if (!hasMore || isLoading) return false;
+    print("hasMore: $hasMore, isLoading: $isLoading");
+    if (!hasMore || isLoading) {
+      print("Không thể load more vì hasMore: $hasMore, isLoading: $isLoading");
+      return false;
+    }
 
     return await execute(() async {
       currentLimit += 10;
+      print("Đang load more với limit: $currentLimit");
       final newBooks =
           (await searchService.searchBook(
             keyword: currentKeyword,
             limit: currentLimit,
           ))!;
 
+      print(
+        "Số sách mới: ${newBooks.length}, số sách cũ: ${searchBookResponse.length}",
+      );
       if (newBooks.length <= searchBookResponse.length) {
         hasMore = false;
+        print("Không còn sách để load more");
       } else {
         searchBookResponse = newBooks;
         _sortBooks();
+        print("Đã load thêm sách thành công");
       }
 
       notifyListeners();

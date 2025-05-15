@@ -8,6 +8,7 @@ import 'package:book_brain/service/api_service/request/delete_notification_reque
 import 'package:book_brain/service/api_service/request/favorites_request.dart';
 import 'package:book_brain/service/api_service/request/forgot_password_request.dart';
 import 'package:book_brain/service/api_service/request/login_request.dart';
+import 'package:book_brain/service/api_service/request/save_note_request.dart';
 import 'package:book_brain/service/api_service/request/subscriptions_request.dart';
 import 'package:book_brain/service/api_service/request/update_history_request.dart';
 import 'package:book_brain/service/api_service/request/update_profile_request.dart';
@@ -39,6 +40,7 @@ import 'package:book_brain/service/common/url_static.dart';
 
 import 'request/delete_review_request.dart';
 import 'response/RegisterResponse.dart';
+import 'response/note_response.dart';
 
 class ApiServices extends BaseApiService {
   // api login
@@ -404,4 +406,32 @@ class ApiServices extends BaseApiService {
       fromJson: (json) => UpdateProfileResponse.fromJson(json),
     );
   }
+
+  Future<BaseResponse<NoteResponse>> sentNoteBook(SaveNoteRequest request) async {
+    return await sendRequest<NoteResponse>(
+      UrlStatic.API_NOTE_BOOK,
+      method: 'POST',
+      data: request.toJson(),
+      fromJson: (json) => NoteResponse.fromJson(json),
+    );
+  }
+
+
+  Future<BaseResponse<NoteResponse>> getNoteBook({
+    required int bookId,
+    required int chapterId,
+  }) async {
+    final queryParams = <String, dynamic>{};
+
+    queryParams["bookId"] = bookId;
+    queryParams["chapterId"] = chapterId;
+
+    return await sendRequest<NoteResponse>(
+      UrlStatic.API_NOTE_BOOK,
+      method: 'GET',
+      data: queryParams,
+      fromJson: (json) => NoteResponse.fromJson(json),
+    );
+  }
+
 }

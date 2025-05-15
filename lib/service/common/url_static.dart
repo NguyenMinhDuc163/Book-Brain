@@ -1,4 +1,4 @@
-class UrlStatic{
+class UrlStatic {
   static const String API_LOGIN = 'auth/login';
   static const String API_REGISTER = 'auth/register';
   static const String API_INFO_BOOK = 'books';
@@ -20,4 +20,5 @@ class UrlStatic{
   static const String API_BOOK_RANKING = 'rankings/books';
   static const String API_CHANGE_PASSWORD = 'auth/change_password';
   static const String API_UPDATE_PROFILE = 'auth/update';
+  static const String API_NOTE_BOOK = 'book_notes';
 }

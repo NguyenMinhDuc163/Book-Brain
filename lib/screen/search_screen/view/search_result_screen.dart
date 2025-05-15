@@ -59,8 +59,10 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
+      print("Scroll đến vị trí load more");
       final presenter = Provider.of<SearchNotifier>(context, listen: false);
       if (presenter.hasMore && !presenter.isLoading) {
+        print("Bắt đầu load more");
         presenter.loadMore();
       }
     }
@@ -196,36 +198,55 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                       ),
                     )
                     : Expanded(
-                      child:
-                          _isGridView
-                              ? BooksGridView(
-                                books: presenter.searchBookResponse,
-                                onTap: (book) {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder:
-                                          (context) => PreviewScreen(
-                                            bookId: book.bookId,
-                                          ),
-                                    ),
-                                  );
-                                },
-                                scrollController: _scrollController,
-                              )
-                              : BooksListView(
-                                books: presenter.searchBookResponse,
-                                onTap: (book) {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder:
-                                          (context) => PreviewScreen(
-                                            bookId: book.bookId,
-                                          ),
-                                    ),
-                                  );
-                                },
-                                scrollController: _scrollController,
-                              ),
+                      child: NotificationListener<ScrollNotification>(
+                        onNotification: (ScrollNotification scrollInfo) {
+                          if (scrollInfo is ScrollEndNotification) {
+                            if (scrollInfo.metrics.pixels >=
+                                scrollInfo.metrics.maxScrollExtent - 200) {
+                              print(
+                                "Scroll đến vị trí load more từ NotificationListener",
+                              );
+                              if (presenter.hasMore && !presenter.isLoading) {
+                                print(
+                                  "Bắt đầu load more từ NotificationListener",
+                                );
+                                presenter.loadMore();
+                              }
+                            }
+                          }
+                          return true;
+                        },
+                        child:
+                            _isGridView
+                                ? BooksGridView(
+                                  books: presenter.searchBookResponse,
+                                  onTap: (book) {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) => PreviewScreen(
+                                              bookId: book.bookId,
+                                            ),
+                                      ),
+                                    );
+                                  },
+                                  scrollController: _scrollController,
+                                )
+                                : BooksListView(
+                                  books: presenter.searchBookResponse,
+                                  onTap: (book) {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) => PreviewScreen(
+                                              bookId: book.bookId,
+                                            ),
+                                      ),
+                                    );
+                                  },
+                                  scrollController: _scrollController,
+                                ),
+                      ),
                     ),
                 if (presenter.isLoading &&
                     presenter.searchBookResponse.isNotEmpty)

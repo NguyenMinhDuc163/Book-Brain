@@ -39,6 +39,7 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     final presenter = Provider.of<HistoryNotifier>(context);
@@ -53,7 +54,7 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
               child: Row(
                 children: List.generate(
                   _tabTitles.length,
-                      (index) => Expanded(
+                  (index) => Expanded(
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
@@ -64,19 +65,21 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
                         margin: EdgeInsets.symmetric(horizontal: 4),
                         padding: EdgeInsets.all(height_5),
                         decoration: BoxDecoration(
-                          color: _selectedIndex == index
-                              ? Colors.white
-                              : Colors.white.withOpacity(0.2),
+                          color:
+                              _selectedIndex == index
+                                  ? Colors.white
+                                  : Colors.white.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(24),
-                          boxShadow: _selectedIndex == index
-                              ? [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 4,
-                              offset: Offset(0, 2),
-                            )
-                          ]
-                              : [],
+                          boxShadow:
+                              _selectedIndex == index
+                                  ? [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 4,
+                                      offset: Offset(0, 2),
+                                    ),
+                                  ]
+                                  : [],
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -84,9 +87,10 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
                             Icon(
                               _tabIcons[index],
                               size: 18,
-                              color: _selectedIndex == index
-                                  ? Color(0xFF6A5AE0)
-                                  : Colors.white,
+                              color:
+                                  _selectedIndex == index
+                                      ? Color(0xFF6A5AE0)
+                                      : Colors.white,
                             ),
                             SizedBox(width: 6),
                             Text(
@@ -94,9 +98,10 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w500,
-                                color: _selectedIndex == index
-                                    ? Color(0xFF6A5AE0)
-                                    : Colors.white,
+                                color:
+                                    _selectedIndex == index
+                                        ? Color(0xFF6A5AE0)
+                                        : Colors.white,
                               ),
                             ),
                           ],
@@ -131,7 +136,6 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
             ),
           ),
           presenter.isLoading ? const LoadingWidget() : const SizedBox(),
-
         ],
       ),
     );
@@ -166,46 +170,46 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
         SizedBox(height: 4),
         Text(
           description,
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[600],
-          ),
+          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
         ),
       ],
     );
   }
 
-
   Widget _buildAllReading(List<HistoryResponse> allHistory) {
-
     return ListView.builder(
       itemCount: allHistory.length,
       padding: EdgeInsets.only(top: height_12),
       itemBuilder: (context, index) {
         return InkWell(
-          onTap: (){
+          onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder:
                     (context) => DetailBookScreen(
-                  bookId:  allHistory[index].bookId ?? 1,
-                  chapterId:  allHistory[index].currentChapterId,
-                ),
+                      bookId: allHistory[index].bookId ?? 1,
+                      chapterId: allHistory[index].currentChapterId,
+                    ),
               ),
             );
           },
           child: _buildReadingBookItem(
             title: allHistory[index].title ?? '',
             author: allHistory[index].authorName ?? '',
-            progress: Utils.convertCompletionRate( allHistory[index].completionRate ?? '5'),
-            lastRead: Utils.convertToFormattedDate(allHistory[index].lastReadAt.toString()),
-            coverAsset:allHistory[index].imageUrl ??  AssetHelper.defaultImage,
+            progress: Utils.convertCompletionRate(
+              allHistory[index].completionRate ?? '5',
+            ),
+            lastRead: Utils.convertToFormattedDate(
+              allHistory[index].lastReadAt.toString(),
+            ),
+            coverAsset: allHistory[index].imageUrl ?? AssetHelper.defaultImage,
+            bookId: allHistory[index].bookId ?? 1,
+            chapterId: allHistory[index].currentChapterId ?? 1,
           ),
         );
       },
     );
   }
-
 
   Widget _buildCurrentlyReading(List<HistoryResponse> currentHistory) {
     return GridView.builder(
@@ -219,26 +223,33 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
       itemCount: currentHistory.length,
       itemBuilder: (context, index) {
         return InkWell(
-          onTap: (){
-            MaterialPageRoute(
-              builder:
-                  (context) => DetailBookScreen(
-                bookId:  currentHistory[index].bookId ?? 1,
-                chapterId:  currentHistory[index].currentChapterId,
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder:
+                    (context) => DetailBookScreen(
+                      bookId: currentHistory[index].bookId ?? 1,
+                      chapterId: currentHistory[index].currentChapterId,
+                    ),
               ),
             );
           },
           child: _buildBookCard(
-            title:  currentHistory[index].title ?? '',
-            author:  currentHistory[index].authorName ?? '',
-            coverAsset: currentHistory[index].imageUrl ?? AssetHelper.defaultImage,
-            addedDate: Utils.convertToFormattedDate(currentHistory[index].lastReadAt.toString()),
+            title: currentHistory[index].title ?? '',
+            author: currentHistory[index].authorName ?? '',
+            coverAsset:
+                currentHistory[index].imageUrl ?? AssetHelper.defaultImage,
+            addedDate: Utils.convertToFormattedDate(
+              currentHistory[index].lastReadAt.toString(),
+            ),
+            progress: Utils.convertCompletionRate(
+              currentHistory[index].completionRate ?? '0',
+            ),
           ),
         );
       },
     );
   }
-
 
   Widget _buildFinishedReading(List<HistoryResponse> completedHistory) {
     return ListView.builder(
@@ -246,27 +257,35 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
       padding: EdgeInsets.only(top: height_12),
       itemBuilder: (context, index) {
         return InkWell(
-          onTap: (){
-            MaterialPageRoute(
-              builder:
-                  (context) => DetailBookScreen(
-                bookId:  completedHistory[index].bookId ?? 1,
-                chapterId:  completedHistory[index].currentChapterId,
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder:
+                    (context) => DetailBookScreen(
+                      bookId: completedHistory[index].bookId ?? 1,
+                      chapterId: completedHistory[index].currentChapterId,
+                    ),
               ),
             );
-            },
+          },
           child: _buildFinishedBookItem(
-            title:  completedHistory[index].title ?? '' ,
-            author:  completedHistory[index].authorName ?? '',
-            rating: Utils.convertCompletionRate( completedHistory[index].completionRate ?? '5').toDouble(),
-            finishedDate: Utils.convertToFormattedDate(completedHistory[index].finishDate ?? ''),
-            coverAsset: completedHistory[index].imageUrl ?? AssetHelper.harryPotterCover,
+            title: completedHistory[index].title ?? '',
+            author: completedHistory[index].authorName ?? '',
+            rating:
+                Utils.convertCompletionRate(
+                  completedHistory[index].completionRate ?? '5',
+                ).toDouble(),
+            finishedDate: Utils.convertToFormattedDate(
+              completedHistory[index].finishDate ?? '',
+            ),
+            coverAsset:
+                completedHistory[index].imageUrl ??
+                AssetHelper.harryPotterCover,
           ),
         );
       },
     );
   }
-
 
   Widget _buildReadingBookItem({
     required String title,
@@ -274,6 +293,8 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
     required int progress,
     required String lastRead,
     required String coverAsset,
+    required int bookId,
+    required int chapterId,
   }) {
     return Container(
       margin: EdgeInsets.only(bottom: 16),
@@ -291,10 +312,9 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
       ),
       child: Row(
         children: [
-
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child:  NetworkImageHandler(
+            child: NetworkImageHandler(
               imageUrl: coverAsset, // URL hình ảnh của bạn
               width: 70,
               height: 110,
@@ -308,20 +328,14 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 SizedBox(height: 4),
                 Text(
                   author,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
                 SizedBox(height: 8),
 
@@ -351,7 +365,9 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
                     LinearProgressIndicator(
                       value: progress / 100,
                       backgroundColor: Colors.grey[200],
-                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6A5AE0)),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Color(0xFF6A5AE0),
+                      ),
                       minHeight: 6,
                       borderRadius: BorderRadius.circular(3),
                     ),
@@ -366,25 +382,41 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
                       onPressed: () {},
                       style: TextButton.styleFrom(
                         minimumSize: Size.zero,
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            "Tiếp tục đọc",
-                            style: TextStyle(
-                              color: Color(0xFF6A5AE0),
-                              fontWeight: FontWeight.w500,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => DetailBookScreen(
+                                    bookId: bookId,
+                                    chapterId: chapterId,
+                                  ),
                             ),
-                          ),
-                          SizedBox(width: 4),
-                          Icon(
-                            Icons.arrow_forward,
-                            size: 14,
-                            color: Color(0xFF6A5AE0),
-                          ),
-                        ],
+                          );
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "Tiếp tục đọc",
+                              style: TextStyle(
+                                color: Color(0xFF6A5AE0),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            SizedBox(width: 4),
+                            Icon(
+                              Icons.arrow_forward,
+                              size: 14,
+                              color: Color(0xFF6A5AE0),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -397,12 +429,12 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
     );
   }
 
-
   Widget _buildBookCard({
     required String title,
     required String author,
     required String coverAsset,
     required String addedDate,
+    required int progress,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -419,14 +451,13 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           ClipRRect(
             borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
             child: NetworkImageHandler(
               imageUrl: coverAsset,
               width: double.infinity,
               height: 140,
-              fit:  BoxFit.fitWidth,
+              fit: BoxFit.fitWidth,
             ),
           ),
 
@@ -437,20 +468,14 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 SizedBox(height: 2),
                 Text(
                   author,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[700],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[700]),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -460,15 +485,37 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
                   children: [
                     Text(
                       "Thêm: $addedDate",
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey[500],
-                      ),
+                      style: TextStyle(fontSize: 10, color: Colors.grey[500]),
                     ),
-                    Icon(
-                      Icons.bookmark,
-                      size: 16,
-                      color: Color(0xFF6A5AE0),
+                    Icon(Icons.bookmark, size: 16, color: Color(0xFF6A5AE0)),
+                  ],
+                ),
+                SizedBox(height: 8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Tiến độ: $progress%",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF6A5AE0),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 4),
+                    LinearProgressIndicator(
+                      value: progress / 100,
+                      backgroundColor: Colors.grey[200],
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Color(0xFF6A5AE0),
+                      ),
+                      minHeight: 4,
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ],
                 ),
@@ -479,7 +526,6 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
       ),
     );
   }
-
 
   Widget _buildFinishedBookItem({
     required String title,
@@ -503,8 +549,8 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
         ],
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: NetworkImageHandler(
@@ -513,30 +559,23 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
               height: 100,
               fit: BoxFit.cover,
             ),
-
           ),
-          SizedBox(width: 16),
 
+          SizedBox(width: width_30),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 SizedBox(height: 4),
                 Text(
                   author,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
                 SizedBox(height: 6),
 
@@ -545,7 +584,6 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
                   children: [
                     Row(
                       children: [
-
                         Row(
                           children: List.generate(5, (index) {
                             return Icon(
@@ -561,7 +599,7 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
                         ),
                         SizedBox(width: 4),
                         Text(
-                          rating.toString(),
+                          '${rating.toString().split('.')[0]} %',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -569,17 +607,13 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
                         ),
                       ],
                     ),
-                    Text(
-                      "Đọc xong: $finishedDate",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
-                    ),
                   ],
                 ),
                 SizedBox(height: 8),
-
+                Text(
+                  "Đọc xong: $finishedDate",
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                ),
               ],
             ),
           ),

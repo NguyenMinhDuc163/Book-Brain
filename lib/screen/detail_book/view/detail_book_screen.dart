@@ -29,10 +29,12 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
   bool _isBookmarked = false;
   int chapterNumber = 1;
   final TextEditingController noteController = TextEditingController();
+  String? _selectedText;
+  Map<String, String> _notes =
+      {}; // Lưu trữ ghi chú với key là vị trí bắt đầu của text
 
   Color _backgroundColor = ColorPalette.backgroundColor;
   double _backgroundOpacity = 1.0;
-
 
   Widget _buttonWidget(String text, Function()? onTap) {
     return InkWell(
@@ -69,9 +71,29 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
         listen: false,
       ).getData(bookId: widget.bookId ?? 1, chapterId: widget.chapterId ?? 1),
     );
+
+    // Lấy danh sách ghi chú khi màn hình được khởi tạo
+    Future.microtask(
+      () => Provider.of<DetailBookNotifier>(context, listen: false).getNoteBook(
+        bookId: widget.bookId ?? 1,
+        chapterId: widget.chapterId ?? 1,
+      ),
+    );
   }
 
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
+  void _scrollToTop() {
+    _scrollController.animateTo(
+      0,
+      duration: Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+    );
+  }
 
   void _updateChapter(int newChapterNumber, int maxChapterNumber) {
     if (newChapterNumber < 1) {
@@ -102,6 +124,205 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
           ).bookDetail?.bookId ??
           1,
       chapterId: newChapterNumber,
+    );
+  }
+
+  void _showNoteMenu(BuildContext context, Offset tapPosition) {
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromPoints(tapPosition, tapPosition),
+      Offset.zero & overlay.size,
+    );
+
+    showMenu<String>(
+      context: context,
+      position: position,
+      items: [
+        PopupMenuItem<String>(
+          value: 'note',
+          child: Row(
+            children: [
+              Icon(Icons.note_add, color: Color(0xFF6357CC)),
+              SizedBox(width: 8),
+              Text('Thêm ghi chú'),
+            ],
+          ),
+        ),
+      ],
+    ).then((value) {
+      if (value == 'note') {
+        _showNoteDialog(context, _selectedText ?? '');
+      }
+    });
+  }
+
+  void _showNoteDialog(BuildContext context, String selectedText) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Thêm ghi chú"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  selectedText,
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    color: Colors.grey[700],
+                  ),
+                ),
+              ),
+              SizedBox(height: 16),
+              TextField(
+                controller: noteController,
+                decoration: InputDecoration(
+                  hintText: "Nhập ghi chú của bạn...",
+                  border: OutlineInputBorder(),
+                  filled: true,
+                  fillColor: Colors.grey[100],
+                ),
+                maxLines: 5,
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Hủy"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF6357CC),
+              ),
+              child: Text("Lưu"),
+              onPressed: () async {
+                if (_selectedText != null) {
+                  final presenter = Provider.of<DetailBookNotifier>(
+                    context,
+                    listen: false,
+                  );
+                  bool success = await presenter.saveNoteBook(
+                    bookId: widget.bookId ?? 1,
+                    chapterId: chapterNumber,
+                    startPosition:
+                        presenter.bookDetail?.currentChapter?.content?.indexOf(
+                          _selectedText!,
+                        ) ??
+                        0,
+                    endPosition:
+                        (presenter.bookDetail?.currentChapter?.content?.indexOf(
+                              _selectedText!,
+                            ) ??
+                            0) +
+                        _selectedText!.length,
+                    selectedText: _selectedText!,
+                    noteContent: noteController.text,
+                  );
+
+                  if (success) {
+                    // Cập nhật lại danh sách ghi chú từ server
+                    await presenter.getNoteBook(
+                      bookId: widget.bookId ?? 1,
+                      chapterId: chapterNumber,
+                    );
+
+                    setState(() {
+                      _notes[_selectedText!] = noteController.text;
+                    });
+                    noteController.clear();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Đã lưu ghi chú"),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Không thể lưu ghi chú"),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  }
+                }
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showNoteContent(BuildContext context, String text) {
+    final presenter = Provider.of<DetailBookNotifier>(context, listen: false);
+    String? noteContent;
+
+    // Tìm ghi chú từ server
+    final noteList = presenter.noteBook ?? [];
+    for (var note in noteList) {
+      if (note.selectedText == text) {
+        noteContent = note.noteContent;
+        break;
+      }
+    }
+
+    // Nếu không tìm thấy từ server, tìm trong ghi chú local
+    if (noteContent == null) {
+      noteContent = _notes[text];
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Ghi chú"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  text,
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    color: Colors.grey[700],
+                  ),
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                noteContent ?? 'Chưa có ghi chú',
+                style: TextStyle(fontSize: 16),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Đóng"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -139,7 +360,6 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
 
         FocusScope.of(context).unfocus();
       },
-
       behavior: HitTestBehavior.translucent,
       child: Scaffold(
         backgroundColor: adjustedBackgroundColor,
@@ -147,29 +367,45 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
           title: presenter.bookDetail?.title ?? "",
           backgroundColor: adjustedBackgroundColor,
           textColor: Colors.black,
-          onBack: (){
-            presenter.setHistoryBook(note: noteController.text, chapNumber: chapterNumber);
-            Navigator.of(context).pop();
+          onBack: () {
+            presenter.setHistoryBook(
+              note: noteController.text,
+              chapNumber: chapterNumber,
+            );
           },
-          onHomeTap: (){
-            presenter.setHistoryBook(note: noteController.text, chapNumber: chapterNumber);
-            Navigator.pushNamedAndRemoveUntil(context, MainApp.routeName, (route) => false);
-
+          onHomeTap: () {
+            presenter.setHistoryBook(
+              note: noteController.text,
+              chapNumber: chapterNumber,
+            );
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              MainApp.routeName,
+              (route) => false,
+            );
           },
         ),
-
         body: Stack(
           children: [
             Column(
               children: [
-                Container(
-                  padding: EdgeInsets.all(kDefaultPadding),
-                  child: Text(
-                    "${presenter.bookDetail?.currentChapter?.title}",
-                    style: TextStyle(fontSize: fontSize_15sp, color: colorRed),
+                InkWell(
+                  onTap: _scrollToTop,
+                  child: Container(
+                    padding: EdgeInsets.all(kDefaultPadding),
+                    child: Column(
+                      children: [
+                        Text(
+                          "${presenter.bookDetail?.currentChapter?.title}",
+                          style: TextStyle(
+                            fontSize: fontSize_15sp,
+                            color: colorRed,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-
                 Expanded(
                   child: RawScrollbar(
                     thumbColor: Colors.grey.withOpacity(0.5),
@@ -184,9 +420,51 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            presenter.bookDetail?.currentChapter?.content ?? '',
+                          SelectableText.rich(
+                            TextSpan(
+                              children: _buildTextWithNotes(
+                                presenter.bookDetail?.currentChapter?.content ??
+                                    '',
+                              ),
+                            ),
                             style: TextStyle(fontSize: _fontSize, height: 1.5),
+                            toolbarOptions: ToolbarOptions(
+                              copy: true,
+                              selectAll: true,
+                            ),
+                            onSelectionChanged: (selection, cause) {
+                              if (selection != null && selection.isValid) {
+                                final text =
+                                    presenter
+                                        .bookDetail
+                                        ?.currentChapter
+                                        ?.content ??
+                                    '';
+                                if (selection.start >= 0 &&
+                                    selection.end <= text.length &&
+                                    selection.start <= selection.end) {
+                                  _selectedText = text.substring(
+                                    selection.start,
+                                    selection.end,
+                                  );
+                                  if (cause ==
+                                      SelectionChangedCause.longPress) {
+                                    final RenderBox box =
+                                        context.findRenderObject() as RenderBox;
+                                    final Offset position = box.localToGlobal(
+                                      Offset(
+                                        selection.baseOffset.toDouble(),
+                                        selection.extentOffset.toDouble(),
+                                      ),
+                                    );
+                                    _showNoteMenu(context, position);
+                                  }
+                                }
+                              } else {
+                                // Reset selection when invalid
+                                _selectedText = null;
+                              }
+                            },
                           ),
 
                           SizedBox(height: height_20),
@@ -205,8 +483,10 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
                                   int newChapterNumber =
                                       int.tryParse(match.group(1) ?? "") ?? 1;
 
-                                  _updateChapter(newChapterNumber,
-                                      presenter.bookDetail?.chapters.length ?? 1);
+                                  _updateChapter(
+                                    newChapterNumber,
+                                    presenter.bookDetail?.chapters.length ?? 1,
+                                  );
                                 }
                               });
                             },
@@ -219,14 +499,18 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
                             children: [
                               _buttonWidget(
                                 "Chương trước",
-                                () => _updateChapter(chapterNumber - 1,
-                                    presenter.bookDetail?.chapters.length ?? 1),
+                                () => _updateChapter(
+                                  chapterNumber - 1,
+                                  presenter.bookDetail?.chapters.length ?? 1,
+                                ),
                               ),
                               _buttonWidget(
                                 "Chương sau",
-                                () => _updateChapter(chapterNumber + 1,
-                                    presenter.bookDetail?.chapters.length ?? 1),),
-
+                                () => _updateChapter(
+                                  chapterNumber + 1,
+                                  presenter.bookDetail?.chapters.length ?? 1,
+                                ),
+                              ),
                             ],
                           ),
 
@@ -247,46 +531,11 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
           children: [
             if (_isFabExpanded) ...[
               FloatingActionButton(
-                heroTag: "bookmark",
-                mini: true,
-                backgroundColor: _isBookmarked ? Colors.amber : Colors.white,
-                onPressed: () {
-                  setState(() {
-                    _isBookmarked = !_isBookmarked;
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        _isBookmarked ? "Đã thêm bookmark" : "Đã xóa bookmark",
-                      ),
-                      duration: Duration(seconds: 1),
-                    ),
-                  );
-                },
-                child: Icon(
-                  _isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                  color: _isBookmarked ? Colors.white : Colors.amber,
-                ),
-              ),
-              SizedBox(height: 10),
-
-              FloatingActionButton(
-                heroTag: "background",
-                mini: true,
-                backgroundColor: Colors.white,
-                onPressed: () {
-                  _showBackgroundColorDialog(context);
-                },
-                child: Icon(Icons.color_lens, color: Colors.teal),
-              ),
-              SizedBox(height: 10),
-
-              FloatingActionButton(
                 heroTag: "note",
                 mini: true,
                 backgroundColor: Colors.white,
                 onPressed: () {
-                  _showNoteDialog(context);
+                  _showNoteDialog(context, _selectedText ?? '');
                 },
                 child: Icon(Icons.note_add, color: Colors.blue),
               ),
@@ -306,7 +555,16 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
                 child: Icon(Icons.star_border, color: Colors.amber),
               ),
               SizedBox(height: 10),
-
+              FloatingActionButton(
+                heroTag: "background",
+                mini: true,
+                backgroundColor: Colors.white,
+                onPressed: () {
+                  _showBackgroundColorDialog(context);
+                },
+                child: Icon(Icons.color_lens, color: Colors.teal),
+              ),
+              SizedBox(height: 10),
               FloatingActionButton(
                 heroTag: "font",
                 mini: true,
@@ -524,57 +782,6 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
     );
   }
 
-  void _showNoteDialog(BuildContext context) {
-    // final TextEditingController noteController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Thêm ghi chú"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: noteController,
-                decoration: InputDecoration(
-                  hintText: "Nhập ghi chú của bạn...",
-                  border: OutlineInputBorder(),
-                  filled: true,
-                  fillColor: Colors.grey[100],
-                ),
-                maxLines: 5,
-              ),
-            ],
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text("Hủy"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF6357CC),
-              ),
-              child: Text("Lưu"),
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text("Đã lưu ghi chú"),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   void _showRatingDialog({
     required BuildContext context,
     required String title,
@@ -712,5 +919,69 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
     if (rating == 4) return "Tốt";
     if (rating == 5) return "Rất tuyệt vời";
     return "";
+  }
+
+  List<TextSpan> _buildTextWithNotes(String text) {
+    List<TextSpan> spans = [];
+    int currentIndex = 0;
+
+    // Lấy danh sách ghi chú từ notifier
+    final presenter = Provider.of<DetailBookNotifier>(context, listen: false);
+    final noteList = presenter.noteBook ?? [];
+
+    // Sắp xếp ghi chú theo vị trí bắt đầu
+    noteList.sort(
+      (a, b) => (a.startPosition ?? 0).compareTo(b.startPosition ?? 0),
+    );
+
+    // Xử lý từng ghi chú theo thứ tự
+    for (var note in noteList) {
+      if (note.selectedText != null &&
+          note.startPosition != null &&
+          note.endPosition != null) {
+        int startIndex = note.startPosition!;
+        int endIndex = note.endPosition!;
+
+        // Thêm text trước ghi chú
+        if (startIndex > currentIndex) {
+          spans.add(TextSpan(text: text.substring(currentIndex, startIndex)));
+        }
+
+        // Thêm ghi chú với icon
+        spans.add(
+          TextSpan(
+            text: note.selectedText,
+            style: TextStyle(
+              backgroundColor: Color(0xFF6357CC).withOpacity(0.1),
+            ),
+            children: [
+              WidgetSpan(
+                alignment: PlaceholderAlignment.middle,
+                child: GestureDetector(
+                  onTap: () => _showNoteContent(context, note.selectedText!),
+                  child: Container(
+                    margin: EdgeInsets.only(left: 4),
+                    child: Icon(
+                      Icons.note_alt_outlined,
+                      size: 16,
+                      color: Color(0xFF6357CC),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+
+        currentIndex = endIndex;
+      }
+    }
+
+    // Thêm phần text còn lại
+    if (currentIndex < text.length) {
+      spans.add(TextSpan(text: text.substring(currentIndex)));
+    }
+
+    return spans;
   }
 }
