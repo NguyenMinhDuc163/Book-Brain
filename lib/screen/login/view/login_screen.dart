@@ -240,56 +240,56 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                     SizedBox(height: kDefaultPadding),
-                    InkWell(
-                      onTap: () async {
-                        // bool isLogin = await presenter.signInWithGoogle();
-
-                        // if (!isLogin) return;
-
-                        Navigator.of(context).pushNamed(MainApp.routeName);
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Colors.grey.shade300,
-                            width: 1,
-                          ),
-
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
-                              spreadRadius: 1,
-                              blurRadius: 3,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        padding: EdgeInsets.symmetric(
-                          vertical: 12,
-                          horizontal: 16,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            ImageHelper.loadFromAsset(AssetHelper.icoGG),
-                            SizedBox(width: 8),
-                            Text(
-                              'Google',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: kDefaultPadding),
+                    // InkWell(
+                    //   onTap: () async {
+                    //     // bool isLogin = await presenter.signInWithGoogle();
+                    //
+                    //     // if (!isLogin) return;
+                    //
+                    //     Navigator.of(context).pushNamed(MainApp.routeName);
+                    //   },
+                    //   child: Container(
+                    //     width: double.infinity,
+                    //     decoration: BoxDecoration(
+                    //       color: Colors.white,
+                    //       borderRadius: BorderRadius.circular(12),
+                    //       border: Border.all(
+                    //         color: Colors.grey.shade300,
+                    //         width: 1,
+                    //       ),
+                    //
+                    //       boxShadow: [
+                    //         BoxShadow(
+                    //           color: Colors.grey.withOpacity(0.2),
+                    //           spreadRadius: 1,
+                    //           blurRadius: 3,
+                    //           offset: Offset(0, 2),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //     padding: EdgeInsets.symmetric(
+                    //       vertical: 12,
+                    //       horizontal: 16,
+                    //     ),
+                    //     child: Row(
+                    //       mainAxisAlignment: MainAxisAlignment.center,
+                    //       crossAxisAlignment: CrossAxisAlignment.center,
+                    //       children: [
+                    //         ImageHelper.loadFromAsset(AssetHelper.icoGG),
+                    //         SizedBox(width: 8),
+                    //         Text(
+                    //           'Google',
+                    //           style: TextStyle(
+                    //             fontSize: 16,
+                    //             fontWeight: FontWeight.bold,
+                    //             color: Colors.black87,
+                    //           ),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
+                    // SizedBox(height: kDefaultPadding),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

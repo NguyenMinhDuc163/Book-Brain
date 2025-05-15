@@ -13,6 +13,7 @@ class SearchNotifier extends BaseNotifier {
   int currentLimit = 10;
   String currentKeyword = '';
   String currentSortOption = 'A-Z';
+  bool isLoadingMore = false;
 
   Future<void> getData(String keyWord) async {
     currentKeyword = keyWord;
@@ -23,12 +24,15 @@ class SearchNotifier extends BaseNotifier {
   }
 
   Future<bool> getSearchData(String keyWord) async {
+    if (isLoading) return false;
+
     return await execute(() async {
       final newBooks =
           (await searchService.searchBook(
             keyword: keyWord,
             limit: currentLimit,
           ))!;
+
       if (newBooks.isEmpty) {
         hasMore = false;
       }
@@ -40,36 +44,37 @@ class SearchNotifier extends BaseNotifier {
   }
 
   Future<bool> loadMore() async {
-    print("hasMore: $hasMore, isLoading: $isLoading");
-    if (!hasMore || isLoading) {
-      print("Không thể load more vì hasMore: $hasMore, isLoading: $isLoading");
+    if (!hasMore || isLoading || isLoadingMore) {
       return false;
     }
 
-    return await execute(() async {
+    try {
+      isLoadingMore = true;
+      notifyListeners();
+
       currentLimit += 10;
-      print("Đang load more với limit: $currentLimit");
       final newBooks =
           (await searchService.searchBook(
             keyword: currentKeyword,
             limit: currentLimit,
           ))!;
 
-      print(
-        "Số sách mới: ${newBooks.length}, số sách cũ: ${searchBookResponse.length}",
-      );
       if (newBooks.length <= searchBookResponse.length) {
         hasMore = false;
-        print("Không còn sách để load more");
       } else {
         searchBookResponse = newBooks;
         _sortBooks();
-        print("Đã load thêm sách thành công");
       }
 
       notifyListeners();
       return true;
-    });
+    } catch (e) {
+      print("Lỗi khi load more: $e");
+      return false;
+    } finally {
+      isLoadingMore = false;
+      notifyListeners();
+    }
   }
 
   void sortBooks(String sortOption) {

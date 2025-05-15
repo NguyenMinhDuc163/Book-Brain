@@ -6,6 +6,8 @@ import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:book_brain/screen/search_screen/provider/search_notifier.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -120,22 +122,38 @@ class _SearchScreenState extends State<SearchScreen> {
               horizontal: kMediumPadding,
               vertical: 16,
             ),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (recentSearches.isNotEmpty) ...[
-                    _buildRecentSearches(),
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (ScrollNotification scrollInfo) {
+                if (scrollInfo is ScrollEndNotification) {
+                  if (scrollInfo.metrics.pixels ==
+                      scrollInfo.metrics.maxScrollExtent) {
+                    // Khi cuộn đến cuối trang
+                    final searchNotifier = Provider.of<SearchNotifier>(
+                      context,
+                      listen: false,
+                    );
+                    searchNotifier.loadMore();
+                  }
+                }
+                return true;
+              },
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (recentSearches.isNotEmpty) ...[
+                      _buildRecentSearches(),
+                      SizedBox(height: 20),
+                    ],
+
+                    _buildPopularCategories(),
+                    SizedBox(height: 20),
+
+                    _buildTrendingBooks(),
+
                     SizedBox(height: 20),
                   ],
-
-                  _buildPopularCategories(),
-                  SizedBox(height: 20),
-
-                  _buildTrendingBooks(),
-
-                  SizedBox(height: 20),
-                ],
+                ),
               ),
             ),
           ),
@@ -169,31 +187,32 @@ class _SearchScreenState extends State<SearchScreen> {
             color: Color(0xFF6A5AE0),
             size: 16,
           ),
-          suffixIcon: _keywordController.text.isNotEmpty
-              ? IconButton(
-            icon: Icon(Icons.clear, color: Color(0xFF6A5AE0)),
-            onPressed: _clearSearch,
-          )
-              : Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: GestureDetector(
-              onTap: () {
-                // Xử lý khi người dùng nhấn vào biểu tượng tìm kiếm bằng giọng nói
-              },
-              child: Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Color(0xFF6A5AE0).withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  FontAwesomeIcons.x,
-                  color: Color(0xFF6A5AE0),
-                  size: 16,
-                ),
-              ),
-            ),
-          ),
+          suffixIcon:
+              _keywordController.text.isNotEmpty
+                  ? IconButton(
+                    icon: Icon(Icons.clear, color: Color(0xFF6A5AE0)),
+                    onPressed: _clearSearch,
+                  )
+                  : Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        // Xử lý khi người dùng nhấn vào biểu tượng tìm kiếm bằng giọng nói
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Color(0xFF6A5AE0).withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          FontAwesomeIcons.x,
+                          color: Color(0xFF6A5AE0),
+                          size: 16,
+                        ),
+                      ),
+                    ),
+                  ),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         ),
@@ -239,44 +258,44 @@ class _SearchScreenState extends State<SearchScreen> {
           spacing: 8,
           runSpacing: 8,
           children:
-          recentSearches.map((search) {
-            return GestureDetector(
-              onTap: () {
-                _keywordController.text = search;
-                _search();
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.history, color: Colors.grey[600], size: 16),
-                    SizedBox(width: 8),
-                    Text(
-                      search,
-                      style: TextStyle(color: Colors.black87, fontSize: 14),
+              recentSearches.map((search) {
+                return GestureDetector(
+                  onTap: () {
+                    _keywordController.text = search;
+                    _search();
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(color: Colors.grey.shade300),
                     ),
-                    SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () {
-                        _removeRecentSearch(search);
-                      },
-                      child: Icon(
-                        Icons.close,
-                        color: Colors.grey[400],
-                        size: 16,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.history, color: Colors.grey[600], size: 16),
+                        SizedBox(width: 8),
+                        Text(
+                          search,
+                          style: TextStyle(color: Colors.black87, fontSize: 14),
+                        ),
+                        SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: () {
+                            _removeRecentSearch(search);
+                          },
+                          child: Icon(
+                            Icons.close,
+                            color: Colors.grey[400],
+                            size: 16,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
+                  ),
+                );
+              }).toList(),
         ),
       ],
     );
@@ -304,54 +323,54 @@ class _SearchScreenState extends State<SearchScreen> {
           mainAxisSpacing: 10,
           childAspectRatio: 1,
           children:
-          popularCategories.map((category) {
-            return GestureDetector(
-              onTap: () {
-                _keywordController.text = category['name'];
-                _search();
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: category['color'].withOpacity(0.2),
-                      blurRadius: 10,
-                      offset: Offset(0, 3),
+              popularCategories.map((category) {
+                return GestureDetector(
+                  onTap: () {
+                    _keywordController.text = category['name'];
+                    _search();
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: category['color'].withOpacity(0.2),
+                          blurRadius: 10,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: category['color'].withOpacity(0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        category['icon'],
-                        color: category['color'],
-                        size: 24,
-                      ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: category['color'].withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            category['icon'],
+                            color: category['color'],
+                            size: 24,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          category['name'],
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black87,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 10),
-                    Text(
-                      category['name'],
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
+                  ),
+                );
+              }).toList(),
         ),
       ],
     );
