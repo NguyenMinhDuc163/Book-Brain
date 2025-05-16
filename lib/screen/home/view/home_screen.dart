@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             width: width_100,
             height: height_50,
-            padding: EdgeInsets.symmetric(vertical: kMediumPadding),
+            padding: EdgeInsets.symmetric(vertical: height_20),
             decoration: BoxDecoration(
               color: color.withOpacity(0.2),
               borderRadius: BorderRadius.circular(kItemPadding),
@@ -74,8 +74,8 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 SizedBox(width: kMinPadding),
                 Container(
-                  height: 40,
-                  width: 40,
+                  height: height_30,
+                  width: width_30,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(kItemPadding),
                     color: Colors.white,
@@ -168,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           paddingContent: EdgeInsets.all(kDefaultPadding),
-          topPadding: 10,
+          topPadding: height_30,
           child: Column(
             children: [
               Expanded(
@@ -229,7 +229,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: kMediumPadding),
+                      SizedBox(height: height_20),
                       HorizontalBookList(
                         title: 'Top thinh hành',
                         books: presenter.trendingBook,

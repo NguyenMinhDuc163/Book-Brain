@@ -11,6 +11,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../utils/widget/loading_widget.dart';
 import '../widget/button_widget.dart' show ButtonWidget;
@@ -151,11 +152,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           recognizer:
                               TapGestureRecognizer()
-                                ..onTap = () {
-                                  // Xử lý khi người dùng nhấp vào "Terms and Conditions"
-                                  print(
-                                    'Điều hướng đến Điều khoản và Điều kiện',
+                                ..onTap = () async {
+                                  final Uri url = Uri.parse(
+                                    'https://www.freeprivacypolicy.com/live/e98e0bef-5336-4269-8197-71cd770e1c24',
                                   );
+                                  if (!await launchUrl(
+                                    url,
+                                    mode: LaunchMode.externalApplication,
+                                  )) {
+                                    throw 'Could not launch URL}';
+                                  }
                                 },
                         ),
                         TextSpan(
@@ -170,9 +176,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           recognizer:
                               TapGestureRecognizer()
-                                ..onTap = () {
-                                  // Xử lý khi người dùng nhấp vào "and"
-                                  print('Điều hướng đến "và"');
+                                ..onTap = () async {
+                                  final Uri url = Uri.parse(
+                                    'https://www.freeprivacypolicy.com/live/e98e0bef-5336-4269-8197-71cd770e1c24',
+                                  );
+                                  if (!await launchUrl(
+                                    url,
+                                    mode: LaunchMode.externalApplication,
+                                  )) {
+                                    throw 'Could not launch URL}';
+                                  }
                                 },
                         ),
                         TextSpan(
@@ -185,9 +198,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           recognizer:
                               TapGestureRecognizer()
-                                ..onTap = () {
-                                  // Xử lý khi người dùng nhấp vào "Privacy Policy"
-                                  print('Navigate to Privacy Policy');
+                                ..onTap = () async {
+                                  final Uri url = Uri.parse(
+                                    'https://www.freeprivacypolicy.com/live/e98e0bef-5336-4269-8197-71cd770e1c24',
+                                  );
+                                  if (!await launchUrl(
+                                    url,
+                                    mode: LaunchMode.externalApplication,
+                                  )) {
+                                    throw 'Could not launch URL}';
+                                  }
                                 },
                         ),
                         TextSpan(
@@ -250,7 +270,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     // Biểu thức chính quy kiểm tra cú pháp email chặt chẽ hơn
     final RegExp emailRegExp = RegExp(
-      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+      r'^[a-zA-Z0-'
+      r']+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
       caseSensitive: false,
     );
 

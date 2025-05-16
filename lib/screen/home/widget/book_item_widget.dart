@@ -74,12 +74,12 @@ class HorizontalBookList extends StatelessWidget {
   final Function()? onSeeAllPressed;
 
   const HorizontalBookList({
-    Key? key,
+    super.key,
     required this.title,
     this.seeAllText = 'Tất cả',
     required this.books,
     this.onSeeAllPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -103,8 +103,8 @@ class HorizontalBookList extends StatelessWidget {
         ),
         SizedBox(height: kMediumPadding),
 
-        Container(
-          height: 280,
+        SizedBox(
+          height: height_180,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: books.length,
