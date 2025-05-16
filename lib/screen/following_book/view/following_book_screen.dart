@@ -490,11 +490,11 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 8),
-                    Text(
-                      "Theo dõi từ: ${_formatDate(Utils.formatDate(book.subscribedAt))}",
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                    ),
+                    // SizedBox(height: 8),
+                    // Text(
+                    //   "Theo dõi từ: ${_formatDate(Utils.formatDate(book.subscribedAt))}",
+                    //   style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    // ),
                   ],
                 ),
               ),

@@ -114,7 +114,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
               SizedBox(height: kDefaultPadding),
 
-              ButtonWidget(title: 'Cập nhật', isign: isSign, ontap: _signUp),
+              ButtonWidget(
+                title: 'Cập nhật',
+                isign: isSign,
+                ontap: _changeProfile,
+              ),
               SizedBox(height: kDefaultPadding),
             ],
           ),
@@ -124,16 +128,66 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   bool isValidEmail(String email) {
-    // Biểu thức chính quy kiểm tra cú pháp email
+    if (email.isEmpty) return false;
+
+    // Loại bỏ khoảng trắng ở đầu và cuối
+    email = email.trim();
+
+    // Kiểm tra độ dài tối đa của email
+    if (email.length > 254) return false;
+
+    // Biểu thức chính quy kiểm tra cú pháp email chặt chẽ hơn
     final RegExp emailRegExp = RegExp(
       r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+      caseSensitive: false,
     );
 
-    // Kiểm tra email có khớp với biểu thức chính quy hay không
+    // Kiểm tra các trường hợp đặc biệt
+    if (email.contains('..')) return false;
+    if (email.startsWith('.') || email.endsWith('.')) return false;
+    if (email.contains('@.') || email.contains('.@')) return false;
+
+    // Kiểm tra phần domain
+    final parts = email.split('@');
+    if (parts.length != 2) return false;
+
+    final domain = parts[1];
+    if (domain.length > 255) return false;
+    if (domain.startsWith('.') || domain.endsWith('.')) return false;
+
     return emailRegExp.hasMatch(email);
   }
 
-  void _signUp() async {
+  bool validateInputs() {
+    if (_userNameController.text.trim().isEmpty) {
+      showToastTop(message: 'Vui lòng nhập tên người dùng');
+      return false;
+    }
+
+    if (_userNameController.text.trim().length < 3) {
+      showToastTop(message: 'Tên người dùng phải có ít nhất 3 ký tự');
+      return false;
+    }
+
+    if (_emailController.text.trim().isEmpty) {
+      showToastTop(message: 'Vui lòng nhập email');
+      return false;
+    }
+
+    if (!isValidEmail(_emailController.text)) {
+      showToastTop(message: 'Email không hợp lệ, vui lòng kiểm tra lại');
+      return false;
+    }
+
+    if (_phoneNumberController.text.trim().isEmpty) {
+      showToastTop(message: 'Vui lòng nhập số điện thoại');
+      return false;
+    }
+
+    return true;
+  }
+
+  void _changeProfile() async {
     setState(() {
       isSign = true;
     });

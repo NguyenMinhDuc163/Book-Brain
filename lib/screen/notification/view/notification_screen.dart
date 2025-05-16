@@ -185,6 +185,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     // Nội dung chi tiết
                     Text(
                       notification.message ?? '',
+
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.black87,
