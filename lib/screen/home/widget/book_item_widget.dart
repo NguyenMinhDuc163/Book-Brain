@@ -1,8 +1,8 @@
-
 import 'package:book_brain/screen/preview/view/preview_screen.dart';
 import 'package:book_brain/service/api_service/response/book_info_response.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
-import 'package:book_brain/utils/core/constants/textstyle_ext.dart' show ExtendedTextStyle, TextStyles;
+import 'package:book_brain/utils/core/constants/textstyle_ext.dart'
+    show ExtendedTextStyle, TextStyles;
 import 'package:flutter/material.dart';
 
 import '../../../utils/core/helpers/network_image_handler.dart';
@@ -10,14 +10,25 @@ import '../../../utils/core/helpers/network_image_handler.dart';
 class BookItem extends StatelessWidget {
   final String name;
   final String image;
-  final int rating;
+  final String rating;
 
   const BookItem({
     Key? key,
     required this.name,
     required this.image,
-    this.rating = 4,
+    this.rating = "5.0",
   }) : super(key: key);
+
+  int _getRatingStars() {
+    try {
+      // Chuyển đổi rating từ string sang double
+      final ratingValue = double.parse(rating);
+      // Chuyển đổi từ thang điểm 5 sang số sao (làm tròn)
+      return ratingValue.round();
+    } catch (e) {
+      return 5; // Giá trị mặc định nếu có lỗi
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,16 +37,9 @@ class BookItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          
-
-
-          NetworkImageHandler(
-            imageUrl: image, // URL hình ảnh của bạn
-            width: 140,
-            height: 200,
-          ),
+          NetworkImageHandler(imageUrl: image, width: 140, height: 200),
           SizedBox(height: 8),
-          
+
           SizedBox(
             width: 140,
             child: Text(
@@ -46,12 +50,12 @@ class BookItem extends StatelessWidget {
             ),
           ),
           SizedBox(height: 4),
-          
+
           Row(
             children: List.generate(
               5,
-                  (starIndex) => Icon(
-                starIndex < rating ? Icons.star : Icons.star_border,
+              (starIndex) => Icon(
+                starIndex < _getRatingStars() ? Icons.star : Icons.star_border,
                 color: Color(0xFFFFC107),
                 size: 16,
               ),
@@ -62,7 +66,6 @@ class BookItem extends StatelessWidget {
     );
   }
 }
-
 
 class HorizontalBookList extends StatelessWidget {
   final String title;
@@ -84,7 +87,10 @@ class HorizontalBookList extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            Text(
+              title,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             Spacer(),
             GestureDetector(
               onTap: onSeeAllPressed,
@@ -97,7 +103,6 @@ class HorizontalBookList extends StatelessWidget {
         ),
         SizedBox(height: kMediumPadding),
 
-        
         Container(
           height: 280,
           child: ListView.builder(
@@ -105,17 +110,18 @@ class HorizontalBookList extends StatelessWidget {
             itemCount: books.length,
             itemBuilder: (context, index) {
               final book = books[index];
-              int rate = int.tryParse((book.rating ?? '10/10').split('/')[0]) ?? 4;
               return InkWell(
-                onTap: (){
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => PreviewScreen(bookId: book.bookId,)
-                  ));
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => PreviewScreen(bookId: book.bookId),
+                    ),
+                  );
                 },
                 child: BookItem(
                   name: book.title ?? "",
                   image: book.imageUrl ?? "",
-                  rating: rate,
+                  rating: book.rating ?? "5.0",
                 ),
               );
             },

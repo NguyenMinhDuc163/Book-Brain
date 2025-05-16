@@ -4,6 +4,7 @@ import 'package:book_brain/service/api_service/request/change_password_request.d
 import 'package:book_brain/service/api_service/request/update_profile_request.dart';
 import 'package:book_brain/service/api_service/response/base_response.dart';
 import 'package:book_brain/service/api_service/response/update_profile_response.dart';
+import 'package:book_brain/utils/core/common/toast.dart';
 
 
 class ProfileService implements IProfileInterface {
@@ -33,9 +34,10 @@ class ProfileService implements IProfileInterface {
         newPassword: newPassword
     );
     final BaseResponse<UpdateProfileResponse> response = await apiServices.changePassword(request);
-    if (response.code != null) {
+    if (response.code == 200) {
       return true;
     }
+    showToastTop(message: response.error.toString());
     return false;
   }
 }

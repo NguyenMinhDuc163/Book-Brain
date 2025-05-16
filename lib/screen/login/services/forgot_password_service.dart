@@ -15,6 +15,7 @@ class ForgotPasswordService implements IForgotPasswordInterface {
       oldPassword: oldPassword,
       newPassword: newPassword,
     );
+
     final BaseResponse<ForgotPasswordResponse> response = await apiServices.forgotPassword(
       request,
     );

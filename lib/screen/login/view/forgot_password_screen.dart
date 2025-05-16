@@ -1,11 +1,9 @@
 
-import 'package:book_brain/screen/login/provider/forgot_password_notifier.dart';
 import 'package:book_brain/screen/login/view/login_screen.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/screen/login/widget/button_widget.dart';
 import 'package:book_brain/utils/core/common/toast.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
-import 'package:book_brain/utils/router_names.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
