@@ -215,6 +215,13 @@ class _ReviewBookScreenState extends State<ReviewBookScreen> {
 
   // Hàm hiển thị menu xóa/sửa đánh giá
   void _showReviewOptions(AllReviewResponse review) {
+    final currentUserId = LocalStorageHelper.getValue("userId") ?? "1";
+
+    // Chỉ hiển thị menu nếu là bình luận của người dùng hiện tại
+    if (review.userId != currentUserId) {
+      return;
+    }
+
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -489,7 +496,13 @@ class _ReviewBookScreenState extends State<ReviewBookScreen> {
                                 helpfulCount:
                                     int.tryParse(review.helpfulCount ?? '0') ??
                                     0,
-                                onMorePressed: () => _showReviewOptions(review),
+                                onMorePressed:
+                                    review.userId ==
+                                            LocalStorageHelper.getValue(
+                                              "userId",
+                                            )
+                                        ? () => _showReviewOptions(review)
+                                        : null,
                               ),
                               const SizedBox(height: kDefaultPadding),
                             ],

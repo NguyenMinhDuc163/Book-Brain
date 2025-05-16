@@ -5,6 +5,7 @@ import 'package:book_brain/utils/core/helpers/image_helper.dart';
 import 'package:book_brain/utils/widget/dash_line_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:book_brain/utils/core/constants/avatar_colors.dart';
 
 class FeedBackWidget extends StatefulWidget {
   const FeedBackWidget({
@@ -110,6 +111,10 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
               // Avatar (hỗ trợ cả local asset và network image)
               CircleAvatar(
                 radius: 20,
+                backgroundColor:
+                    widget.avatar.contains('http')
+                        ? null
+                        : getColorFromName(widget.name),
                 backgroundImage:
                     widget.avatar.contains('http')
                         ? NetworkImage(widget.avatar) as ImageProvider
@@ -118,6 +123,10 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
                   // Fallback khi lỗi load ảnh
                   AssetImage(AssetHelper.avatar);
                 },
+                child:
+                    widget.avatar.contains('http')
+                        ? null
+                        : Icon(Icons.person, color: Colors.white),
               ),
               SizedBox(width: 12),
               Column(
@@ -218,14 +227,11 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
               ),
               Spacer(),
               // Nút tùy chọn
-              IconButton(
-                icon: Icon(Icons.more_horiz),
-                onPressed:
-                    widget.onMorePressed ??
-                    () {
-                      _showReportOptionsDialog(context);
-                    },
-              ),
+              if (widget.onMorePressed != null)
+                IconButton(
+                  icon: Icon(Icons.more_horiz),
+                  onPressed: widget.onMorePressed,
+                ),
             ],
           ),
         ],
