@@ -38,7 +38,7 @@ class _AllBookScreenState extends State<AllBookScreen> {
               child: Column(
                 children: [
                   SizedBox(height: height_20),
-                  _buildHeader(title: "${widget.title ?? ""}"),
+                  _buildHeader(title: widget.title ?? ""),
                   SizedBox(height: 16),
 
                   Expanded(
@@ -77,7 +77,7 @@ class _AllBookScreenState extends State<AllBookScreen> {
           ),
         ),
         Container(
-          height: 36,
+          height: height_30,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(18),
@@ -105,7 +105,7 @@ class _AllBookScreenState extends State<AllBookScreen> {
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(horizontal: 12),
-                      height: 36,
+                      height: height_20,
                       decoration: BoxDecoration(
                         gradient:
                             _isGridView
@@ -122,7 +122,7 @@ class _AllBookScreenState extends State<AllBookScreen> {
                       ),
                       child: Icon(
                         Icons.grid_view_rounded,
-                        size: 18,
+                        size: height_12,
                         color: _isGridView ? Colors.white : Colors.grey[600],
                       ),
                     ),
@@ -143,7 +143,7 @@ class _AllBookScreenState extends State<AllBookScreen> {
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(horizontal: 12),
-                      height: 36,
+                      height: height_24,
                       decoration: BoxDecoration(
                         gradient:
                             !_isGridView
@@ -160,7 +160,7 @@ class _AllBookScreenState extends State<AllBookScreen> {
                       ),
                       child: Icon(
                         Icons.view_list_rounded,
-                        size: 18,
+                        size: height_12,
                         color: !_isGridView ? Colors.white : Colors.grey[600],
                       ),
                     ),
@@ -239,21 +239,21 @@ class _AllBookScreenState extends State<AllBookScreen> {
                   ? Image.network(
                     book.imageUrl ?? "",
                     width: double.infinity,
-                    height: 160,
+                    height: height_110,
                     fit: BoxFit.cover,
                     errorBuilder:
                         (context, error, stackTrace) =>
                             ImageHelper.loadFromAsset(
                               AssetHelper.defaultImage,
                               width: double.infinity,
-                              height: 160,
+                              height: height_80,
                               fit: BoxFit.cover,
                             ),
                   )
                   : ImageHelper.loadFromAsset(
                     AssetHelper.defaultImage,
                     width: double.infinity,
-                    height: 160,
+                    height: height_80,
                     fit: BoxFit.cover,
                   ),
 
@@ -277,7 +277,7 @@ class _AllBookScreenState extends State<AllBookScreen> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      SizedBox(height: 2),
+                      SizedBox(height: height_2),
                       Text(
                         book.authorName ?? "",
                         style: TextStyle(fontSize: 12, color: Colors.grey[700]),
@@ -342,22 +342,22 @@ class _AllBookScreenState extends State<AllBookScreen> {
                   (book.imageUrl ?? '') != ''
                       ? Image.network(
                         book.imageUrl ?? "",
-                        width: 100,
-                        height: 140,
+                        width: width_90,
+                        height: height_100,
                         fit: BoxFit.cover,
                         errorBuilder:
                             (context, error, stackTrace) =>
                                 ImageHelper.loadFromAsset(
                                   AssetHelper.defaultImage,
-                                  width: 100,
-                                  height: 140,
+                                  width: width_90,
+                                  height: height_100,
                                   fit: BoxFit.cover,
                                 ),
                       )
                       : ImageHelper.loadFromAsset(
                         AssetHelper.defaultImage,
-                        width: 100,
-                        height: 140,
+                        width: width_90,
+                        height: height_100,
                         fit: BoxFit.cover,
                       ),
             ),

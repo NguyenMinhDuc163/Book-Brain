@@ -27,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     Future.microtask(
-      () => Provider.of<HomeNotifier>(context, listen: false).getData(),
+          () => Provider.of<HomeNotifier>(context, listen: false).getData(),
     );
   }
 
@@ -95,11 +95,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       presenter.userName ?? "Nguyễn Minh Đức",
                       style:
-                          TextStyles
-                              .defaultStyle
-                              .fontHeader
-                              .whiteTextColor
-                              .bold,
+                      TextStyles
+                          .defaultStyle
+                          .fontHeader
+                          .whiteTextColor
+                          .bold,
                     ),
                     Text(
                       'Bạn sẽ đọc cuốn sách nào hôm nay?',
@@ -238,7 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             MaterialPageRoute(
                               builder:
                                   (context) =>
-                                      AllBookScreen(title: 'Top thinh hành', book: presenter.trendingBook,),
+                                  AllBookScreen(title: 'Top thinh hành', book: presenter.trendingBook,),
                             ),
                           );
                         },
@@ -252,7 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             MaterialPageRoute(
                               builder:
                                   (context) =>
-                                      AllBookScreen(title: 'Dành cho bạn', book: presenter.recommenlist,),
+                                  AllBookScreen(title: 'Dành cho bạn', book: presenter.recommenlist,),
                             ),
                           );
                         },
