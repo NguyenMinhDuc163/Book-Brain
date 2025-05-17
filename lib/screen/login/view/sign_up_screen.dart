@@ -153,9 +153,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               TapGestureRecognizer()
                                 ..onTap = () {
                                   // Xử lý khi người dùng nhấp vào "Terms and Conditions"
-                                  print(
-                                    'Điều hướng đến Điều khoản và Điều kiện',
-                                  );
+                                  print('Điều hướng đến Điều khoản và Điều kiện');
                                 },
                         ),
                         TextSpan(
@@ -203,117 +201,125 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     title: 'Đăng ký',
                     isign: isSign,
                     ontap: () async {
-                      if (!validateInputs()) {
-                        return;
-                      }
-
                       bool isRegister = await presenter.register(
                         username: _userNameController.text.trim(),
                         password: _passwordController.text.trim(),
                         email: _emailController.text.trim(),
-                        phoneNumber: _phoneNumberController.text.trim(),
+                        phoneNumber: _phoneNumberController.text.trim()
                       );
                       if (isRegister) {
                         Navigator.pushNamed(context, LoginScreen.routeName);
                       }
                     },
                   ),
+                  SizedBox(height: kDefaultPadding),
+                  Row(
+                    children: const [
+                      Expanded(
+                        child: Divider(
+                          color: Colors.grey, // Màu của đường thẳng
+                          thickness: 1, // Độ dày của đường thẳng
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Text(
+                          'hoặc đăng nhập bằng',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ),
+                      Expanded(
+                        child: Divider(
+                          color: Colors.grey, // Màu của đường thẳng
+                          thickness: 1, // Độ dày của đường thẳng
+                        ),
+                      ),
+                      SizedBox(height: kDefaultPadding),
+                    ],
+                  ),
+                  SizedBox(height: kDefaultPadding),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          // onTap: _signInWithGoogle,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              ImageHelper.loadFromAsset(
+                                AssetHelper.icoRectangleWhite,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  ImageHelper.loadFromAsset(AssetHelper.icoGG),
+                                  SizedBox(width: kMinPadding),
+                                  Text(
+                                    'Google',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            // Navigator.of(context).pushNamed(TicketStubScreen.routeName);
+                          },
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              ImageHelper.loadFromAsset(
+                                AssetHelper.icoRectangleBlue,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  ImageHelper.loadFromAsset(AssetHelper.icoFB),
+                                  SizedBox(width: kMinPadding),
+                                  Text(
+                                    'Facebook',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: kDefaultPadding),
                 ],
               ),
             ),
           ),
           presenter.isLoading ? const LoadingWidget() : const SizedBox(),
+
         ],
       ),
     );
   }
 
-  bool isValidPhoneNumber(String phoneNumber) {
-    // Kiểm tra số điện thoại Việt Nam
-    // Format: 0 + 9 số hoặc +84 + 9 số
-    final RegExp phoneRegex = RegExp(r'^(0|\+84)([0-9]{9})$');
-
-    // Loại bỏ khoảng trắng và dấu gạch ngang
-    String cleanPhone = phoneNumber.replaceAll(RegExp(r'[\s-]'), '');
-
-    return phoneRegex.hasMatch(cleanPhone);
-  }
-
   bool isValidEmail(String email) {
-    if (email.isEmpty) return false;
-
-    // Loại bỏ khoảng trắng ở đầu và cuối
-    email = email.trim();
-
-    // Kiểm tra độ dài tối đa của email
-    if (email.length > 254) return false;
-
-    // Biểu thức chính quy kiểm tra cú pháp email chặt chẽ hơn
+    // Biểu thức chính quy kiểm tra cú pháp email
     final RegExp emailRegExp = RegExp(
       r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-      caseSensitive: false,
     );
 
-    // Kiểm tra các trường hợp đặc biệt
-    if (email.contains('..')) return false;
-    if (email.startsWith('.') || email.endsWith('.')) return false;
-    if (email.contains('@.') || email.contains('.@')) return false;
-
-    // Kiểm tra phần domain
-    final parts = email.split('@');
-    if (parts.length != 2) return false;
-
-    final domain = parts[1];
-    if (domain.length > 255) return false;
-    if (domain.startsWith('.') || domain.endsWith('.')) return false;
-
+    // Kiểm tra email có khớp với biểu thức chính quy hay không
     return emailRegExp.hasMatch(email);
-  }
-
-  bool validateInputs() {
-    if (_userNameController.text.trim().isEmpty) {
-      showToastTop(message: 'Vui lòng nhập tên người dùng');
-      return false;
-    }
-
-    if (_userNameController.text.trim().length < 3) {
-      showToastTop(message: 'Tên người dùng phải có ít nhất 3 ký tự');
-      return false;
-    }
-
-    if (_emailController.text.trim().isEmpty) {
-      showToastTop(message: 'Vui lòng nhập email');
-      return false;
-    }
-
-    if (!isValidEmail(_emailController.text)) {
-      showToastTop(message: 'Email không hợp lệ, vui lòng kiểm tra lại');
-      return false;
-    }
-
-    if (_phoneNumberController.text.trim().isEmpty) {
-      showToastTop(message: 'Vui lòng nhập số điện thoại');
-      return false;
-    }
-
-    if (!isValidPhoneNumber(_phoneNumberController.text)) {
-      showToastTop(
-        message:
-            'Số điện thoại không hợp lệ. Vui lòng nhập theo định dạng: 0xxxxxxxxx hoặc +84xxxxxxxxx',
-      );
-      return false;
-    }
-
-    if (_passwordController.text.trim().isEmpty) {
-      showToastTop(message: 'Vui lòng nhập mật khẩu');
-      return false;
-    }
-
-    if (_passwordController.text.length < 6) {
-      showToastTop(message: 'Mật khẩu phải có ít nhất 6 ký tự');
-      return false;
-    }
-
-    return true;
   }
 }
