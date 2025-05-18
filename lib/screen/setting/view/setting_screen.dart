@@ -5,6 +5,7 @@ import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart'
     show AssetHelper;
+import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -286,6 +287,7 @@ class _SettingScreenState extends State<SettingScreen> {
                     ),
                     ElevatedButton(
                       onPressed: () {
+                        LocalStorageHelper.setValue('ignoreIntroScreen', false);
                         Navigator.pop(context);
                         Navigator.pushAndRemoveUntil(
                           context,

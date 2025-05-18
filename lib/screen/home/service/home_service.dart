@@ -20,8 +20,10 @@ class HomeService implements IHomeInterface {
   }
 
   @override
-  Future<List<BookInfoResponse>> getBookTrending() async {
+  Future<List<BookInfoResponse>> getBookTrending({required int limit}) async {
     final BaseResponse<BookInfoResponse> response = await apiServices.getTrending(
+      limit: limit
+
     );
     if (response.code != null){
       List<BookInfoResponse> data = response.data!;

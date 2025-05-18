@@ -70,6 +70,7 @@ double width_90 = 90.w;
 double width_100 = 100.w;
 double width_120 = 120.w;
 double width_130 = 130.w;
+double width_125 = 125.w;
 double width_150 = 150.w;
 double width_180 = 180.w;
 double width_200 = 200.w;

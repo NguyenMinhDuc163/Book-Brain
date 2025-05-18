@@ -13,7 +13,8 @@ import '../../main_app.dart';
 import 'book_ranking_screen.dart';
 
 class RankingScreen extends StatefulWidget {
-  const RankingScreen({super.key});
+  final bool isFromHome;
+  const RankingScreen({super.key, this.isFromHome = false});
   static const routeName = "/ranking_screen";
   @override
   State<RankingScreen> createState() => _RankingScreenState();
@@ -38,7 +39,7 @@ class _RankingScreenState extends State<RankingScreen> {
       appBar: BaseAppbar(
         title: "Bảng xếp hạng",
         backgroundColor: ColorPalette.color6A5AE0,
-        isShowBack: false,
+        isShowBack: widget.isFromHome,
         textColor: Colors.white,
       ),
       body: Stack(

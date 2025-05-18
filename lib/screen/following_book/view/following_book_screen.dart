@@ -358,7 +358,7 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
-                        maxLines: 2,
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                       SizedBox(height: 2),

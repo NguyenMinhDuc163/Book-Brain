@@ -19,11 +19,19 @@ class HomeNotifier extends BaseNotifier {
   String? userName;
   String? email;
 
+  // Thêm biến để theo dõi trạng thái loadmore
+  bool isLoadingMoreTrending = false;
+  bool isLoadingMoreRecommend = false;
+  int currentTrendingLimit = 10;
+  int currentRecommendLimit = 10;
+  bool hasMoreTrending = true;
+  bool hasMoreRecommend = true;
+
   Future<void> getData() async {
     await execute(() async {
       await Future.wait([
         getInfoBook(),
-        getTrendingBook(),
+        getTrendingBook(limit: 10),
         getUnreadNotificationCount(),
         getRecommentBook(),
         loadUserInfo(),
@@ -72,11 +80,12 @@ class HomeNotifier extends BaseNotifier {
     });
   }
 
-  Future<bool> getTrendingBook() async {
+  Future<bool> getTrendingBook({required int limit}) async {
     return await execute(() async {
-      trendingBook = await homeService.getBookTrending();
+      trendingBook = await homeService.getBookTrending(limit: limit);
+      currentTrendingLimit = limit;
+      hasMoreTrending = trendingBook.length >= limit;
       notifyListeners();
-
       return true;
     });
   }
@@ -84,10 +93,79 @@ class HomeNotifier extends BaseNotifier {
   Future<bool> getRecommentBook() async {
     return await execute(() async {
       int userID = LocalStorageHelper.getValue("userId");
-      recommenlist = await homeService.getRecommendation(userID: userID, limit: 10);
+      recommenlist = await homeService.getRecommendation(
+        userID: userID,
+        limit: currentRecommendLimit,
+      );
+      hasMoreRecommend = recommenlist.length >= currentRecommendLimit;
       notifyListeners();
-
       return true;
     });
+  }
+
+  // Sửa lại hàm loadmore cho trending books
+  Future<void> loadMoreTrendingBooks() async {
+    if (isLoadingMoreTrending || !hasMoreTrending) return;
+
+    isLoadingMoreTrending = true;
+    notifyListeners();
+
+    try {
+      final newBooks = await homeService.getBookTrending(
+        limit: currentTrendingLimit + 10,
+      );
+
+      // Lọc ra những cuốn sách mới chưa có trong danh sách hiện tại
+      final existingIds = trendingBook.map((book) => book.bookId).toSet();
+      final uniqueNewBooks =
+          newBooks.where((book) => !existingIds.contains(book.bookId)).toList();
+
+      if (uniqueNewBooks.isNotEmpty) {
+        trendingBook.addAll(uniqueNewBooks);
+        currentTrendingLimit += 10;
+        hasMoreTrending = uniqueNewBooks.length >= 10;
+      } else {
+        hasMoreTrending = false;
+      }
+    } catch (e) {
+      print("Error loading more trending books: $e");
+    } finally {
+      isLoadingMoreTrending = false;
+      notifyListeners();
+    }
+  }
+
+  // Sửa lại hàm loadmore cho recommend books
+  Future<void> loadMoreRecommendBooks() async {
+    if (isLoadingMoreRecommend || !hasMoreRecommend) return;
+
+    isLoadingMoreRecommend = true;
+    notifyListeners();
+
+    try {
+      int userID = LocalStorageHelper.getValue("userId");
+      final newBooks = await homeService.getRecommendation(
+        userID: userID,
+        limit: currentRecommendLimit + 10,
+      );
+
+      // Lọc ra những cuốn sách mới chưa có trong danh sách hiện tại
+      final existingIds = recommenlist.map((book) => book.bookId).toSet();
+      final uniqueNewBooks =
+          newBooks.where((book) => !existingIds.contains(book.bookId)).toList();
+
+      if (uniqueNewBooks.isNotEmpty) {
+        recommenlist.addAll(uniqueNewBooks);
+        currentRecommendLimit += 10;
+        hasMoreRecommend = uniqueNewBooks.length >= 10;
+      } else {
+        hasMoreRecommend = false;
+      }
+    } catch (e) {
+      print("Error loading more recommend books: $e");
+    } finally {
+      isLoadingMoreRecommend = false;
+      notifyListeners();
+    }
   }
 }

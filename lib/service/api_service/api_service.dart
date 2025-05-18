@@ -76,10 +76,15 @@ class ApiServices extends BaseApiService {
     );
   }
   // get top trending
-  Future<BaseResponse<BookInfoResponse>> getTrending() async {
+  Future<BaseResponse<BookInfoResponse>> getTrending({required int limit}) async {
+    final queryParams = <String, int>{};
+
+    queryParams["limit"] = limit;
+
     return await sendRequest<BookInfoResponse>(
       UrlStatic.API_TRENDING_BOOK,
       method: 'GET',
+      data: queryParams,
       fromJson: (json) => BookInfoResponse.fromJson(json),
     );
   }

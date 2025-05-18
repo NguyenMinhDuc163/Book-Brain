@@ -37,11 +37,15 @@ class BookItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          NetworkImageHandler(imageUrl: image, width: 140, height: 200),
+          NetworkImageHandler(
+            imageUrl: image,
+            width: width_120,
+            height: height_140,
+          ),
           SizedBox(height: 8),
 
           SizedBox(
-            width: 140,
+            width: width_130,
             child: Text(
               name,
               style: TextStyles.defaultStyle.bold,
@@ -83,6 +87,9 @@ class HorizontalBookList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Lấy 10 cuốn sách đầu tiên
+    final displayBooks = books.take(10).toList();
+
     return Column(
       children: [
         Row(
@@ -107,9 +114,9 @@ class HorizontalBookList extends StatelessWidget {
           height: height_180,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: books.length,
+            itemCount: displayBooks.length,
             itemBuilder: (context, index) {
-              final book = books[index];
+              final book = displayBooks[index];
               return InkWell(
                 onTap: () {
                   Navigator.of(context).push(

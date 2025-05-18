@@ -23,6 +23,21 @@ class AllBookScreen extends StatefulWidget {
 
 class _AllBookScreenState extends State<AllBookScreen> {
   bool _isGridView = true;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToTop() {
+    _scrollController.animateTo(
+      0,
+      duration: Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +70,6 @@ class _AllBookScreenState extends State<AllBookScreen> {
               ),
             ),
             presenter.isLoading ? const LoadingWidget() : const SizedBox(),
-
           ],
         ),
       ),
@@ -67,12 +81,15 @@ class _AllBookScreenState extends State<AllBookScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
-          child: Text(
-            title,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Color(0xff6357CC),
+          child: GestureDetector(
+            onTap: _scrollToTop,
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xff6357CC),
+              ),
             ),
           ),
         ),
@@ -183,28 +200,122 @@ class _AllBookScreenState extends State<AllBookScreen> {
   }
 
   Widget _buildGridView(List<BookInfoResponse> books) {
-    return GridView.builder(
-      padding: EdgeInsets.all(16),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 16,
-        crossAxisSpacing: 16,
-        childAspectRatio: 0.65,
-      ),
-      itemCount: books.length,
-      itemBuilder: (context, index) {
-        return _buildGridItem(books[index]);
+    final presenter = Provider.of<HomeNotifier>(context);
+    bool isLoadingMore =
+        widget.title == 'Top thinh hành'
+            ? presenter.isLoadingMoreTrending
+            : presenter.isLoadingMoreRecommend;
+    bool hasMore =
+        widget.title == 'Top thinh hành'
+            ? presenter.hasMoreTrending
+            : presenter.hasMoreRecommend;
+
+    return NotificationListener<ScrollNotification>(
+      onNotification: (ScrollNotification scrollInfo) {
+        if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+          if (widget.title == 'Top thinh hành') {
+            Provider.of<HomeNotifier>(
+              context,
+              listen: false,
+            ).loadMoreTrendingBooks();
+          } else {
+            Provider.of<HomeNotifier>(
+              context,
+              listen: false,
+            ).loadMoreRecommendBooks();
+          }
+        }
+        return true;
       },
+      child: Stack(
+        children: [
+          RawScrollbar(
+            thumbColor: Color(0xFF6357CC).withOpacity(0.5),
+            radius: Radius.circular(20),
+            thickness: 6,
+            thumbVisibility: true,
+            controller: _scrollController,
+            child: GridView.builder(
+              controller: _scrollController,
+              padding: EdgeInsets.all(16),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 0.65,
+              ),
+              itemCount: books.length,
+              itemBuilder: (context, index) {
+                return _buildGridItem(books[index]);
+              },
+            ),
+          ),
+          if (isLoadingMore || !hasMore)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: _buildLoadingIndicator(),
+            ),
+        ],
+      ),
     );
   }
 
   Widget _buildListView(List<BookInfoResponse> books) {
-    return ListView.builder(
-      padding: EdgeInsets.all(16),
-      itemCount: books.length,
-      itemBuilder: (context, index) {
-        return _buildListItem(books[index]);
+    final presenter = Provider.of<HomeNotifier>(context);
+    bool isLoadingMore =
+        widget.title == 'Top thinh hành'
+            ? presenter.isLoadingMoreTrending
+            : presenter.isLoadingMoreRecommend;
+    bool hasMore =
+        widget.title == 'Top thinh hành'
+            ? presenter.hasMoreTrending
+            : presenter.hasMoreRecommend;
+
+    return NotificationListener<ScrollNotification>(
+      onNotification: (ScrollNotification scrollInfo) {
+        if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+          if (widget.title == 'Top thinh hành') {
+            Provider.of<HomeNotifier>(
+              context,
+              listen: false,
+            ).loadMoreTrendingBooks();
+          } else {
+            Provider.of<HomeNotifier>(
+              context,
+              listen: false,
+            ).loadMoreRecommendBooks();
+          }
+        }
+        return true;
       },
+      child: Stack(
+        children: [
+          RawScrollbar(
+            thumbColor: Color(0xFF6357CC).withOpacity(0.5),
+            radius: Radius.circular(20),
+            thickness: 6,
+            thumbVisibility: true,
+            controller: _scrollController,
+            child: ListView.builder(
+              controller: _scrollController,
+              padding: EdgeInsets.all(16),
+              itemCount: books.length,
+              itemBuilder: (context, index) {
+                return _buildListItem(books[index]);
+              },
+            ),
+          ),
+          if (isLoadingMore || !hasMore)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: _buildLoadingIndicator(),
+            ),
+        ],
+      ),
     );
   }
 
@@ -408,6 +519,48 @@ class _AllBookScreenState extends State<AllBookScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    final presenter = Provider.of<HomeNotifier>(context);
+    bool isLoadingMore =
+        widget.title == 'Top thinh hành'
+            ? presenter.isLoadingMoreTrending
+            : presenter.isLoadingMoreRecommend;
+    bool hasMore =
+        widget.title == 'Top thinh hành'
+            ? presenter.hasMoreTrending
+            : presenter.hasMoreRecommend;
+
+    if (!isLoadingMore && !hasMore) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        color: Colors.white,
+        child: Center(
+          child: Text(
+            'Đã hết dữ liệu',
+            style: TextStyle(color: Colors.grey[600], fontSize: 14),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      color: Colors.white,
+      child: Center(
+        child: SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: Color(0xFF6357CC),
+          ),
         ),
       ),
     );
