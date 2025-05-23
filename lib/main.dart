@@ -14,6 +14,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_ce_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'firebase_options.dart';
 
@@ -23,6 +24,18 @@ void main() async {
   await Hive.initFlutter();
   await LocalStorageHelper.initLocalStorageHelper();
   await dotenv.load(fileName: ".env");
+
+  // Đăng ký Native Ad Factory
+  MobileAds.instance.initialize().then((initializationStatus) {
+    initializationStatus.adapterStatuses.forEach((key, value) {
+      debugPrint('Adapter status for $key: ${value.description}');
+    });
+  });
+
+  // Cấu hình test device
+  MobileAds.instance.updateRequestConfiguration(
+    RequestConfiguration(testDeviceIds: ['EMULATOR']),
+  );
 
   // Khởi tạo AdMob
   await AdMobService().initialize();

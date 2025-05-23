@@ -8,7 +8,6 @@ import 'package:book_brain/screen/ranking/view/ranking_screen.dart';
 import 'package:book_brain/screen/search_screen/view/search_screen.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/constants/textstyle_ext.dart';
-import 'package:book_brain/widgets/ad_banner_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     Future.microtask(
-      () => Provider.of<HomeNotifier>(context, listen: false).getData(),
+          () => Provider.of<HomeNotifier>(context, listen: false).getData(),
     );
   }
 
@@ -96,11 +95,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       presenter.userName ?? "Nguyễn Minh Đức",
                       style:
-                          TextStyles
-                              .defaultStyle
-                              .fontHeader
-                              .whiteTextColor
-                              .bold,
+                      TextStyles
+                          .defaultStyle
+                          .fontHeader
+                          .whiteTextColor
+                          .bold,
                     ),
                     Text(
                       'Bạn sẽ đọc cuốn sách nào hôm nay?',
@@ -207,7 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   MaterialPageRoute(
                                     builder:
                                         (context) =>
-                                            RankingScreen(isFromHome: true),
+                                        RankingScreen(isFromHome: true),
                                   ),
                                 );
                               },
@@ -243,9 +242,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             MaterialPageRoute(
                               builder:
                                   (context) => AllBookScreen(
-                                    title: 'Top thinh hành',
-                                    book: presenter.trendingBook,
-                                  ),
+                                title: 'Top thinh hành',
+                                book: presenter.trendingBook,
+                              ),
                             ),
                           );
                         },
@@ -259,15 +258,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             MaterialPageRoute(
                               builder:
                                   (context) => AllBookScreen(
-                                    title: 'Dành cho bạn',
-                                    book: presenter.recommenlist,
-                                  ),
+                                title: 'Dành cho bạn',
+                                book: presenter.recommenlist,
+                              ),
                             ),
                           );
                         },
                       ),
-                      SizedBox(height: kMediumPadding),
-                      const AdBannerWidget(),
                     ],
                   ),
                 ),
