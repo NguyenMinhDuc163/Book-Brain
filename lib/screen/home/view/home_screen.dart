@@ -8,6 +8,7 @@ import 'package:book_brain/screen/ranking/view/ranking_screen.dart';
 import 'package:book_brain/screen/search_screen/view/search_screen.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/constants/textstyle_ext.dart';
+import 'package:book_brain/widgets/ad_banner_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -265,6 +266,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           );
                         },
                       ),
+                      SizedBox(height: kMediumPadding),
+                      const AdBannerWidget(),
                     ],
                   ),
                 ),

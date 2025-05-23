@@ -1,5 +1,7 @@
 import 'package:book_brain/providers/provider_setup.dart';
-import 'package:book_brain/screen/splash/view/splash_screen.dart' show SplashScreen;
+import 'package:book_brain/screen/splash/view/splash_screen.dart'
+    show SplashScreen;
+import 'package:book_brain/service/service_config/admob_service.dart';
 import 'package:book_brain/service/service_config/firebase_service.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
@@ -14,25 +16,28 @@ import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'firebase_options.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await Hive.initFlutter();
   await LocalStorageHelper.initLocalStorageHelper();
   await dotenv.load(fileName: ".env");
+
+  // Khởi tạo AdMob
+  await AdMobService().initialize();
+
   /// khởi tạo Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   /// Firebase Service
   final firebaseService = FirebaseService();
   print(
-      "Current base URL from Firebase Remote Config: ${firebaseService.getBaseURLServer()}");
+    "Current base URL from Firebase Remote Config: ${firebaseService.getBaseURLServer()}",
+  );
   await FirebaseAppCheck.instance.activate(
     androidProvider: AndroidProvider.playIntegrity,
   );
-
 
   Locale defaultLocale = const Locale('en', 'US');
   String? savedLocale = LocalStorageHelper.getValue('languageCode');
@@ -57,8 +62,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-
     return ScreenUtilInit(
       designSize: const Size(360, 690),
       minTextAdapt: true,

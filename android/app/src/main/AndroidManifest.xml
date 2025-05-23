@@ -7,6 +7,12 @@
         android:label="Book Brain"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        
+        <!-- AdMob app ID -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-4649011658078977~9956099225"/>
+            
         <activity
             android:name=".MainActivity"
             android:exported="true"
