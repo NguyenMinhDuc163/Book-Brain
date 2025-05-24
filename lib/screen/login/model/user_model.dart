@@ -3,12 +3,14 @@ class UserModel {
   final String? username;
   final String? email;
   final String? createdAt;
+  final String? isAds;
 
   UserModel({
      this.id,
      this.username,
      this.email,
      this.createdAt,
+     this.isAds = 'on',
   });
 
   // Ánh xạ JSON sang User
@@ -18,6 +20,7 @@ class UserModel {
       username: json['username'] as String,
       email: json['email'] as String,
       createdAt: json['created_at'] as String?,
+      isAds: json['isAds'] as String?,
     );
   }
 
@@ -27,12 +30,14 @@ class UserModel {
       'id': id,
       'username': username,
       'email': email,
-      'created_at': createdAt,
+      'isAds': isAds,
     };
   }
 
   @override
   String toString() {
-    return 'User{id: $id, username: $username, email: $email, createdAt: $createdAt}';
+    return 'UserModel{id: $id, username: $username, email: $email, createdAt: $createdAt, isAds: $isAds}';
   }
+
+
 }

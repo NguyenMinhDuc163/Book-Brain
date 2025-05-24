@@ -1,3 +1,4 @@
+import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:book_brain/service/service_config/admob_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -120,6 +121,12 @@ class _RewardedInterstitialAdWidgetState
 
   @override
   Widget build(BuildContext context) {
+
+    String isAds = LocalStorageHelper.getValue("isAds");
+    if(isAds == 'off'){
+      return SizedBox.shrink();
+    }
+
     return Material(
       color: Colors.transparent,
       child: InkWell(

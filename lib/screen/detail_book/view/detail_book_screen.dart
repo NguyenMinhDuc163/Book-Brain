@@ -6,11 +6,15 @@ import 'package:book_brain/utils/core/constants/color_constants.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
 import 'package:book_brain/utils/widget/base_appbar.dart';
+import 'package:book_brain/widgets/ad_banner_widget.dart';
+import 'package:book_brain/widgets/native_ad_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import '../../../utils/widget/loading_widget.dart';
 import '../../main_app.dart';
+import 'package:book_brain/service/service_config/admob_service.dart';
 
 class DetailBookScreen extends StatefulWidget {
   DetailBookScreen({super.key, this.bookId, this.chapterId});
@@ -41,6 +45,13 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
 
   Color _backgroundColor = ColorPalette.backgroundColor;
   double _backgroundOpacity = 1.0;
+
+  bool _isBannerVisible = true;
+  DateTime? _bannerHiddenTime;
+  static const Duration _bannerHideDuration = Duration(minutes: 10);
+
+  bool _isRewardedLoading = false;
+  int? _pendingChapterNumber;
 
   Widget _buttonWidget(String text, Function()? onTap) {
     return InkWell(
@@ -88,6 +99,15 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
         chapterId: widget.chapterId ?? 1,
       ),
     );
+
+    // Kiểm tra nếu banner đã bị ẩn và hết thời gian thì hiện lại
+    if (_bannerHiddenTime != null) {
+      final now = DateTime.now();
+      if (now.difference(_bannerHiddenTime!) > _bannerHideDuration) {
+        _isBannerVisible = true;
+        _bannerHiddenTime = null;
+      }
+    }
   }
 
   // Thêm phương thức khôi phục cài đặt
@@ -169,6 +189,99 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
     );
   }
 
+  Future<void> _showRewardedInterstitialAdAndContinue(
+    int newChapterNumber,
+    int maxChapterNumber,
+  ) async {
+    setState(() {
+      _isRewardedLoading = true;
+      _pendingChapterNumber = newChapterNumber;
+    });
+    try {
+      await RewardedInterstitialAd.load(
+        adUnitId: AdMobService().getAdUnitId('rewarded_interstitial'),
+        request: const AdRequest(),
+        rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
+          onAdLoaded: (ad) {
+            ad.fullScreenContentCallback = FullScreenContentCallback(
+              onAdDismissedFullScreenContent: (ad) {
+                // Nếu người dùng tắt quảng cáo trước khi nhận thưởng
+                if (_pendingChapterNumber != null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Bạn cần xem hết quảng cáo để tiếp tục đọc chương tiếp theo!',
+                      ),
+                    ),
+                  );
+                  setState(() {
+                    _isRewardedLoading = false;
+                    // Giữ nguyên _pendingChapterNumber để không chuyển chương
+                  });
+                }
+                ad.dispose();
+              },
+            );
+            ad.show(
+              onUserEarnedReward: (_, reward) {
+                // Khi xem xong quảng cáo, chuyển chương
+                _onRewardedAdCompleted();
+                ad.dispose();
+              },
+            );
+            setState(() {
+              _isRewardedLoading = false;
+            });
+          },
+          onAdFailedToLoad: (error) {
+            setState(() {
+              _isRewardedLoading = false;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Không thể tải quảng cáo, vui lòng thử lại sau!'),
+              ),
+            );
+          },
+        ),
+      );
+    } catch (e) {
+      setState(() {
+        _isRewardedLoading = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Có lỗi khi tải quảng cáo!')));
+    }
+  }
+
+  void _onRewardedAdCompleted() {
+    if (_pendingChapterNumber != null) {
+      _updateChapter(
+        _pendingChapterNumber!,
+        Provider.of<DetailBookNotifier>(
+              context,
+              listen: false,
+            ).bookDetail?.chapters.length ??
+            1,
+      );
+      setState(() {
+        _pendingChapterNumber = null;
+      });
+    }
+  }
+
+  void _tryChangeChapter(int newChapterNumber, int maxChapterNumber) {
+    if (newChapterNumber < 4) {
+      _updateChapter(newChapterNumber, maxChapterNumber);
+    } else {
+      _showRewardedInterstitialAdAndContinue(
+        newChapterNumber,
+        maxChapterNumber,
+      );
+    }
+  }
+
   void _showNoteMenu(BuildContext context, Offset tapPosition) {
     final RenderBox overlay =
         Overlay.of(context).context.findRenderObject() as RenderBox;
@@ -204,7 +317,7 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Thêm ghi chú",),
+          title: Text("Thêm ghi chú"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,7 +360,7 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF6357CC),
               ),
-              child: Text("Lưu",  style: TextStyle(color: Colors.white)),
+              child: Text("Lưu", style: TextStyle(color: Colors.white)),
               onPressed: () async {
                 if (_selectedText != null) {
                   final presenter = Provider.of<DetailBookNotifier>(
@@ -433,6 +546,7 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     final presenter = Provider.of<DetailBookNotifier>(context);
@@ -513,6 +627,9 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
                     ),
                   ),
                 ),
+                Center(child: AdBannerWidget()),
+                SizedBox(height: height_5),
+
                 Expanded(
                   child: RawScrollbar(
                     thumbColor: Colors.grey.withOpacity(0.5),
@@ -574,7 +691,9 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
                             },
                           ),
 
-                          SizedBox(height: height_20),
+                          NativeAdWidget(),
+
+                          SizedBox(height: kMediumPadding),
 
                           BottomSheetSelector(
                             title: 'Chọn chương sách',
@@ -590,7 +709,7 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
                                   int newChapterNumber =
                                       int.tryParse(match.group(1) ?? "") ?? 1;
 
-                                  _updateChapter(
+                                  _tryChangeChapter(
                                     newChapterNumber,
                                     presenter.bookDetail?.chapters.length ?? 1,
                                   );
@@ -606,14 +725,14 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
                             children: [
                               _buttonWidget(
                                 "Chương trước",
-                                () => _updateChapter(
+                                () => _tryChangeChapter(
                                   chapterNumber - 1,
                                   presenter.bookDetail?.chapters.length ?? 1,
                                 ),
                               ),
                               _buttonWidget(
                                 "Chương sau",
-                                () => _updateChapter(
+                                () => _tryChangeChapter(
                                   chapterNumber + 1,
                                   presenter.bookDetail?.chapters.length ?? 1,
                                 ),
@@ -630,6 +749,33 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
               ],
             ),
             presenter.isLoading ? const LoadingWidget() : const SizedBox(),
+            if (_isRewardedLoading)
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black.withOpacity(0.3),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Color(0xFF6357CC),
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          'Đang tải quảng cáo...',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
 

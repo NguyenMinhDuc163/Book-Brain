@@ -25,12 +25,8 @@ void main() async {
   await LocalStorageHelper.initLocalStorageHelper();
   await dotenv.load(fileName: ".env");
 
-  // Đăng ký Native Ad Factory
-  MobileAds.instance.initialize().then((initializationStatus) {
-    initializationStatus.adapterStatuses.forEach((key, value) {
-      debugPrint('Adapter status for $key: ${value.description}');
-    });
-  });
+  // Khởi tạo MobileAds
+  await MobileAds.instance.initialize();
 
   // Cấu hình test device
   MobileAds.instance.updateRequestConfiguration(

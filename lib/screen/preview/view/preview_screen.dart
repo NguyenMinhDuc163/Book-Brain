@@ -9,9 +9,12 @@ import 'package:book_brain/utils/core/constants/mock_data.dart';
 import 'package:book_brain/utils/core/constants/textstyle_ext.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
+import 'package:book_brain/widgets/native_ad_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:book_brain/service/service_config/admob_service.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import '../../../utils/widget/loading_widget.dart';
 
@@ -25,9 +28,11 @@ class PreviewScreen extends StatefulWidget {
 }
 
 class _PreviewScreenState extends State<PreviewScreen> {
-
   String _selectedChapter = "";
   late int chapterNumber;
+  bool _isRewardedLoading = false;
+  int? _pendingChapterNumber;
+
   @override
   void initState() {
     super.initState();
@@ -47,13 +52,115 @@ class _PreviewScreenState extends State<PreviewScreen> {
     super.dispose();
     _selectedChapter = "";
   }
+
+  Future<void> _showRewardedInterstitialAdAndContinue(
+    int chapterNumber,
+    int bookId,
+  ) async {
+    setState(() {
+      _isRewardedLoading = true;
+      _pendingChapterNumber = chapterNumber;
+    });
+    bool isAdLoaded = false;
+    // Bắt đầu timeout 6s
+    Future.delayed(const Duration(seconds: 6), () {
+      if (!_isRewardedLoading || isAdLoaded) return;
+      setState(() {
+        _isRewardedLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Không thể tải quảng cáo, vui lòng thử lại!')),
+      );
+    });
+    try {
+      await RewardedInterstitialAd.load(
+        adUnitId: AdMobService().getAdUnitId('rewarded_interstitial'),
+        request: const AdRequest(),
+        rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
+          onAdLoaded: (ad) {
+            isAdLoaded = true;
+            ad.fullScreenContentCallback = FullScreenContentCallback(
+              onAdDismissedFullScreenContent: (ad) {
+                // Nếu người dùng tắt quảng cáo trước khi nhận thưởng
+                if (_pendingChapterNumber != null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Bạn cần xem hết quảng cáo để tiếp tục đọc chương tiếp theo!',
+                      ),
+                    ),
+                  );
+                  setState(() {
+                    _isRewardedLoading = false;
+                  });
+                }
+                ad.dispose();
+              },
+            );
+            ad.show(
+              onUserEarnedReward: (_, reward) {
+                // Khi xem xong quảng cáo, chuyển màn đọc chi tiết
+                _onRewardedAdCompleted(bookId);
+                ad.dispose();
+              },
+            );
+            setState(() {
+              _isRewardedLoading = false;
+            });
+          },
+          onAdFailedToLoad: (error) {
+            isAdLoaded = true;
+            setState(() {
+              _isRewardedLoading = false;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Không thể tải quảng cáo, vui lòng thử lại sau!'),
+              ),
+            );
+          },
+        ),
+      );
+    } catch (e) {
+      setState(() {
+        _isRewardedLoading = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Có lỗi khi tải quảng cáo!')));
+    }
+  }
+
+  void _onRewardedAdCompleted(int bookId) {
+    final int? chapterToOpen = _pendingChapterNumber ?? chapterNumber;
+    if (chapterToOpen != null) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder:
+              (context) =>
+                  DetailBookScreen(bookId: bookId, chapterId: chapterToOpen),
+        ),
+      );
+      setState(() {
+        _pendingChapterNumber = null;
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Không xác định được chương để mở!')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final presenter = Provider.of<PreviewNotifier>(context);
 
-    final List<String>? _chapters = presenter.bookDetail?.chapters.map(
-              (chapter) => "Chương ${chapter.chapterOrder}: ${chapter.title}",).toList();
-
+    final List<String>? _chapters =
+        presenter.bookDetail?.chapters
+            .map(
+              (chapter) => "Chương ${chapter.chapterOrder}: ${chapter.title}",
+            )
+            .toList();
     
     if (_selectedChapter.isEmpty &&
         presenter.bookDetail?.currentChapter != null) {
@@ -64,7 +171,6 @@ class _PreviewScreenState extends State<PreviewScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          
           Positioned.fill(
             child: Image(
               image:
@@ -76,7 +182,6 @@ class _PreviewScreenState extends State<PreviewScreen> {
               fit: BoxFit.fill,
             ),
           ),
-
           
           Positioned(
             top: kMediumPadding * 3,
@@ -97,14 +202,12 @@ class _PreviewScreenState extends State<PreviewScreen> {
               ),
             ),
           ),
-
           
           Positioned(
             top: kMediumPadding * 3,
             right: kMediumPadding,
             child: GestureDetector(
               onTap: () {
-                
                 presenter.setFavorites(!presenter.isFavorites);
               },
               child: Container(
@@ -116,7 +219,6 @@ class _PreviewScreenState extends State<PreviewScreen> {
                   color: Colors.white,
                 ),
                 child: Icon(
-                  
                   presenter.isFavorites
                       ? FontAwesomeIcons.solidHeart  
                       : FontAwesomeIcons.heart,      
@@ -126,7 +228,6 @@ class _PreviewScreenState extends State<PreviewScreen> {
               ),
             ),
           ),
-
           
           Column(
             children: [
@@ -147,7 +248,6 @@ class _PreviewScreenState extends State<PreviewScreen> {
                       ),
                       child: Column(
                         children: [
-                          
                           Container(
                             alignment: Alignment.center,
                             margin: EdgeInsets.only(top: kDefaultPadding),
@@ -163,7 +263,6 @@ class _PreviewScreenState extends State<PreviewScreen> {
                             ),
                           ),
                           SizedBox(height: kDefaultPadding),
-
                           
                           Expanded(
                             child: ListView(
@@ -186,7 +285,9 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                     SizedBox(width: width_16),
                                     GestureDetector(
                                       onTap: () {
-                                        presenter.setFollowing(!presenter.isFollowing);
+                                        presenter.setFollowing(
+                                          !presenter.isFollowing,
+                                        );
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(
@@ -206,7 +307,9 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Text(
-                                              presenter.isFollowing ? 'Đã theo dõi' : 'Theo dõi',
+                                              presenter.isFollowing
+                                                  ? 'Đã theo dõi'
+                                                  : 'Theo dõi',
                                               style: TextStyle(
                                                 color: Colors.black,
                                                 fontWeight: FontWeight.w500,
@@ -214,7 +317,9 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                             ),
                                             const SizedBox(width: 4),
                                             Icon(
-                                              presenter.isFollowing ? Icons.check : Icons.add,
+                                              presenter.isFollowing
+                                                  ? Icons.check
+                                                  : Icons.add,
                                               color: Colors.black,
                                               size: 18,
                                             ),
@@ -340,8 +445,8 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                   placeholder: 'Vui lòng chọn chương sách',
                                 ),
 
-                                
-                                SizedBox(height: 80),
+                                SizedBox(height: kMediumPadding),
+                                NativeAdWidget(),
                               ],
                             ),
                           ),
@@ -351,7 +456,6 @@ class _PreviewScreenState extends State<PreviewScreen> {
                   },
                 ),
               ),
-
               
               Container(
                 width: double.infinity,
@@ -361,6 +465,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                   title: 'Bắt đầu đọc',
                   ontap: () {
                     print("======> $chapterNumber");
+                    if (chapterNumber < 3) {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder:
@@ -370,13 +475,25 @@ class _PreviewScreenState extends State<PreviewScreen> {
                             ),
                       ),
                     );
+                    } else {
+                      _showRewardedInterstitialAdAndContinue(
+                        chapterNumber,
+                        presenter.bookDetail?.bookId ?? 1,
+                      );
+                    }
                   },
                 ),
               ),
             ],
           ),
           presenter.isLoading ? const LoadingWidget() : const SizedBox(),
-
+          if (_isRewardedLoading)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.3),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            ),
         ],
       ),
     );

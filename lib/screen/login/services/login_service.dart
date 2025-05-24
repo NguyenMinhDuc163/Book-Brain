@@ -37,10 +37,13 @@ class LoginService implements ILoginInterface {
           Map<String, dynamic> userMap = item.value as Map<String, dynamic>;
           String username = userMap['username'] ?? 'Nguyễn Minh Đức';
           String email = userMap['email'] ?? 'ngminhduc1603@gmail.com';
+          String isAds = userMap['isAds'] ?? 'on';
+
           int id = userMap['id'] ?? 1;
           LocalStorageHelper.setValue("userName", username);
           LocalStorageHelper.setValue("email", email);
           LocalStorageHelper.setValue("userId", id);
+          LocalStorageHelper.setValue("isAds", isAds);
 
           break; // Dừng vòng lặp khi tìm thấy user
         }

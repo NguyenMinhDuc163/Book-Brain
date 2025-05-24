@@ -31,7 +31,7 @@ class AdMobService {
   };
 
   // Chọn môi trường (true = production, false = test)
-  bool _isProduction = false; // Chuyển về production để kiếm tiền
+  bool _isProduction = true; // chuyển về test để debug
 
   // Lấy ID quảng cáo dựa trên môi trường
   String _getAdUnitId(String type) {
@@ -166,6 +166,7 @@ class AdMobService {
 
   Future<void> loadAppOpenAd() async {
     try {
+      print('Loading App Open Ad...');
       await AppOpenAd.load(
         adUnitId: _getAdUnitId('app_open'),
         request: const AdRequest(),
@@ -239,10 +240,17 @@ class AdMobService {
   }
 
   void showAppOpenAd() {
+    print('Attempting to show App Open Ad...');
+    print(
+      'App Open Ad status: ${_appOpenAd != null ? 'Loaded' : 'Not loaded'}',
+    );
+    print('Is showing ad: $_isShowingAd');
+
     if (_appOpenAd != null && !_isShowingAd) {
       // Kiểm tra thời gian từ lần hiển thị quảng cáo cuối
       if (_lastAdShownTime != null) {
         final timeSinceLastAd = DateTime.now().difference(_lastAdShownTime!);
+        print('Time since last ad: ${timeSinceLastAd.inSeconds} seconds');
         if (timeSinceLastAd < const Duration(minutes: 1)) {
           print('App Open Ad: Too soon to show another ad');
           return;
@@ -250,11 +258,18 @@ class AdMobService {
       }
 
       print('Showing App Open Ad');
-      _appOpenAd!.show();
+      try {
+        _appOpenAd!.show();
+      } catch (e) {
+        print('Error showing App Open Ad: $e');
+        _appOpenAd = null;
+        loadAppOpenAd();
+      }
     } else {
       print('App Open Ad not ready to show');
       // Thử tải lại quảng cáo nếu chưa có
       if (_appOpenAd == null) {
+        print('Reloading App Open Ad...');
         loadAppOpenAd();
       }
     }
