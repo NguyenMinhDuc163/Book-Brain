@@ -15,6 +15,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:book_brain/service/service_config/admob_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
 
 import '../../../utils/widget/loading_widget.dart';
 
@@ -57,6 +58,12 @@ class _PreviewScreenState extends State<PreviewScreen> {
     int chapterNumber,
     int bookId,
   ) async {
+    String isAds = LocalStorageHelper.getValue("isAds");
+    if (isAds == 'off') {
+      _onRewardedAdCompleted(bookId);
+      return;
+    }
+
     setState(() {
       _isRewardedLoading = true;
       _pendingChapterNumber = chapterNumber;
@@ -161,7 +168,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
               (chapter) => "Chương ${chapter.chapterOrder}: ${chapter.title}",
             )
             .toList();
-    
+
     if (_selectedChapter.isEmpty &&
         presenter.bookDetail?.currentChapter != null) {
       _selectedChapter =
@@ -182,7 +189,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
               fit: BoxFit.fill,
             ),
           ),
-          
+
           Positioned(
             top: kMediumPadding * 3,
             left: kMediumPadding,
@@ -202,7 +209,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
               ),
             ),
           ),
-          
+
           Positioned(
             top: kMediumPadding * 3,
             right: kMediumPadding,
@@ -220,15 +227,15 @@ class _PreviewScreenState extends State<PreviewScreen> {
                 ),
                 child: Icon(
                   presenter.isFavorites
-                      ? FontAwesomeIcons.solidHeart  
-                      : FontAwesomeIcons.heart,      
+                      ? FontAwesomeIcons.solidHeart
+                      : FontAwesomeIcons.heart,
                   size: 18,
-                  color: presenter.isFavorites ? Colors.red : Colors.grey, 
+                  color: presenter.isFavorites ? Colors.red : Colors.grey,
                 ),
               ),
             ),
           ),
-          
+
           Column(
             children: [
               Expanded(
@@ -263,7 +270,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                             ),
                           ),
                           SizedBox(height: kDefaultPadding),
-                          
+
                           Expanded(
                             child: ListView(
                               controller: scrollController,
@@ -296,7 +303,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                         ),
                                         decoration: BoxDecoration(
                                           color:
-                                          presenter.isFollowing
+                                              presenter.isFollowing
                                                   ? Color(0xFFBB86FC)
                                                   : ColorPalette.colorGreen,
                                           borderRadius: BorderRadius.circular(
@@ -396,7 +403,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                   style: TextStyle(fontWeight: FontWeight.w300),
                                 ),
                                 SizedBox(height: kDefaultPadding),
-                                
+
                                 SizedBox(height: kDefaultPadding),
                                 Text(
                                   'Mô tả',
@@ -456,7 +463,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                   },
                 ),
               ),
-              
+
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.all(kDefaultPadding),
@@ -465,16 +472,17 @@ class _PreviewScreenState extends State<PreviewScreen> {
                   title: 'Bắt đầu đọc',
                   ontap: () {
                     print("======> $chapterNumber");
-                    if (chapterNumber < 3) {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder:
-                            (context) => DetailBookScreen(
-                              bookId: presenter.bookDetail?.bookId ?? 1,
-                              chapterId: chapterNumber,
-                            ),
-                      ),
-                    );
+                    String isAds = LocalStorageHelper.getValue("isAds");
+                    if (chapterNumber < 3 || isAds == 'off') {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder:
+                              (context) => DetailBookScreen(
+                                bookId: presenter.bookDetail?.bookId ?? 1,
+                                chapterId: chapterNumber,
+                              ),
+                        ),
+                      );
                     } else {
                       _showRewardedInterstitialAdAndContinue(
                         chapterNumber,

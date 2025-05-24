@@ -7,12 +7,14 @@ class RewardedInterstitialAdWidget extends StatefulWidget {
   final Widget child;
   final VoidCallback onRewarded;
   final int showAfterCount;
+  final VoidCallback? onAdDismissed;
 
   const RewardedInterstitialAdWidget({
     Key? key,
     required this.child,
     required this.onRewarded,
     this.showAfterCount = 3,
+    this.onAdDismissed,
   }) : super(key: key);
 
   @override
@@ -25,11 +27,15 @@ class _RewardedInterstitialAdWidgetState
   RewardedInterstitialAd? _rewardedInterstitialAd;
   bool _isAdLoaded = false;
   int _interactionCount = 0;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _loadRewardedInterstitialAd();
+    String isAds = LocalStorageHelper.getValue("isAds");
+    if(isAds == 'on') {
+      _loadRewardedInterstitialAd();
+    }
   }
 
   Future<void> _loadRewardedInterstitialAd() async {
@@ -48,6 +54,7 @@ class _RewardedInterstitialAdWidgetState
             if (mounted) {
               setState(() {
                 _isAdLoaded = true;
+                _isLoading = false;
               });
             }
           },
@@ -58,6 +65,7 @@ class _RewardedInterstitialAdWidgetState
             if (mounted) {
               setState(() {
                 _isAdLoaded = false;
+                _isLoading = false;
               });
             }
             // Thử tải lại sau 5 giây nếu thất bại
@@ -70,6 +78,11 @@ class _RewardedInterstitialAdWidgetState
       );
     } catch (e) {
       print('Error loading rewarded interstitial ad: $e');
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
       // Thử tải lại sau 5 giây nếu có lỗi
       Future.delayed(const Duration(seconds: 5), _loadRewardedInterstitialAd);
     }
@@ -86,14 +99,29 @@ class _RewardedInterstitialAdWidgetState
         _showRewardedInterstitialAd();
       } else {
         print('Ad is not loaded yet');
+        setState(() {
+          _isLoading = true;
+        });
+        _loadRewardedInterstitialAd();
       }
       _interactionCount = 0;
+    } else {
+      widget.onRewarded();
     }
   }
 
   void _showRewardedInterstitialAd() {
     if (_rewardedInterstitialAd != null) {
       print('Showing rewarded interstitial ad');
+      _rewardedInterstitialAd!
+          .fullScreenContentCallback = FullScreenContentCallback(
+        onAdDismissedFullScreenContent: (ad) {
+          if (widget.onAdDismissed != null) {
+            widget.onAdDismissed!();
+          }
+          ad.dispose();
+        },
+      );
       _rewardedInterstitialAd!.show(
         onUserEarnedReward: (_, reward) {
           print(
@@ -121,21 +149,51 @@ class _RewardedInterstitialAdWidgetState
 
   @override
   Widget build(BuildContext context) {
-
     String isAds = LocalStorageHelper.getValue("isAds");
-    if(isAds == 'off'){
+    if (isAds == 'off') {
       return SizedBox.shrink();
     }
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          print('Container tapped');
-          _incrementInteractionCount();
-        },
-        child: widget.child,
-      ),
+    return Stack(
+      children: [
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              print('Container tapped');
+              _incrementInteractionCount();
+            },
+            child: widget.child,
+          ),
+        ),
+        if (_isLoading)
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withOpacity(0.3),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Color(0xFF6357CC),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      'Đang tải quảng cáo...',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

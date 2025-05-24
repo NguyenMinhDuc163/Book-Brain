@@ -29,6 +29,17 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _initializeApp() async {
     print('Initializing app...');
 
+    // Kiểm tra xem user có phải VIP không
+    String isAds = LocalStorageHelper.getValue("isAds");
+    if (isAds == 'off') {
+      // Nếu là VIP, chỉ đợi 3 giây rồi chuyển màn
+      await Future.delayed(const Duration(seconds: 3));
+      if (mounted) {
+        redirectIntroScreen();
+      }
+      return;
+    }
+
     // Tăng số lần mở app
     int openCount =
         (LocalStorageHelper.getValue(_appOpenCountKey) as int?) ?? 0;
@@ -36,7 +47,6 @@ class _SplashScreenState extends State<SplashScreen> {
     LocalStorageHelper.setValue(_appOpenCountKey, openCount);
 
     // Chỉ tải và hiển thị quảng cáo khi đạt đến số lần mở nhất định
-
     if (openCount >= _showAdAfterCount) {
       // Tải quảng cáo
       await _adMobService.loadAppOpenAd();
