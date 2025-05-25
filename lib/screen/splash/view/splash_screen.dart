@@ -30,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
     print('Initializing app...');
 
     // Kiểm tra xem user có phải VIP không
-    String isAds = LocalStorageHelper.getValue("isAds");
+    String isAds = LocalStorageHelper.getValue("isAds") ?? 'on';
     if (isAds == 'off') {
       // Nếu là VIP, chỉ đợi 3 giây rồi chuyển màn
       await Future.delayed(const Duration(seconds: 3));

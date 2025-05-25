@@ -54,6 +54,26 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
   bool _isRewardedLoading = false;
   int? _pendingChapterNumber;
 
+  // Thêm key cho LocalStorage để lưu danh sách chương đã xem quảng cáo
+  static const String _viewedAdsChaptersKey = 'viewed_ads_chapters';
+
+  // Hàm kiểm tra xem chương đã xem quảng cáo chưa
+  bool _hasViewedAdForChapter(int chapterNumber) {
+    List<dynamic> viewedChapters =
+        LocalStorageHelper.getValue(_viewedAdsChaptersKey) ?? [];
+    return viewedChapters.contains(chapterNumber);
+  }
+
+  // Hàm lưu chương đã xem quảng cáo
+  void _markChapterAsViewed(int chapterNumber) {
+    List<dynamic> viewedChapters =
+        LocalStorageHelper.getValue(_viewedAdsChaptersKey) ?? [];
+    if (!viewedChapters.contains(chapterNumber)) {
+      viewedChapters.add(chapterNumber);
+      LocalStorageHelper.setValue(_viewedAdsChaptersKey, viewedChapters);
+    }
+  }
+
   Widget _buttonWidget(String text, Function()? onTap) {
     return InkWell(
       onTap: onTap,
@@ -146,6 +166,8 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
 
   @override
   void dispose() {
+    // Reset danh sách chương đã xem quảng cáo khi thoát màn hình
+    LocalStorageHelper.setValue(_viewedAdsChaptersKey, []);
     _scrollController.dispose();
     super.dispose();
   }
@@ -193,56 +215,136 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
   void _handleChapterChange(int newChapterNumber, int maxChapterNumber) {
     if (newChapterNumber < 4) {
       _updateChapter(newChapterNumber, maxChapterNumber);
-    } else {
-      String isAds = LocalStorageHelper.getValue("isAds");
-      if (isAds == 'off') {
-        _updateChapter(newChapterNumber, maxChapterNumber);
-      } else {
+      return;
+    }
+
+    String isAds = LocalStorageHelper.getValue("isAds");
+    if (isAds == 'off') {
+      _updateChapter(newChapterNumber, maxChapterNumber);
+      return;
+    }
+
+    // Kiểm tra xem đã xem quảng cáo cho chương này chưa
+    if (_hasViewedAdForChapter(newChapterNumber)) {
+      _updateChapter(newChapterNumber, maxChapterNumber);
+      return;
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      _isRewardedLoading = true;
+    });
+
+    // Thêm timeout 3 giây
+    Future.delayed(const Duration(seconds: 3), () {
+      if (_isRewardedLoading && mounted) {
         setState(() {
-          _isRewardedLoading = true;
+          _isRewardedLoading = false;
         });
-        RewardedInterstitialAd.load(
-          adUnitId: AdMobService().getAdUnitId('rewarded_interstitial'),
-          request: const AdRequest(),
-          rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
-            onAdLoaded: (ad) {
-              setState(() {
-                _isRewardedLoading = false;
-              });
-              ad.fullScreenContentCallback = FullScreenContentCallback(
-                onAdDismissedFullScreenContent: (ad) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Bạn cần xem hết quảng cáo để tiếp tục đọc chương tiếp theo!',
-                      ),
-                    ),
-                  );
-                  ad.dispose();
-                },
-              );
-              ad.show(
-                onUserEarnedReward: (_, reward) {
-                  _updateChapter(newChapterNumber, maxChapterNumber);
-                  ad.dispose();
-                },
-              );
-            },
-            onAdFailedToLoad: (error) {
-              setState(() {
-                _isRewardedLoading = false;
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Không thể tải quảng cáo, vui lòng thử lại sau!',
-                  ),
-                ),
-              );
-            },
+        _updateChapter(newChapterNumber, maxChapterNumber);
+        _markChapterAsViewed(newChapterNumber);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Đang tải quảng cáo, vui lòng thử lại sau!'),
+            duration: Duration(seconds: 2),
           ),
         );
       }
+    });
+
+    try {
+      RewardedAd.load(
+        adUnitId: AdMobService().getAdUnitId('rewarded'),
+        request: const AdRequest(),
+        rewardedAdLoadCallback: RewardedAdLoadCallback(
+          onAdLoaded: (ad) {
+            if (!mounted) {
+              ad.dispose();
+              return;
+            }
+
+            setState(() {
+              _isRewardedLoading = false;
+            });
+
+            ad.fullScreenContentCallback = FullScreenContentCallback(
+              onAdDismissedFullScreenContent: (ad) {
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Bạn cần xem hết quảng cáo để tiếp tục đọc chương tiếp theo!',
+                    ),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+                ad.dispose();
+              },
+              onAdFailedToShowFullScreenContent: (ad, error) {
+                print('Ad failed to show: $error');
+                ad.dispose();
+                if (mounted) {
+                  _updateChapter(newChapterNumber, maxChapterNumber);
+                  _markChapterAsViewed(newChapterNumber);
+                }
+              },
+            );
+
+            // Thêm delay nhỏ trước khi hiển thị quảng cáo
+            Future.delayed(Duration(milliseconds: 500), () {
+              if (mounted) {
+                ad.show(
+                  onUserEarnedReward: (_, reward) {
+                    if (mounted) {
+                      _markChapterAsViewed(newChapterNumber);
+                      _updateChapter(newChapterNumber, maxChapterNumber);
+                    }
+                    ad.dispose();
+                  },
+                );
+              } else {
+                ad.dispose();
+              }
+            });
+          },
+          onAdFailedToLoad: (error) {
+            print('Ad failed to load: $error');
+            if (!mounted) return;
+
+            setState(() {
+              _isRewardedLoading = false;
+            });
+
+            _updateChapter(newChapterNumber, maxChapterNumber);
+            _markChapterAsViewed(newChapterNumber);
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Không thể tải quảng cáo, vui lòng thử lại sau!'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+          },
+        ),
+      );
+    } catch (e) {
+      print('Error loading ad: $e');
+      if (!mounted) return;
+
+      setState(() {
+        _isRewardedLoading = false;
+      });
+
+      _updateChapter(newChapterNumber, maxChapterNumber);
+      _markChapterAsViewed(newChapterNumber);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Có lỗi xảy ra, vui lòng thử lại sau!'),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -693,25 +795,7 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
                                   presenter.bookDetail?.chapters.length ?? 1,
                                 ),
                               ),
-                              RewardedInterstitialAdWidget(
-                                showAfterCount: 3,
-                                onRewarded: () {
-                                  _updateChapter(
-                                    chapterNumber + 1,
-                                    presenter.bookDetail?.chapters.length ?? 1,
-                                  );
-                                },
-                                onAdDismissed: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        'Bạn cần xem hết quảng cáo để tiếp tục đọc chương tiếp theo!',
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: _buttonWidget("Chương sau", null),
-                              ),
+                              _buttonWidget("Chương sau", null),
                             ],
                           ),
 
