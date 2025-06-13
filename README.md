@@ -1,10 +1,5 @@
 # AI Tìm Kiếm và Đề Xuất Sách
 
-## Nhóm phát triển
-- **Nguyễn Minh Đức** - B21DCCN249  
-- **Nguyễn Hữu Tú Minh** - B21DCCN526  
-- **Dương Anh Đức** - B21DCCN238
-- **Nguyễn Lê Quốc Khánh** - B21DCCN454
   
 ## Giới Thiệu
 **AI Tìm Kiếm và Đề Xuất Sách** là một ứng dụng di động giúp người dùng tìm kiếm và đề xuất sách dựa trên sở thích đọc và lịch sử đọc sách.
@@ -16,6 +11,54 @@
 - **Đánh Giá và Ghi Chú Cá Nhân:** Ghi chú và đánh giá theo quan điểm cá nhân.
 - **Lịch Sử Đọc Sách:** Lưu trữ và theo dõi những sách đã đọc.
 - **Bảng Xếp Hạng và Đề Xuất Tác Giả:** Gợi ý sách và tác giả theo xu hướng độc giả.
+
+## Demo Sản Phẩm
+
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; justify-items: center; margin: 20px 0;">
+
+<div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+<h4 style="margin: 0;">Giao Diện Chính</h4>
+<img src="assets/picture/home.jpg" alt="Giao diện chính" width="220" height="440" style="object-fit: contain; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+</div>
+
+<div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+<h4 style="margin: 0;">Chi Tiết Sách</h4>
+<img src="assets/picture/detail_book.jpg" alt="Chi tiết sách" width="220" height="440" style="object-fit: contain; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+</div>
+
+<div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+<h4 style="margin: 0;">Bảng Xếp Hạng Sách</h4>
+<img src="assets/picture/book_ranking.jpg" alt="Bảng xếp hạng sách" width="220" height="440" style="object-fit: contain; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+</div>
+
+<div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+<h4 style="margin: 0;">Bảng Xếp Hạng Tác Giả</h4>
+<img src="assets/picture/author_ranking.jpg" alt="Bảng xếp hạng tác giả" width="220" height="440" style="object-fit: contain; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+</div>
+
+<div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+<h4 style="margin: 0;">Ghi Chú</h4>
+<img src="assets/picture/note.jpg" alt="Ghi chú" width="220" height="440" style="object-fit: contain; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+</div>
+
+<div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+<h4 style="margin: 0;">Xem Trước</h4>
+<img src="assets/picture/preview.jpg" alt="Xem trước" width="220" height="440" style="object-fit: contain; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+</div>
+
+</div>
+
+## Tải Ứng Dụng
+Bạn có thể tải ứng dụng từ Google Play Store:
+<div style="display: flex; justify-content: center; margin: 20px 0;">
+<a href="https://play.google.com/store/apps/details?id=com.nguyenduc.book_brain">
+<img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" width="200" style="object-fit: contain;">
+</a>
+</div>
+
+## Hỗ Trợ Dự Án
+Nếu bạn thấy dự án này hữu ích và muốn hỗ trợ phát triển thêm, bạn có thể ủng hộ qua [GitHub Sponsors](https://github.com/sponsors/NguyenMinhDuc163). Mọi sự đóng góp đều được đánh giá cao và sẽ giúp dự án ngày càng hoàn thiện hơn.
+
 ## Cài Đặt
 
 ### Yêu Cầu Hệ Thống
@@ -63,6 +106,6 @@
      flutter run
      ```
 
-## Liên Hệ  .h
-Nếu gặp vấn đề khi cài đặt hoặc chạy ứng dụng, vui lòng liên hệ với chúng tôi qua Telegram: [Nhóm hỗ trợ](https://www.youtube.com/watch?v=dQw4w9WgXcQ).
+## Liên Hệ 
+Nếu gặp vấn đề khi cài đặt hoặc chạy ứng dụng, vui lòng liên hệ với chúng tôi qua Telegram: [Nhóm hỗ trợ](https://t.me/+6fX3YBx3flk2ZTI1).
 

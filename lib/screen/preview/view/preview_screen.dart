@@ -68,73 +68,97 @@ class _PreviewScreenState extends State<PreviewScreen> {
       _isRewardedLoading = true;
       _pendingChapterNumber = chapterNumber;
     });
+
+    int retryCount = 0;
+    const maxRetries = 3;
     bool isAdLoaded = false;
-    // Bắt đầu timeout 6s
-    Future.delayed(const Duration(seconds: 6), () {
-      if (!_isRewardedLoading || isAdLoaded) return;
-      setState(() {
-        _isRewardedLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Không thể tải quảng cáo, vui lòng thử lại!')),
-      );
-    });
-    try {
-      await RewardedInterstitialAd.load(
-        adUnitId: AdMobService().getAdUnitId('rewarded_interstitial'),
-        request: const AdRequest(),
-        rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
-          onAdLoaded: (ad) {
-            isAdLoaded = true;
-            ad.fullScreenContentCallback = FullScreenContentCallback(
-              onAdDismissedFullScreenContent: (ad) {
-                // Nếu người dùng tắt quảng cáo trước khi nhận thưởng
-                if (_pendingChapterNumber != null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Bạn cần xem hết quảng cáo để tiếp tục đọc chương tiếp theo!',
+
+    while (retryCount < maxRetries && !isAdLoaded) {
+      try {
+        if (retryCount > 0) {
+          await Future.delayed(Duration(seconds: 2));
+        }
+
+        await RewardedInterstitialAd.load(
+          adUnitId: AdMobService().getAdUnitId('rewarded_interstitial'),
+          request: const AdRequest(),
+          rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
+            onAdLoaded: (ad) {
+              isAdLoaded = true;
+              ad.fullScreenContentCallback = FullScreenContentCallback(
+                onAdDismissedFullScreenContent: (ad) {
+                  if (_pendingChapterNumber != null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Bạn cần xem hết quảng cáo để tiếp tục đọc chương tiếp theo!',
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                    setState(() {
+                      _isRewardedLoading = false;
+                    });
+                  }
+                  ad.dispose();
+                },
+                onAdFailedToShowFullScreenContent: (ad, error) {
+                  print('Ad failed to show: $error');
+                  ad.dispose();
                   setState(() {
                     _isRewardedLoading = false;
                   });
+                  if (retryCount < maxRetries) {
+                    retryCount++;
+                    isAdLoaded = false;
+                  }
+                },
+              );
+
+              Future.delayed(Duration(milliseconds: 500), () {
+                if (mounted) {
+                  ad.show(
+                    onUserEarnedReward: (_, reward) {
+                      _onRewardedAdCompleted(bookId);
+                      ad.dispose();
+                    },
+                  );
                 }
-                ad.dispose();
-              },
-            );
-            ad.show(
-              onUserEarnedReward: (_, reward) {
-                // Khi xem xong quảng cáo, chuyển màn đọc chi tiết
-                _onRewardedAdCompleted(bookId);
-                ad.dispose();
-              },
-            );
-            setState(() {
-              _isRewardedLoading = false;
-            });
-          },
-          onAdFailedToLoad: (error) {
-            isAdLoaded = true;
-            setState(() {
-              _isRewardedLoading = false;
-            });
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Không thể tải quảng cáo, vui lòng thử lại sau!'),
-              ),
-            );
-          },
-        ),
-      );
-    } catch (e) {
-      setState(() {
-        _isRewardedLoading = false;
-      });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Có lỗi khi tải quảng cáo!')));
+              });
+
+              setState(() {
+                _isRewardedLoading = false;
+              });
+            },
+            onAdFailedToLoad: (error) {
+              print('Ad failed to load: $error');
+              retryCount++;
+              if (retryCount >= maxRetries) {
+                setState(() {
+                  _isRewardedLoading = false;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Không thể tải quảng cáo, vui lòng thử lại sau!',
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+        );
+      } catch (e) {
+        print('Error loading ad: $e');
+        retryCount++;
+        if (retryCount >= maxRetries) {
+          setState(() {
+            _isRewardedLoading = false;
+          });
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Có lỗi khi tải quảng cáo!')));
+        }
+      }
     }
   }
 

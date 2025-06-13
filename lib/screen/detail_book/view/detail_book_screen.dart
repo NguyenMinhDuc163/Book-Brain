@@ -795,7 +795,17 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
                                   presenter.bookDetail?.chapters.length ?? 1,
                                 ),
                               ),
-                              _buttonWidget("Chương sau", null),
+                              _buttonWidget("Chương sau", () {
+                                int? isMaxChapter = presenter.bookDetail?.chapters.length ?? 1;
+                                if(chapterNumber + 1 > isMaxChapter) {
+                                  showToastTop(message: "Bạn đang ở chương cuối cùng");
+                                  return;
+                                }
+                                _handleChapterChange(
+                                  chapterNumber + 1,
+                                  presenter.bookDetail?.chapters.length ?? 1,
+                                );
+                              },),
                             ],
                           ),
 

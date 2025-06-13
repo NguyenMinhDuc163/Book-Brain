@@ -29,40 +29,8 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _initializeApp() async {
     print('Initializing app...');
 
-    // Kiểm tra xem user có phải VIP không
-    String isAds = LocalStorageHelper.getValue("isAds") ?? 'on';
-    if (isAds == 'off') {
-      // Nếu là VIP, chỉ đợi 3 giây rồi chuyển màn
-      await Future.delayed(const Duration(seconds: 3));
-      if (mounted) {
-        redirectIntroScreen();
-      }
-      return;
-    }
-
-    // Tăng số lần mở app
-    int openCount =
-        (LocalStorageHelper.getValue(_appOpenCountKey) as int?) ?? 0;
-    openCount++;
-    LocalStorageHelper.setValue(_appOpenCountKey, openCount);
-
-    // Chỉ tải và hiển thị quảng cáo khi đạt đến số lần mở nhất định
-    if (openCount >= _showAdAfterCount) {
-      // Tải quảng cáo
-      await _adMobService.loadAppOpenAd();
-
-      // Đợi 2 giây để đảm bảo quảng cáo được tải đầy đủ
-      await Future.delayed(const Duration(seconds: 3));
-
-      // Hiển thị quảng cáo App Open
-      _adMobService.showAppOpenAd();
-
-      // Reset số lần mở app về 0
-      LocalStorageHelper.setValue(_appOpenCountKey, 0);
-    } else {
-      // Nếu chưa đủ số lần mở, chỉ đợi 3 giây
-      await Future.delayed(const Duration(seconds: 3));
-    }
+    // Đợi 2 giây rồi chuyển màn
+    await Future.delayed(const Duration(seconds: 2));
 
     if (mounted) {
       redirectIntroScreen();
@@ -89,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen> {
             AssetHelper.backgroundSplash,
             fit: BoxFit.fitWidth,
           ),
-        ), // cho full man hinh
+        ),
         Positioned.fill(
           child: ImageHelper.loadFromAsset(AssetHelper.circleSplash),
         ),
