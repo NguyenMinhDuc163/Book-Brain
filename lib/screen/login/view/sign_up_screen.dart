@@ -269,11 +269,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (email.length > 254) return false;
 
     // Biểu thức chính quy kiểm tra cú pháp email chặt chẽ hơn
-    final RegExp emailRegExp = RegExp(
-      r'^[a-zA-Z0-'
-      r']+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-      caseSensitive: false,
-    );
+    final RegExp emailRegExp = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",);
 
     // Kiểm tra các trường hợp đặc biệt
     if (email.contains('..')) return false;
