@@ -14,39 +14,30 @@
 
 ## Demo Sản Phẩm
 
-<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; justify-items: center; margin: 20px 0;">
-
-<div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-<h4 style="margin: 0;">Giao Diện Chính</h4>
-<img src="assets/picture/home.jpg" alt="Giao diện chính" width="220" height="440" style="object-fit: contain; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-</div>
-
-<div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-<h4 style="margin: 0;">Chi Tiết Sách</h4>
-<img src="assets/picture/detail_book.jpg" alt="Chi tiết sách" width="220" height="440" style="object-fit: contain; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-</div>
-
-<div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-<h4 style="margin: 0;">Bảng Xếp Hạng Sách</h4>
-<img src="assets/picture/book_ranking.jpg" alt="Bảng xếp hạng sách" width="220" height="440" style="object-fit: contain; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-</div>
-
-<div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-<h4 style="margin: 0;">Bảng Xếp Hạng Tác Giả</h4>
-<img src="assets/picture/author_ranking.jpg" alt="Bảng xếp hạng tác giả" width="220" height="440" style="object-fit: contain; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-</div>
-
-<div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-<h4 style="margin: 0;">Ghi Chú</h4>
-<img src="assets/picture/note.jpg" alt="Ghi chú" width="220" height="440" style="object-fit: contain; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-</div>
-
-<div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-<h4 style="margin: 0;">Xem Trước</h4>
-<img src="assets/picture/preview.jpg" alt="Xem trước" width="220" height="440" style="object-fit: contain; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-</div>
-
-</div>
+<table>
+<tr>
+<td width="20%" style="padding-right: 10px;">
+<img src="assets/picture/home.jpg" alt="Home Screen" width="100%">
+<br><em>Trang chủ</em>
+</td>
+<td width="20%" style="padding-right: 10px;">
+<img src="assets/picture/detail_book.jpg" alt="Chi Tiết Sách" width="100%">
+<br><em>Chi Tiết Sách</em>
+</td>
+<td width="20%" style="padding: 0 10px;">
+<img src="assets/picture/book_ranking.jpg" alt="Bảng Xếp Hạng Sách" width="100%">
+<br><em>Bảng Xếp Hạng Sách</em>
+</td>
+<td width="20%" style="padding-left: 10px;">
+<img src="assets/picture/note.jpg" alt="Ghi Chú" width="100%">
+<br><em>Ghi Chú</em>
+</td>
+<td width="20%" style="padding-left: 10px;">
+<img src="assets/picture/preview.jpg" alt="Xem Trước" width="100%">
+<br><em>Xem Trước</em>
+</td>
+</tr>
+</table>
 
 ## Tải Ứng Dụng
 Bạn có thể tải ứng dụng từ Google Play Store:
@@ -108,4 +99,5 @@ Nếu bạn thấy dự án này hữu ích và muốn hỗ trợ phát triển 
 
 ## Liên Hệ 
 Nếu gặp vấn đề khi cài đặt hoặc chạy ứng dụng, vui lòng liên hệ với chúng tôi qua Telegram: [Nhóm hỗ trợ](https://t.me/+6fX3YBx3flk2ZTI1).
+
 
