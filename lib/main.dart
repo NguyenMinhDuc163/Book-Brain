@@ -23,7 +23,7 @@ void main() async {
   await EasyLocalization.ensureInitialized();
   await Hive.initFlutter();
   await LocalStorageHelper.initLocalStorageHelper();
-  await dotenv.load(fileName: ".env");
+  // await dotenv.load(fileName: ".env");
 
   // Khởi tạo MobileAds
   await MobileAds.instance.initialize();
