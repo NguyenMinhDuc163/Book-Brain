@@ -1,11 +1,5 @@
 class BaseResponse<T> {
-  BaseResponse({
-    this.code,
-    this.data,
-    this.status,
-    this.message,
-    this.error,
-  });
+  BaseResponse({this.code, this.data, this.status, this.message, this.error});
 
   final int? code;
   final List<T>? data; // data là một danh sách các đối tượng T
@@ -14,18 +8,27 @@ class BaseResponse<T> {
   final String? error;
 
   factory BaseResponse.fromJson(
-      Map<String, dynamic> json,
-      T Function(dynamic json) fromJsonT,
-      ) =>
-      BaseResponse<T>(
-        code: json["code"],
-        data: json["data"] != null || json["data"] != {}
-            ? List<T>.from(json["data"].map((x) => fromJsonT(x)))
-            : [],
-        status: json["status"],
-        message: json["message"],
-        error: json["error"],
-      );
+    Map<String, dynamic> json,
+    T Function(dynamic json) fromJsonT,
+  ) {
+    final dynamic rawData = json["data"];
+    List<T> responseData = [];
+
+    if (rawData is List) {
+      responseData = List<T>.from(rawData.map((x) => fromJsonT(x)));
+    } else if (rawData is Map<String, dynamic> && rawData.isNotEmpty) {
+      responseData = [fromJsonT(rawData)];
+    }
+
+    return BaseResponse<T>(
+      code: json["code"],
+      data: responseData,
+      status: json["status"],
+      message: json["message"],
+      error:
+          json["error"] ?? json["title"] ?? json["detail"] ?? json["message"],
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     "code": code,

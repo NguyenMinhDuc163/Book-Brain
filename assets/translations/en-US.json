@@ -197,7 +197,16 @@
     "error_updating_email": "An error occurred while updating email",
     "error_occurred": "An error occurred",
     "error_updating_phone": "An error occurred while updating phone number",
-    "change_password_success": "Password changed successfully"
+    "change_password_success": "Password changed successfully",
+    "delete_account": "Delete account",
+    "delete_account_subtitle": "Permanently delete your account",
+    "delete_account_warning": "Your data will be permanently deleted and cannot be recovered. Are you sure you want to delete your account?",
+    "delete_account_success_title": "Account deleted successfully",
+    "delete_account_success_message": "Your account has been deleted successfully.",
+    "delete_account_failed": "Failed to delete account, please try again later.",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "close": "Close"
   },
 
   "drawer": {

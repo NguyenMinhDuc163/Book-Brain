@@ -201,7 +201,16 @@
     "error_updating_email": "Có lỗi xảy ra khi cập nhật email",
     "error_occurred": "Có lỗi xảy ra",
     "error_updating_phone": "Có lỗi xảy ra khi cập nhật số điện thoại",
-    "change_password_success": "Đổi mật khẩu thành công"
+    "change_password_success": "Đổi mật khẩu thành công",
+    "delete_account": "Xóa tài khoản",
+    "delete_account_subtitle": "Xóa vĩnh viễn tài khoản của bạn",
+    "delete_account_warning": "Dữ liệu của bạn sẽ bị xóa vĩnh viễn và không thể khôi phục. Bạn có chắc chắn muốn xóa tài khoản không?",
+    "delete_account_success_title": "Xóa tài khoản thành công",
+    "delete_account_success_message": "Tài khoản của bạn đã được xóa thành công.",
+    "delete_account_failed": "Xóa tài khoản thất bại, vui lòng thử lại sau.",
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "close": "Đóng"
   },
 
   "drawer": {

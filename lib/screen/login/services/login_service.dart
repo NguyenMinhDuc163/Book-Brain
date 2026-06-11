@@ -4,6 +4,7 @@ import 'package:book_brain/service/api_service/request/login_request.dart';
 import 'package:book_brain/service/api_service/response/base_response.dart';
 import 'package:book_brain/service/api_service/response/login_response.dart';
 import 'package:book_brain/service/service_config/network_service.dart';
+import 'package:book_brain/utils/core/common/toast.dart';
 import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
 
 class LoginService implements ILoginInterface {
@@ -18,13 +19,13 @@ class LoginService implements ILoginInterface {
     LoginRequest request = LoginRequest(
       email: username,
       password: password,
-      fcmToken: tokenFCM ?? "",
+      fcmToken: tokenFCM,
     );
     final BaseResponse<LoginResponse> response = await apiServices.sendLogin(
       request,
     );
 
-    if (response.code != null) {
+    if (response.code == 200 || response.code == 201) {
       for (var item in response.data!) {
         if (item.key == 'token') {
           await LocalStorageHelper.setValue("authToken", item.value);
@@ -48,7 +49,12 @@ class LoginService implements ILoginInterface {
           break; // Dừng vòng lặp khi tìm thấy user
         }
       }
+      return true;
+    } else {
+      showToastTop(
+        message: response.error ?? response.message ?? "Đăng nhập thất bại",
+      );
+      return false;
     }
-    return response.code == 200 || response.code == 201;
   }
 }

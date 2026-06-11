@@ -1,11 +1,14 @@
 import 'package:book_brain/screen/edit_profile/view/edit_profile_screen.dart';
+import 'package:book_brain/screen/edit_profile/provider/profile_notifier.dart';
 import 'package:book_brain/screen/home/provider/home_notifier.dart';
 import 'package:book_brain/screen/login/view/login_screen.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart'
     show AssetHelper;
+import 'package:book_brain/utils/core/common/toast.dart';
 import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -195,6 +198,14 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
                 subtitle: "Cập nhật mật khẩu của bạn",
               ),
+              _buildDivider(),
+              _buildSettingItem(
+                "settings.delete_account".tr(),
+                Colors.red,
+                _showDeleteAccountDialog,
+                subtitle: "settings.delete_account_subtitle".tr(),
+                iconData: FontAwesomeIcons.trash,
+              ),
             ],
           ),
         ),
@@ -341,11 +352,100 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
+  void _showDeleteAccountDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text("settings.delete_account".tr()),
+            content: Text("settings.delete_account_warning".tr()),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text("settings.cancel".tr()),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _deleteAccount();
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                child: Text(
+                  "settings.delete".tr(),
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
+  Future<void> _deleteAccount() async {
+    try {
+      bool success =
+          await Provider.of<ProfileNotifier>(
+            context,
+            listen: false,
+          ).deleteAccount();
+
+      if (success && mounted) {
+        _showDeleteAccountSuccessDialog();
+      }
+    } catch (e) {
+      if (mounted) {
+        showToastTop(message: "settings.delete_account_failed".tr());
+      }
+    }
+  }
+
+  void _showDeleteAccountSuccessDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder:
+          (context) => AlertDialog(
+            title: Text("settings.delete_account_success_title".tr()),
+            content: Text("settings.delete_account_success_message".tr()),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  _clearAccountLocalData();
+                  Navigator.of(context).pop();
+                  Navigator.of(this.context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                    (route) => false,
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF6A5AE0),
+                ),
+                child: Text(
+                  "settings.close".tr(),
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _clearAccountLocalData() {
+    LocalStorageHelper.setValue("authToken", null);
+    LocalStorageHelper.setValue("userName", null);
+    LocalStorageHelper.setValue("email", null);
+    LocalStorageHelper.setValue("userId", null);
+    LocalStorageHelper.setValue("saved_email", null);
+    LocalStorageHelper.setValue("saved_password", null);
+    LocalStorageHelper.setValue("remember_me", null);
+    LocalStorageHelper.setValue('ignoreIntroScreen', false);
+  }
+
   Widget _buildSettingItem(
     String title,
     Color iconColor,
     VoidCallback onTap, {
     String? subtitle,
+    IconData? iconData,
   }) {
     IconData getIconData(String title) {
       switch (title) {
@@ -380,7 +480,11 @@ class _SettingScreenState extends State<SettingScreen> {
                 color: iconColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: FaIcon(getIconData(title), size: 16, color: iconColor),
+              child: FaIcon(
+                iconData ?? getIconData(title),
+                size: 16,
+                color: iconColor,
+              ),
             ),
             SizedBox(width: 16),
             Expanded(

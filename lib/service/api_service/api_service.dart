@@ -22,6 +22,7 @@ import 'package:book_brain/service/api_service/response/chapters_response.dart';
 import 'package:book_brain/service/api_service/response/create_favorites_response.dart';
 import 'package:book_brain/service/api_service/response/create_review_response.dart';
 import 'package:book_brain/service/api_service/response/create_subscriptions_response.dart';
+import 'package:book_brain/service/api_service/response/delete_account_response.dart';
 import 'package:book_brain/service/api_service/response/delete_all_notificaiton_response.dart';
 import 'package:book_brain/service/api_service/response/delete_notification_response.dart';
 import 'package:book_brain/service/api_service/response/delete_subscriptions_response.dart';
@@ -31,7 +32,6 @@ import 'package:book_brain/service/api_service/response/forgot_password_response
 import 'package:book_brain/service/api_service/response/history_response.dart';
 import 'package:book_brain/service/api_service/response/login_response.dart';
 import 'package:book_brain/service/api_service/response/notification_response.dart';
-import 'package:book_brain/service/api_service/response/recoment_response.dart';
 import 'package:book_brain/service/api_service/response/review_stats_response.dart';
 import 'package:book_brain/service/api_service/response/search_book_response.dart';
 import 'package:book_brain/service/api_service/response/subscriptions_response.dart';
@@ -75,8 +75,11 @@ class ApiServices extends BaseApiService {
       fromJson: (json) => BookInfoResponse.fromJson(json),
     );
   }
+
   // get top trending
-  Future<BaseResponse<BookInfoResponse>> getTrending({required int limit}) async {
+  Future<BaseResponse<BookInfoResponse>> getTrending({
+    required int limit,
+  }) async {
     final queryParams = <String, int>{};
 
     queryParams["limit"] = limit;
@@ -106,7 +109,6 @@ class ApiServices extends BaseApiService {
       fromJson: (json) => DetailBookResponse.fromJson(json),
     );
   }
-
 
   // GET
   Future<BaseResponse<SearchBookResponse>> searchBook({
@@ -177,7 +179,9 @@ class ApiServices extends BaseApiService {
     );
   }
 
-  Future<BaseResponse<CreateReviewResponse>> sendCreateReview(CreateReviewRequest request) async {
+  Future<BaseResponse<CreateReviewResponse>> sendCreateReview(
+    CreateReviewRequest request,
+  ) async {
     return await sendRequest<CreateReviewResponse>(
       UrlStatic.API_CREATE_REVIEW,
       method: 'POST',
@@ -186,7 +190,9 @@ class ApiServices extends BaseApiService {
     );
   }
 
-  Future<BaseResponse<CreateReviewResponse>> sendDeleteReview(DeleteReview request) async {
+  Future<BaseResponse<CreateReviewResponse>> sendDeleteReview(
+    DeleteReview request,
+  ) async {
     return await sendRequest<CreateReviewResponse>(
       UrlStatic.API_DELETE_REVIEW,
       method: 'POST',
@@ -194,6 +200,7 @@ class ApiServices extends BaseApiService {
       fromJson: (json) => CreateReviewResponse.fromJson(json),
     );
   }
+
   /// chuc nang yeu thich
   Future<BaseResponse<FavoritesResponse>> getFavorites({
     required int page,
@@ -212,7 +219,9 @@ class ApiServices extends BaseApiService {
     );
   }
 
-  Future<BaseResponse<CreateFavoritesResponse>> sendCreateFavorites(FavoritesRequest request) async {
+  Future<BaseResponse<CreateFavoritesResponse>> sendCreateFavorites(
+    FavoritesRequest request,
+  ) async {
     return await sendRequest<CreateFavoritesResponse>(
       UrlStatic.API_FAVORISTES,
       method: 'POST',
@@ -221,7 +230,9 @@ class ApiServices extends BaseApiService {
     );
   }
 
-  Future<BaseResponse<CreateFavoritesResponse>> sendDeleteFavorites(FavoritesRequest request) async {
+  Future<BaseResponse<CreateFavoritesResponse>> sendDeleteFavorites(
+    FavoritesRequest request,
+  ) async {
     return await sendRequest<CreateFavoritesResponse>(
       UrlStatic.API_FAVORISTES,
       method: 'POST',
@@ -229,7 +240,6 @@ class ApiServices extends BaseApiService {
       fromJson: (json) => CreateFavoritesResponse.fromJson(json),
     );
   }
-
 
   /// chuc nang dang ky theo doi sách
   Future<BaseResponse<SubscriptionsResponse>> getSubscriptions({
@@ -241,7 +251,8 @@ class ApiServices extends BaseApiService {
 
     queryParams["page"] = page;
     queryParams["limit"] = limit;
-    queryParams["active_only"] = limit; //true tra ve các sách đã đăng ký theo dõi, false => all
+    queryParams["active_only"] =
+        limit; //true tra ve các sách đã đăng ký theo dõi, false => all
 
     return await sendRequest<SubscriptionsResponse>(
       UrlStatic.API_SUBCRIPTIONS,
@@ -251,8 +262,9 @@ class ApiServices extends BaseApiService {
     );
   }
 
-
-  Future<BaseResponse<CreateSubscriptionsResponse>> sendCreateSubscription(SubscriptionsRequest request) async {
+  Future<BaseResponse<CreateSubscriptionsResponse>> sendCreateSubscription(
+    SubscriptionsRequest request,
+  ) async {
     return await sendRequest<CreateSubscriptionsResponse>(
       UrlStatic.API_SUBCRIPTIONS,
       method: 'POST',
@@ -261,7 +273,9 @@ class ApiServices extends BaseApiService {
     );
   }
 
-  Future<BaseResponse<DeleteSubscriptionsResponse>> sendDeleteSubscription(SubscriptionsRequest request) async {
+  Future<BaseResponse<DeleteSubscriptionsResponse>> sendDeleteSubscription(
+    SubscriptionsRequest request,
+  ) async {
     return await sendRequest<DeleteSubscriptionsResponse>(
       UrlStatic.API_SUBCRIPTIONS,
       method: 'POST',
@@ -269,7 +283,6 @@ class ApiServices extends BaseApiService {
       fromJson: (json) => DeleteSubscriptionsResponse.fromJson(json),
     );
   }
-
 
   /// nhan thong bao
 
@@ -292,7 +305,9 @@ class ApiServices extends BaseApiService {
     );
   }
 
-  Future<BaseResponse<DeleteNotificationResponse>> sendNotification(DeleteNotificationRequest request) async {
+  Future<BaseResponse<DeleteNotificationResponse>> sendNotification(
+    DeleteNotificationRequest request,
+  ) async {
     return await sendRequest<DeleteNotificationResponse>(
       UrlStatic.API_NOTIFICATION,
       method: 'POST',
@@ -301,7 +316,9 @@ class ApiServices extends BaseApiService {
     );
   }
 
-  Future<BaseResponse<DeleteAllNotificaitonResponse>> sendAllNotification(DeleteAllNotiRequest request) async {
+  Future<BaseResponse<DeleteAllNotificaitonResponse>> sendAllNotification(
+    DeleteAllNotiRequest request,
+  ) async {
     return await sendRequest<DeleteAllNotificaitonResponse>(
       UrlStatic.API_NOTIFICATION,
       method: 'POST',
@@ -310,9 +327,10 @@ class ApiServices extends BaseApiService {
     );
   }
 
-
   /// lay lich su doc sach
-  Future<BaseResponse<UpdateHistoryResponse>> sendUpdateHistory(UpdateHistoryRequest request) async {
+  Future<BaseResponse<UpdateHistoryResponse>> sendUpdateHistory(
+    UpdateHistoryRequest request,
+  ) async {
     return await sendRequest<UpdateHistoryResponse>(
       UrlStatic.API_HISTORY,
       method: 'POST',
@@ -331,7 +349,7 @@ class ApiServices extends BaseApiService {
 
     queryParams["page"] = page;
     queryParams["limit"] = limit;
-    if(status != null) {
+    if (status != null) {
       queryParams["status"] = status;
     }
 
@@ -343,8 +361,10 @@ class ApiServices extends BaseApiService {
     );
   }
 
-// ranking
-  Future<BaseResponse<UpdateRankingResponse>> sendUpdateRanking(BaseRequest request) async {
+  // ranking
+  Future<BaseResponse<UpdateRankingResponse>> sendUpdateRanking(
+    BaseRequest request,
+  ) async {
     return await sendRequest<UpdateRankingResponse>(
       UrlStatic.API_RANKING_UPDATE,
       method: 'POST',
@@ -368,7 +388,6 @@ class ApiServices extends BaseApiService {
     );
   }
 
-
   Future<BaseResponse<AuthorRankingResponse>> getAuthRanking({
     required int limit,
   }) async {
@@ -384,10 +403,10 @@ class ApiServices extends BaseApiService {
     );
   }
 
-
   // lay lại mk
-  Future<BaseResponse<ForgotPasswordResponse>> forgotPassword(ForgotPasswordRequest request) async {
-
+  Future<BaseResponse<ForgotPasswordResponse>> forgotPassword(
+    ForgotPasswordRequest request,
+  ) async {
     return await sendRequest<ForgotPasswordResponse>(
       UrlStatic.API_CHANGE_PASSWORD,
       method: 'POST',
@@ -395,8 +414,11 @@ class ApiServices extends BaseApiService {
       fromJson: (json) => ForgotPasswordResponse.fromJson(json),
     );
   }
+
   // update profile
-  Future<BaseResponse<UpdateProfileResponse>> updateProfile(UpdateProfileRequest request) async {
+  Future<BaseResponse<UpdateProfileResponse>> updateProfile(
+    UpdateProfileRequest request,
+  ) async {
     return await sendRequest<UpdateProfileResponse>(
       UrlStatic.API_UPDATE_PROFILE,
       method: 'POST',
@@ -405,8 +427,9 @@ class ApiServices extends BaseApiService {
     );
   }
 
-
-  Future<BaseResponse<UpdateProfileResponse>> changePassword(ChangePasswordRequest request) async {
+  Future<BaseResponse<UpdateProfileResponse>> changePassword(
+    ChangePasswordRequest request,
+  ) async {
     return await sendRequest<UpdateProfileResponse>(
       UrlStatic.API_CHANGE_PASSWORD,
       method: 'POST',
@@ -415,7 +438,18 @@ class ApiServices extends BaseApiService {
     );
   }
 
-  Future<BaseResponse<NoteResponse>> sentNoteBook(SaveNoteRequest request) async {
+  Future<BaseResponse<DeleteAccountResponse>> deleteAccount() async {
+    return await sendRequest<DeleteAccountResponse>(
+      UrlStatic.API_DELETE_ACCOUNT,
+      method: 'POST',
+      data: {},
+      fromJson: (json) => DeleteAccountResponse.fromJson(json),
+    );
+  }
+
+  Future<BaseResponse<NoteResponse>> sentNoteBook(
+    SaveNoteRequest request,
+  ) async {
     return await sendRequest<NoteResponse>(
       UrlStatic.API_NOTE_BOOK,
       method: 'POST',
@@ -423,7 +457,6 @@ class ApiServices extends BaseApiService {
       fromJson: (json) => NoteResponse.fromJson(json),
     );
   }
-
 
   Future<BaseResponse<NoteResponse>> getNoteBook({
     required int bookId,
@@ -441,7 +474,10 @@ class ApiServices extends BaseApiService {
       fromJson: (json) => NoteResponse.fromJson(json),
     );
   }
-  Future<BaseResponse<NoteResponse>> deleteNote(DeleteNoteRequest request) async {
+
+  Future<BaseResponse<NoteResponse>> deleteNote(
+    DeleteNoteRequest request,
+  ) async {
     return await sendRequest<NoteResponse>(
       UrlStatic.API_DELETE_NOTE,
       method: 'POST',

@@ -1,10 +1,7 @@
 import 'package:book_brain/screen/edit_profile/service/profile_service.dart';
 import 'package:book_brain/screen/home/provider/home_notifier.dart';
-import 'package:book_brain/service/api_service/response/subscriptions_response.dart';
 import 'package:book_brain/utils/core/base/base_notifier.dart';
-import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:book_brain/utils/routers.dart';
 
 import '../../../utils/core/common/toast.dart';
 import '../../../utils/core/constants/dimension_constants.dart';
@@ -43,9 +40,6 @@ class ProfileNotifier extends BaseNotifier {
     });
   }
 
-
-
-
   Future<bool> changePassword({
     String? oldPassword,
     String? newPassword,
@@ -56,16 +50,23 @@ class ProfileNotifier extends BaseNotifier {
         id: id,
         oldPassword: oldPassword ?? "",
         newPassword: newPassword ?? "",
-
       );
 
       if (isSucc == true) {
-         showToastTop(message: "Đổi mật khẩu thành công");
-         return true;
+        showToastTop(message: "Đổi mật khẩu thành công");
+        return true;
       }
 
       notifyListeners();
       return false;
+    });
+  }
+
+  Future<bool> deleteAccount() async {
+    return await execute(() async {
+      bool? isSucc = await profileService.deleteAccount();
+      notifyListeners();
+      return isSucc ?? false;
     });
   }
 }

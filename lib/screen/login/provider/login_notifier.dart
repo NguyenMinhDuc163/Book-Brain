@@ -6,18 +6,25 @@ import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class LoginNotifier extends BaseNotifier{
-
+class LoginNotifier extends BaseNotifier {
   UserModel userModel = UserModel(); // khai báo model
   UserModel get model => userModel; // getter
   LoginService loginService = LoginService(); // khai báo service
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  Future<bool> login({required String username, required String password, required String tokenFCM}) async {
-    return await execute(() async{
+  Future<bool> login({
+    required String username,
+    required String password,
+    required String tokenFCM,
+  }) async {
+    return await execute(() async {
       setLoading(true);
-      bool isLogin = await loginService.login(username: username, password: password,tokenFCM: tokenFCM ?? "");
+      bool isLogin = await loginService.login(
+        username: username,
+        password: password,
+        tokenFCM: tokenFCM,
+      );
       setLoading(false);
 
       notifyListeners(); // thông báo cho các widget khác biết rằng đã có sự thay đổi
@@ -26,16 +33,13 @@ class LoginNotifier extends BaseNotifier{
         showToastTop(message: "Đăng nhập thành công");
         return true;
       } else {
-        showToastTop(message: "Dăng nhập thất bại");
         return false;
       }
     });
   }
 
   Future<bool> signInWithGoogle() async {
-
     return await execute(() async {
-
       try {
         // Bắt đầu quá trình đăng nhập Google
         final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
@@ -45,7 +49,8 @@ class LoginNotifier extends BaseNotifier{
         }
 
         // Lấy thông tin xác thực từ request
-        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
 
         // Tạo credential cho Firebase
         final AuthCredential credential = GoogleAuthProvider.credential(
@@ -54,13 +59,14 @@ class LoginNotifier extends BaseNotifier{
         );
 
         // Đăng nhập vào Firebase với credential
-        final UserCredential authResult = await _auth.signInWithCredential(credential);
+        final UserCredential authResult = await _auth.signInWithCredential(
+          credential,
+        );
         User? _user = authResult.user;
 
         LocalStorageHelper.setValue("userName", _user?.displayName ?? "");
         LocalStorageHelper.setValue("email", _user?.email ?? '');
         LocalStorageHelper.setValue("userId", _user?.uid ?? "");
-
 
         notifyListeners();
         return true;
@@ -70,6 +76,5 @@ class LoginNotifier extends BaseNotifier{
         return false;
       }
     });
-
   }
 }
