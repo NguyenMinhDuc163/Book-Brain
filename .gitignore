@@ -48,3 +48,13 @@ app.*.map.json
 .fvm/
 /lib/test.dart
 .env
+android/key.properties
+android/fastlane/play-store-credentials*.json
+android/.bundle/
+android/vendor/bundle/
+ios/fastlane/.env
+*.keystore
+*.jks
+*.p8
+*.p12
+*.mobileprovision
