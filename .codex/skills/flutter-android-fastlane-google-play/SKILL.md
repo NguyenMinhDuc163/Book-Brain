@@ -10,6 +10,7 @@ description: Configure, review, or debug Flutter Android Fastlane delivery to Go
 - Do not run `flutter build appbundle`, `fastlane android deploy*`, or any upload command unless the user explicitly asks to build or upload.
 - Prefer minimal configuration. Do not add many environment variables. Use fixed local paths unless the user asks for a configurable setup.
 - Never print secret values from `play-store-credentials.json`, keystores, passwords, or `key.properties`. Only report existence, path, readability, and missing keys.
+- If `pubspec.yaml` declares `.env` as a Flutter asset, CI must create `.env` from a GitHub secret such as `ENV_FILE_CONTENTS` before running `flutter build appbundle`.
 - Treat `android/key.properties` and `android/fastlane/play-store-credentials*.json` as local secrets that must be ignored by Git.
 - Use `ruby -c`, `bundle install`, `bundle exec fastlane lanes`, and `bundle exec fastlane android doctor` as non-uploading validation.
 - Use FVM automatically when `.fvm/flutter_sdk/bin/flutter` exists; otherwise use `flutter` from PATH.
@@ -308,6 +309,16 @@ Google Play release name = 48 (1.0.1)
 
 ## GitHub Actions Android SDK/NDK Cache Pitfall
 
+If Fastlane reports only that `flutter build appbundle --release --no-pub` exited 1, inspect the Gradle/Flutter output above the Fastlane summary. For this project, this message means the runner did not create `.env`:
+
+```text
+Error detected in pubspec.yaml:
+No file or variants found for asset: .env.
+Target aot_android_asset_bundle failed: Exception: Failed to bundle asset files.
+```
+
+Fix the workflow by writing `.env` from `ENV_FILE_CONTENTS` before the Fastlane deploy step, and keep the real `.env` out of Git.
+
 If Android CI logs repeatedly show package installation during `flutter build appbundle`, the slow part may be Android SDK package downloads rather than Dart/Gradle compile. Cache the SDK directories that match the project; do not assume fixed versions.
 
 Discover the cache targets first:
@@ -344,6 +355,22 @@ key: ${{ runner.os }}-android-sdk-ndk-27.0.12077973-platform-33-v1
 ```
 
 This cache is safe because it stores SDK/NDK toolchain packages, not app source or release build output. Change the key/path when `ndkVersion` or the required Android SDK platform changes.
+
+## Android Native Libs Artifact
+
+Upload release native libraries after the Google Play deploy step with `if: always()` so crash/native logs can be traced later:
+
+```yaml
+- name: Upload Android symbol artifact
+  if: always()
+  uses: actions/upload-artifact@v4
+  with:
+    name: symbol
+    path: build/app/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib
+    if-no-files-found: warn
+```
+
+Keep the existing AAB artifact upload as well. This artifact should contain the built ABI folders and native `.so` files from the release build.
 
 ## Lane Commands
 

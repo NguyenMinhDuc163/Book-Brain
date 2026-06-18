@@ -82,6 +82,7 @@ Do not use `APP_STORE_CONNECT_API_KEY_PATH` for a raw `.p8` file. Fastlane/Pilot
 - Let the Runner target own `PRODUCT_BUNDLE_IDENTIFIER` through the Xcode project.
 - If `flutter` is not in PATH, support FVM or `FLUTTER_ROOT/bin/flutter`, but do not hardcode one user's Flutter path unless the repo already does.
 - For local build output, naming the IPA from `pubspec.yaml` is safe, e.g. `EdTech-1.0.0-38.ipa`; do not rely on output filename as the actual app version.
+- In GitHub Actions, keep `build_app` archive output stable with `archive_path: "../build/ios/archive/Runner.xcarchive"` so dSYM upload can use a deterministic path.
 
 ## GitHub Actions Cache Guidance
 
@@ -116,6 +117,20 @@ bundle exec pod install --deployment
 over `pod install --clean-install` when `ios/Podfile.lock` is committed. `--deployment` respects the lockfile and fails if pods are out of sync, which is useful for reproducible CI. Keep `build_app(clean: true)` if a clean archive is desired; it is separate from CocoaPods dependency caching.
 
 Do not cache Xcode `DerivedData` for signed App Store/TestFlight builds unless logs prove compilation dominates and the user accepts larger, more fragile caches.
+
+Upload release diagnostics after the TestFlight step with `if: always()`:
+
+```yaml
+- name: Upload dSYM artifact
+  if: always()
+  uses: actions/upload-artifact@v4
+  with:
+    name: ios-dsyms
+    path: build/ios/archive/Runner.xcarchive/dSYMs
+    if-no-files-found: warn
+```
+
+Keep the existing IPA artifact upload as well; dSYMs are needed later to symbolicate iOS crash logs.
 
 ## Debugging Upload Errors
 
@@ -160,6 +175,18 @@ For `xcodebuild -exportArchive` exit status `64` after `ARCHIVE SUCCEEDED`:
 - Do not pass App Store Connect authentication flags through `build_app(xcargs:)` or `export_xcargs` when a certificate/profile is already installed.
 - With Fastlane 2.236.x, keep the export method value as `app-store`; Fastlane does not accept Xcode 26's newer `app-store-connect` method name yet.
 
+For `bundle exec pod install --deployment` failing with `uninitialized constant ActiveSupport::LoggerThreadSafeLevel::Logger` on GitHub Actions:
+
+- Treat this as a Ruby/CocoaPods dependency loading issue, not an iOS signing or Flutter compile issue.
+- Ensure the iOS Fastfile sets `ENV["RUBYOPT"]` to include `-rlogger` before running CocoaPods so the `pod` subprocess loads Ruby's `logger` library.
+- Keep `gem "cocoapods", "1.16.2"` and `gem "ostruct"` in `ios/Gemfile`; add `gem "logger"` only if the lockfile does not already include `logger`.
+
+For `pod install --deployment` failing with `There were changes to the lockfile in deployment mode`:
+
+- Treat this as an out-of-sync `ios/Podfile.lock`, not a signing issue.
+- Run `bundle exec pod install` locally from `ios/`, then rerun `bundle exec pod install --deployment` to verify it is stable.
+- Commit the updated `ios/Podfile.lock` with the Fastlane/workflow fix.
+
 For TestFlight duplicate build errors:
 
 - Increase the build number after `+` in `pubspec.yaml`, e.g. `version: 1.0.0+39`.
@@ -184,5 +211,12 @@ ruby -e 'p=ENV["APP_STORE_CONNECT_API_KEY_KEY_FILEPATH"]; puts File.exist?(p.to_
 
 ## Optional Features
 
-- Add `ITSAppUsesNonExemptEncryption=false` only if the user explicitly requests encryption compliance handling and the app truly qualifies.
+- For iOS builds, if the user wants to avoid manually accepting export compliance for each uploaded build and the app qualifies for non-exempt encryption, add this to `ios/Runner/Info.plist`:
+
+```xml
+<key>ITSAppUsesNonExemptEncryption</key>
+<false/>
+```
+
+- Do not add or change `ITSAppUsesNonExemptEncryption` unless the user explicitly requests this encryption compliance handling.
 - Configure external testers/groups only when the user explicitly asks. External distribution generally requires waiting for build processing and may require `distribute_external`, `groups`, and a changelog.
