@@ -256,7 +256,11 @@
     "account_section": "Tài khoản",
     "login_subtitle": "Đăng nhập để đồng bộ dữ liệu của bạn",
     "register": "Đăng ký",
-    "register_subtitle": "Tạo tài khoản Book Brain"
+    "register_subtitle": "Tạo tài khoản Book Brain",
+    "login_from_avatar": "Đăng nhập tài khoản",
+    "profile_login_prompt": "Đăng nhập để đồng bộ hồ sơ và trải nghiệm đọc của bạn.",
+    "account_cta_title": "Lưu trải nghiệm đọc của bạn",
+    "account_cta_message": "Đăng nhập để đồng bộ sách yêu thích, lịch sử đọc, ghi chú và nhận thông báo."
   },
 
   "change_password": {

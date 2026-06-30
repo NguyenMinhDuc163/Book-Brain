@@ -4,6 +4,7 @@ import 'package:book_brain/screen/home/provider/home_notifier.dart';
 import 'package:book_brain/screen/login/view/login_screen.dart';
 import 'package:book_brain/screen/login/view/sign_up_screen.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
+import 'package:book_brain/screen/main_app.dart';
 import 'package:book_brain/service/service_config/network_service.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart'
@@ -112,7 +113,16 @@ class _SettingScreenState extends State<SettingScreen> {
             child: CircleAvatar(
               radius: 30,
               backgroundColor: Colors.grey[200],
-              backgroundImage: AssetImage(AssetHelper.avatar),
+              backgroundImage:
+                  isLoggedIn ? AssetImage(AssetHelper.avatar) : null,
+              child:
+                  isLoggedIn
+                      ? null
+                      : FaIcon(
+                        FontAwesomeIcons.user,
+                        size: 24,
+                        color: Color(0xFF6A5AE0),
+                      ),
             ),
           ),
           SizedBox(width: kDefaultPadding),
@@ -121,7 +131,7 @@ class _SettingScreenState extends State<SettingScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  username ?? '',
+                  username,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -229,53 +239,107 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   Widget _buildGuestAccountSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
-          child: Text(
-            'guest.account_section'.tr(),
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey[700],
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFFFFFFF), Color(0xFFF0EDFF)],
+        ),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFDCD7FA)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF6357CC).withValues(alpha: 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: const BoxDecoration(
+              color: Color(0xFFE8E4FF),
+              shape: BoxShape.circle,
+            ),
+            child: const Center(
+              child: FaIcon(
+                FontAwesomeIcons.bookBookmark,
+                size: 20,
+                color: Color(0xFF6357CC),
+              ),
             ),
           ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: Offset(0, 4),
-              ),
-            ],
+          const SizedBox(height: 12),
+          Text(
+            'guest.account_cta_title'.tr(),
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF323B4B),
+            ),
           ),
-          child: Column(
+          const SizedBox(height: 6),
+          Text(
+            'guest.account_cta_message'.tr(),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              height: 1.4,
+              color: Colors.grey[600],
+            ),
+          ),
+          const SizedBox(height: 18),
+          Row(
             children: [
-              _buildSettingItem(
-                'auth.login'.tr(),
-                Color(0xFF6A5AE0),
-                () => Navigator.of(context).pushNamed(LoginScreen.routeName),
-                subtitle: 'guest.login_subtitle'.tr(),
-                iconData: FontAwesomeIcons.rightToBracket,
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed:
+                      () => Navigator.of(
+                        context,
+                      ).pushNamed(LoginScreen.routeName),
+                  icon: const Icon(Icons.login_rounded, size: 18),
+                  label: Text('auth.login'.tr()),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6357CC),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
               ),
-              _buildDivider(),
-              _buildSettingItem(
-                'guest.register'.tr(),
-                Color(0xFF38C9A7),
-                () => Navigator.of(context).pushNamed(SignUpScreen.routeName),
-                subtitle: 'guest.register_subtitle'.tr(),
-                iconData: FontAwesomeIcons.userPlus,
+              const SizedBox(width: 10),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed:
+                      () => Navigator.of(
+                        context,
+                      ).pushNamed(SignUpScreen.routeName),
+                  icon: const Icon(Icons.person_add_alt_1_rounded, size: 18),
+                  label: Text('guest.register'.tr()),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF6357CC),
+                    side: const BorderSide(color: Color(0xFFB9B4E4)),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -320,8 +384,16 @@ class _SettingScreenState extends State<SettingScreen> {
                 }
               }, subtitle: "Phiên bản 1.0.0"),
               _buildDivider(),
-              _buildSettingItem("Hỗ trợ", Color(0xFF6A5AE0), () {
-                launchEmail(context);
+              _buildSettingItem("Hỗ trợ", Color(0xFF6A5AE0), () async {
+                final Uri url = Uri.parse(
+                  'https://nguyenduc163.notion.site/Nguyen-Duc-Apps-Support-38303bc2971180bfa793f871713beba5',
+                );
+                if (!await launchUrl(
+                  url,
+                  mode: LaunchMode.externalApplication,
+                )) {
+                  throw 'Could not launch URL';
+                }
               }, subtitle: "Liên hệ hỗ trợ kỹ thuật"),
               _buildDivider(),
               _buildSettingItem(
@@ -329,7 +401,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 Color(0xFF38C9A7),
                 () async {
                   final Uri url = Uri.parse(
-                    'https://www.freeprivacypolicy.com/live/e98e0bef-5336-4269-8197-71cd770e1c24',
+                    'https://nguyenduc163.notion.site/Privacy-Policy-for-Book-Brain-38303bc29711809daae3e77cb0f1cae6',
                   );
                   if (!await launchUrl(
                     url,
@@ -368,12 +440,9 @@ class _SettingScreenState extends State<SettingScreen> {
                         await AuthHelper.continueAsGuest();
                         if (!context.mounted) return;
                         Navigator.pop(context);
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => LoginScreen(),
-                          ),
-                          (route) => false,
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          MainApp.routeName,
+                          (_) => false,
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -478,12 +547,12 @@ class _SettingScreenState extends State<SettingScreen> {
               ElevatedButton(
                 onPressed: () async {
                   await _clearAccountLocalData();
+                  await AuthHelper.continueAsGuest();
                   if (!context.mounted) return;
                   Navigator.of(context).pop();
-                  Navigator.of(this.context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
-                    (route) => false,
-                  );
+                  Navigator.of(
+                    this.context,
+                  ).pushNamedAndRemoveUntil(MainApp.routeName, (_) => false);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF6A5AE0),

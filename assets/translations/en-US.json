@@ -250,7 +250,11 @@
     "account_section": "Account",
     "login_subtitle": "Log in to sync your data",
     "register": "Sign up",
-    "register_subtitle": "Create a Book Brain account"
+    "register_subtitle": "Create a Book Brain account",
+    "login_from_avatar": "Log in to your account",
+    "profile_login_prompt": "Log in to sync your profile and reading experience.",
+    "account_cta_title": "Save your reading experience",
+    "account_cta_message": "Log in to sync favorites, reading history, notes, and notifications."
   },
 
   "change_password": {
