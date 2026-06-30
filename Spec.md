@@ -882,3 +882,206 @@ Follow this order to reduce risk:
 - Do not call private APIs for guest.
 - Do not rewrite the entire app navigation.
 ```
+
+## 27. Implementation handoff (updated 2026-06-30)
+
+This section records the final Flutter behavior after implementation and the
+important lessons discovered while working in the existing codebase. Treat it
+as the current source of truth when it differs from the earlier proposed flow.
+
+### 27.1 Final startup and authentication UX
+
+The app no longer presents Login as the first screen.
+
+Current startup flow:
+
+```text
+SplashScreen
+  -> authToken exists and is not empty: MainApp as logged-in user
+  -> no authToken: set isGuest=true, then open MainApp as guest
+```
+
+`SplashScreen` currently bypasses both `IntroScreen` and `LoginScreen`. Login
+and registration remain available later from guest entry points.
+
+Reasons for this change:
+
+* A visible "Continue without an account" button can technically provide guest
+  access, but showing Login before public content can still look like a login
+  wall to App Review.
+* Opening Home directly makes it unambiguous that browsing and reading do not
+  require an account.
+* Account authentication is requested only at the moment an account-based
+  feature is selected.
+
+The Login screen still keeps the "Continue reading without an account" button
+as a safe fallback. Successful login calls `AuthHelper.markLoggedIn()`.
+
+After logout or account deletion, clear the token and account data, clear the
+in-memory `NetworkService` authorization header, mark the session as guest, and
+return to `MainApp` instead of showing Login again.
+
+### 27.2 Authentication source of truth
+
+Implemented files:
+
+```text
+lib/utils/core/helpers/auth_helper.dart
+lib/utils/core/common/login_required_dialog.dart
+```
+
+Rules that must not regress:
+
+* `authToken != null && authToken.toString().isNotEmpty` is the only source of
+  truth for whether private APIs may be called.
+* `isGuest` is a UX/session marker. Never use it as the only API authorization
+  check because old installations may not have the key.
+* Never read `userId` before checking `AuthHelper.isLoggedIn`.
+* Never substitute a fake `userId` for guests.
+* Keep guards in both the view and notifier/provider where possible. The view
+  shows the login dialog; the notifier is the defensive boundary that prevents
+  an accidental private request from a future caller.
+
+Important architecture detail: providers are registered above `MainApp` and
+can retain data across navigation. When a guest opens the reader,
+`DetailBookNotifier.getData()` clears its cached note list so notes from a
+previous authenticated session cannot be displayed.
+
+`MainApp` uses an `IndexedStack`, so account tabs can be instantiated even when
+they are not selected. Private screens must keep their `initState`
+authentication guards; guarding only button navigation is not sufficient.
+
+### 27.3 Implemented guest boundaries
+
+Guest-accessible functionality:
+
+* Home, public books, trending books, and trending fallback for recommendations
+* Search
+* Book preview/detail and chapter reading
+* Rankings
+* Existing review list and statistics when the public API permits it
+
+Account-only functionality guarded in the UI and/or notifier:
+
+* Notification count, notification list, mark/delete notification
+* Personalized recommendations and recommendation pagination
+* Favorite list and favorite mutations
+* Subscription/follow list and mutations
+* Server reading history
+* Note load/save/delete
+* Review create/edit/delete
+* Profile update, password change, and account deletion
+
+Guest-only screen behavior:
+
+* Favorites, Following, History, and Notification screens do not call their
+  APIs and show a reusable login-required view.
+* Home notification tap shows the reusable login-required dialog.
+* Favorite/follow/note/review actions show the same dialog with a
+  feature-specific localized message.
+* Home displays `Guest` instead of a fake username.
+
+### 27.4 Home avatar and Settings entry points
+
+On Home, the avatar is interactive for guests:
+
+* It displays a small login indicator.
+* Tapping it shows the localized login-required dialog.
+* Choosing Login navigates to `LoginScreen`.
+
+In Settings, guests see:
+
+* A guest profile state with a generic icon, not a fake user avatar or email.
+* A dedicated card explaining the benefit of an account.
+* Visible Login and Sign Up actions.
+* About, Support, and Terms/Privacy items.
+
+Guests do not see profile editing, password change, account deletion, or
+logout controls. Logged-in Settings behavior remains unchanged.
+
+### 27.5 Privacy decision: do not collect phone numbers
+
+Apple-facing registration and profile forms no longer display, validate, read,
+or store a phone-number field.
+
+The existing backend currently expects `phone_number`. Until that backend
+contract is changed, both registration and profile update services send this
+non-personal compatibility value:
+
+```text
+0987654321
+```
+
+The shared value is defined in:
+
+```text
+lib/utils/core/constants/privacy_constants.dart
+```
+
+It is injected only in `RegisterService` and `ProfileService`. Do not add a
+phone controller or phone parameter back to the view/notifier layers. Request
+models are intentionally unchanged because changing backend models was outside
+this migration. If the backend makes `phone_number` optional, remove the
+placeholder instead of collecting a real number.
+
+### 27.6 UI refinements made during the migration
+
+These changes are not authentication requirements, but are part of the current
+implemented UI and should be preserved:
+
+* Ranking empty states use a reusable light card instead of showing text or a
+  spinner on the solid purple background:
+  `lib/screen/ranking/widget/ranking_empty_state.dart`.
+* `EmptyDataWidget` uses a compact default illustration (`64 x 80` design
+  units). Search uses an even smaller `56 x 56` illustration. Avoid restoring
+  the former `200-300` sizes.
+* All new guest and ranking text exists in both translation files:
+  `assets/translations/vi-VN.json` and `assets/translations/en-US.json`.
+
+### 27.7 Current external Settings links
+
+Support:
+
+```text
+https://nguyenduc163.notion.site/Nguyen-Duc-Apps-Support-38303bc2971180bfa793f871713beba5
+```
+
+Terms/Privacy Policy:
+
+```text
+https://nguyenduc163.notion.site/Privacy-Policy-for-Book-Brain-38303bc29711809daae3e77cb0f1cae6
+```
+
+Both links open with `LaunchMode.externalApplication`.
+
+### 27.8 Updated acceptance criteria
+
+For a clean install with no token:
+
+```text
+[ ] Splash opens MainApp/Home directly; Login is not shown first.
+[ ] isGuest is persisted as true.
+[ ] Public Home/trending/search/preview/reader/ranking/reviews work.
+[ ] No private API reads userId or sends a request.
+[ ] Home avatar and Settings provide obvious Login entry points.
+[ ] Restricted actions show a login-required dialog.
+[ ] Login and Sign Up remain reachable and functional.
+```
+
+For an authenticated installation, keep all criteria in section 23.2.
+
+### 27.9 Verification and known repository condition
+
+Verification used after this migration:
+
+```text
+fvm flutter test
+fvm flutter build ios --debug --no-codesign
+```
+
+The automated suite currently contains authentication, placeholder-phone, and
+ranking empty-state coverage. The iOS device build completed successfully.
+
+The repository has many pre-existing analyzer warnings and informational lints.
+Do not treat those as regressions from this migration; still require no new
+error-level analyzer findings in touched files.
