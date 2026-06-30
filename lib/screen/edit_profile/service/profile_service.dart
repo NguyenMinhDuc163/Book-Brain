@@ -6,6 +6,7 @@ import 'package:book_brain/service/api_service/response/base_response.dart';
 import 'package:book_brain/service/api_service/response/delete_account_response.dart';
 import 'package:book_brain/service/api_service/response/update_profile_response.dart';
 import 'package:book_brain/utils/core/common/toast.dart';
+import 'package:book_brain/utils/core/constants/privacy_constants.dart';
 
 class ProfileService implements IProfileInterface {
   final ApiServices apiServices = ApiServices();
@@ -14,13 +15,12 @@ class ProfileService implements IProfileInterface {
   Future<bool?> updateProfile({
     required int id,
     String? email,
-    String? phoneNumber,
     String? userName,
   }) async {
     final UpdateProfileRequest request = UpdateProfileRequest(
       id: id,
       email: email,
-      phoneNumber: phoneNumber,
+      phoneNumber: PrivacyConstants.placeholderPhoneNumber,
       username: userName,
     );
     final BaseResponse<UpdateProfileResponse> response = await apiServices

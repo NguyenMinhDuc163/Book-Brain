@@ -2,6 +2,7 @@ import 'package:book_brain/screen/reivew_book/service/review_book_service.dart';
 import 'package:book_brain/service/api_service/request/create_reivew_request.dart';
 import 'package:book_brain/service/api_service/response/all_review_response.dart';
 import 'package:book_brain/utils/core/base/base_notifier.dart';
+import 'package:book_brain/utils/core/helpers/auth_helper.dart';
 
 import '../../../service/api_service/response/review_stats_response.dart';
 
@@ -39,7 +40,12 @@ class ReviewBookNotifier extends BaseNotifier {
     });
   }
 
-  Future<bool> createReview({required int bookId, required  int rating, required String comment}) async {
+  Future<bool> createReview({
+    required int bookId,
+    required int rating,
+    required String comment,
+  }) async {
+    if (!AuthHelper.isLoggedIn) return false;
     return await execute(() async {
       bool isSubmit = await reviewBookService.createReview(
         bookId: bookId,
@@ -53,10 +59,9 @@ class ReviewBookNotifier extends BaseNotifier {
   }
 
   Future<bool> deleteReview({required int reviewId}) async {
+    if (!AuthHelper.isLoggedIn) return false;
     return await execute(() async {
-      bool isSubmit = await reviewBookService.deleteReview(
-        reviewId: reviewId,
-      );
+      bool isSubmit = await reviewBookService.deleteReview(reviewId: reviewId);
 
       notifyListeners();
       return isSubmit;

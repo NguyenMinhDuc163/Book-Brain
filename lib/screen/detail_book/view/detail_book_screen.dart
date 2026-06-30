@@ -2,14 +2,17 @@ import 'package:book_brain/screen/detail_book/provider/detail_book_notifier.dart
 import 'package:book_brain/screen/detail_book/widget/bottom_sheet_selector.dart';
 import 'package:book_brain/screen/reivew_book/service/review_book_service.dart';
 import 'package:book_brain/utils/core/common/toast.dart';
+import 'package:book_brain/utils/core/common/login_required_dialog.dart';
 import 'package:book_brain/utils/core/constants/color_constants.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
+import 'package:book_brain/utils/core/helpers/auth_helper.dart';
 import 'package:book_brain/utils/widget/base_appbar.dart';
 import 'package:book_brain/widgets/ad_banner_widget.dart';
 import 'package:book_brain/widgets/native_ad_widget.dart';
 import 'package:book_brain/widgets/rewarded_interstitial_ad_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -113,13 +116,15 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
       ).getData(bookId: widget.bookId ?? 1, chapterId: widget.chapterId ?? 1),
     );
 
-    // Lấy danh sách ghi chú khi màn hình được khởi tạo
-    Future.microtask(
-      () => Provider.of<DetailBookNotifier>(context, listen: false).getNoteBook(
-        bookId: widget.bookId ?? 1,
-        chapterId: widget.chapterId ?? 1,
-      ),
-    );
+    if (AuthHelper.isLoggedIn) {
+      Future.microtask(
+        () =>
+            Provider.of<DetailBookNotifier>(context, listen: false).getNoteBook(
+              bookId: widget.bookId ?? 1,
+              chapterId: widget.chapterId ?? 1,
+            ),
+      );
+    }
 
     // Kiểm tra nếu banner đã bị ẩn và hết thời gian thì hiện lại
     if (_bannerHiddenTime != null) {
@@ -349,6 +354,11 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
   }
 
   void _showNoteMenu(BuildContext context, Offset tapPosition) {
+    if (!AuthHelper.isLoggedIn) {
+      showLoginRequiredDialog(context, message: 'guest.note_required'.tr());
+      return;
+    }
+
     final RenderBox overlay =
         Overlay.of(context).context.findRenderObject() as RenderBox;
     final RelativeRect position = RelativeRect.fromRect(
@@ -379,6 +389,11 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
   }
 
   void _showNoteDialog(BuildContext context, String selectedText) {
+    if (!AuthHelper.isLoggedIn) {
+      showLoginRequiredDialog(context, message: 'guest.note_required'.tr());
+      return;
+    }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -548,6 +563,14 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
               TextButton(
                 child: Text("Xóa", style: TextStyle(color: Colors.red)),
                 onPressed: () async {
+                  if (!AuthHelper.isLoggedIn) {
+                    Navigator.of(context).pop();
+                    await showLoginRequiredDialog(
+                      this.context,
+                      message: 'guest.note_required'.tr(),
+                    );
+                    return;
+                  }
                   // Hiển thị dialog xác nhận xóa
                   bool? confirm = await showDialog<bool>(
                     context: context,
@@ -654,16 +677,21 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
           backgroundColor: adjustedBackgroundColor,
           textColor: Colors.black,
           onBack: () {
-            presenter.setHistoryBook(
-              note: noteController.text,
-              chapNumber: chapterNumber,
-            );
+            if (AuthHelper.isLoggedIn) {
+              presenter.setHistoryBook(
+                note: noteController.text,
+                chapNumber: chapterNumber,
+              );
+            }
+            Navigator.of(context).pop();
           },
           onHomeTap: () {
-            presenter.setHistoryBook(
-              note: noteController.text,
-              chapNumber: chapterNumber,
-            );
+            if (AuthHelper.isLoggedIn) {
+              presenter.setHistoryBook(
+                note: noteController.text,
+                chapNumber: chapterNumber,
+              );
+            }
             Navigator.pushNamedAndRemoveUntil(
               context,
               MainApp.routeName,
@@ -796,16 +824,19 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
                                 ),
                               ),
                               _buttonWidget("Chương sau", () {
-                                int? isMaxChapter = presenter.bookDetail?.chapters.length ?? 1;
-                                if(chapterNumber + 1 > isMaxChapter) {
-                                  showToastTop(message: "Bạn đang ở chương cuối cùng");
+                                int? isMaxChapter =
+                                    presenter.bookDetail?.chapters.length ?? 1;
+                                if (chapterNumber + 1 > isMaxChapter) {
+                                  showToastTop(
+                                    message: "Bạn đang ở chương cuối cùng",
+                                  );
                                   return;
                                 }
                                 _handleChapterChange(
                                   chapterNumber + 1,
                                   presenter.bookDetail?.chapters.length ?? 1,
                                 );
-                              },),
+                              }),
                             ],
                           ),
 
@@ -856,7 +887,14 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
                 heroTag: "note",
                 mini: true,
                 backgroundColor: Colors.white,
-                onPressed: () {
+                onPressed: () async {
+                  if (!AuthHelper.isLoggedIn) {
+                    await showLoginRequiredDialog(
+                      context,
+                      message: 'guest.note_required'.tr(),
+                    );
+                    return;
+                  }
                   _showNoteDialog(context, _selectedText ?? '');
                 },
                 child: Icon(Icons.note_add, color: Colors.blue),
@@ -867,7 +905,14 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
                 heroTag: "rating",
                 mini: true,
                 backgroundColor: Colors.white,
-                onPressed: () {
+                onPressed: () async {
+                  if (!AuthHelper.isLoggedIn) {
+                    await showLoginRequiredDialog(
+                      context,
+                      message: 'guest.review_required'.tr(),
+                    );
+                    return;
+                  }
                   _showRatingDialog(
                     context: context,
                     title: presenter.bookDetail?.title ?? "",
@@ -1206,6 +1251,14 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
               ),
               child: Text("Đánh giá", style: TextStyle(color: Colors.white)),
               onPressed: () {
+                if (!AuthHelper.isLoggedIn) {
+                  Navigator.of(context).pop();
+                  showLoginRequiredDialog(
+                    this.context,
+                    message: 'guest.review_required'.tr(),
+                  );
+                  return;
+                }
                 String comment = commentController.text.trim();
                 String ratingMessage = "Đã gửi đánh giá ${rating.toInt()} sao";
 

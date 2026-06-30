@@ -2,11 +2,14 @@ import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/screen/notification/provider/notification_notifier.dart';
 import 'package:book_brain/service/api_service/response/notification_response.dart';
 import 'package:book_brain/utils/core/common/toast.dart';
+import 'package:book_brain/utils/core/common/login_required_dialog.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/widget/empty_data.dart';
+import 'package:book_brain/utils/core/helpers/auth_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../utils/core/constants/color_constants.dart';
 import '../../../utils/widget/loading_widget.dart';
@@ -22,9 +25,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(
-      () => Provider.of<NotificationNotifier>(context, listen: false).getData(),
-    );
+    if (AuthHelper.isLoggedIn) {
+      Future.microtask(
+        () =>
+            Provider.of<NotificationNotifier>(context, listen: false).getData(),
+      );
+    }
   }
 
   // Hàm hiển thị bottom sheet chi tiết thông báo
@@ -326,6 +332,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (!AuthHelper.isLoggedIn) {
+      return Scaffold(
+        body: AppBarContainerWidget(
+          titleString: "Thông báo",
+          backgroundColor: ColorPalette.lavenderWhite,
+          child: LoginRequiredView(message: 'guest.notification_required'.tr()),
+        ),
+      );
+    }
+
     final presenter = Provider.of<NotificationNotifier>(context);
 
     return Scaffold(

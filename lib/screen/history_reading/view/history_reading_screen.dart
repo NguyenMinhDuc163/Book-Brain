@@ -4,9 +4,12 @@ import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/screen/preview/view/preview_screen.dart';
 import 'package:book_brain/service/api_service/response/history_response.dart';
 import 'package:book_brain/utils/core/helpers/network_image_handler.dart';
+import 'package:book_brain/utils/core/helpers/auth_helper.dart';
+import 'package:book_brain/utils/core/common/login_required_dialog.dart';
 import 'package:book_brain/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../utils/core/constants/dimension_constants.dart';
 import '../../../utils/core/helpers/asset_helper.dart';
@@ -34,7 +37,7 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      if (mounted) {
+      if (mounted && AuthHelper.isLoggedIn) {
         Provider.of<HistoryNotifier>(context, listen: false).getData();
       }
     });
@@ -42,6 +45,15 @@ class _HistoryReadingScreenState extends State<HistoryReadingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (!AuthHelper.isLoggedIn) {
+      return Scaffold(
+        body: AppBarContainerWidget(
+          titleString: "Lịch sử đọc sách",
+          child: LoginRequiredView(message: 'guest.history_required'.tr()),
+        ),
+      );
+    }
+
     final presenter = Provider.of<HistoryNotifier>(context);
     return Scaffold(
       body: Stack(

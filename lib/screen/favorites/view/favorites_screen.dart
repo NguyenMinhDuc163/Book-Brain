@@ -4,6 +4,9 @@ import 'package:book_brain/screen/preview/view/preview_screen.dart';
 import 'package:book_brain/service/api_service/response/favorites_response.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
+import 'package:book_brain/utils/core/helpers/auth_helper.dart';
+import 'package:book_brain/utils/core/common/login_required_dialog.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +29,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      if (mounted) {
+      if (mounted && AuthHelper.isLoggedIn) {
         Provider.of<FavoritesNotifier>(context, listen: false).getData();
       }
     });
@@ -34,6 +37,16 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (!AuthHelper.isLoggedIn) {
+      return Scaffold(
+        body: AppBarContainerWidget(
+          titleString: "Yêu thích",
+          isShowBackButton: false,
+          child: LoginRequiredView(message: 'guest.favorites_required'.tr()),
+        ),
+      );
+    }
+
     final presenter = Provider.of<FavoritesNotifier>(context);
     return Scaffold(
       body: Stack(
@@ -67,17 +80,18 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(vertical: 10),
 
-                  suffixIcon: _searchQuery.isNotEmpty
-                      ? IconButton(
-                    icon: Icon(Icons.clear, color: Color(0xff6357CC)),
-                    onPressed: () {
-                      setState(() {
-                        _searchQuery = '';
-                        _searchController.clear();
-                      });
-                    },
-                  )
-                      : null,
+                  suffixIcon:
+                      _searchQuery.isNotEmpty
+                          ? IconButton(
+                            icon: Icon(Icons.clear, color: Color(0xff6357CC)),
+                            onPressed: () {
+                              setState(() {
+                                _searchQuery = '';
+                                _searchController.clear();
+                              });
+                            },
+                          )
+                          : null,
                 ),
               ),
             ),
@@ -94,23 +108,23 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 SizedBox(height: 16),
 
                 Expanded(
-                  child: presenter.isLoading
-                      ? _buildLoadingIndicator()
-                      : presenter.favorites.isEmpty
-                      ? _buildEmptyState()
-                      : _isGridView
-                      ? _buildGridView(presenter)
-                      : _buildListView(presenter),
+                  child:
+                      presenter.isLoading
+                          ? _buildLoadingIndicator()
+                          : presenter.favorites.isEmpty
+                          ? _buildEmptyState()
+                          : _isGridView
+                          ? _buildGridView(presenter)
+                          : _buildListView(presenter),
                 ),
               ],
             ),
           ),
           presenter.isLoading ? const LoadingWidget() : const SizedBox(),
-
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async{
+        onPressed: () async {
           await presenter.getData();
         },
         backgroundColor: Color(0xff6357CC),
@@ -120,11 +134,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   }
 
   Widget _buildLoadingIndicator() {
-    return Center(
-      child: CircularProgressIndicator(
-        color: Color(0xff6357CC),
-      ),
-    );
+    return Center(child: CircularProgressIndicator(color: Color(0xff6357CC)));
   }
 
   Widget _buildEmptyState() {
@@ -132,11 +142,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.favorite_border,
-            size: 60,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.favorite_border, size: 60, color: Colors.grey[400]),
           SizedBox(height: 16),
           Text(
             "Bạn chưa có sách yêu thích nào",
@@ -149,10 +155,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           SizedBox(height: 8),
           Text(
             "Hãy thêm sách vào danh sách yêu thích để xem tại đây",
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[500],
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
             textAlign: TextAlign.center,
           ),
         ],
@@ -190,7 +193,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           child: Row(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.horizontal(left: Radius.circular(18)),
+                borderRadius: BorderRadius.horizontal(
+                  left: Radius.circular(18),
+                ),
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
@@ -203,13 +208,17 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                       padding: EdgeInsets.symmetric(horizontal: 12),
                       height: 36,
                       decoration: BoxDecoration(
-                        gradient: _isGridView
-                            ? LinearGradient(
-                          colors: [Color(0xFF8F67E8), Color(0xFF6357CC)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        )
-                            : null,
+                        gradient:
+                            _isGridView
+                                ? LinearGradient(
+                                  colors: [
+                                    Color(0xFF8F67E8),
+                                    Color(0xFF6357CC),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                )
+                                : null,
                         color: _isGridView ? null : Colors.white,
                       ),
                       child: Icon(
@@ -222,7 +231,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 ),
               ),
               ClipRRect(
-                borderRadius: BorderRadius.horizontal(right: Radius.circular(18)),
+                borderRadius: BorderRadius.horizontal(
+                  right: Radius.circular(18),
+                ),
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
@@ -235,13 +246,17 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                       padding: EdgeInsets.symmetric(horizontal: 12),
                       height: 36,
                       decoration: BoxDecoration(
-                        gradient: !_isGridView
-                            ? LinearGradient(
-                          colors: [Color(0xFF8F67E8), Color(0xFF6357CC)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        )
-                            : null,
+                        gradient:
+                            !_isGridView
+                                ? LinearGradient(
+                                  colors: [
+                                    Color(0xFF8F67E8),
+                                    Color(0xFF6357CC),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                )
+                                : null,
                         color: !_isGridView ? null : Colors.white,
                       ),
                       child: Icon(
@@ -260,16 +275,22 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     );
   }
 
-  
   List<FavoritesResponse> _getFilteredFavorites(FavoritesNotifier presenter) {
     if (_searchQuery.isEmpty) {
       return presenter.favorites;
     }
 
-    return presenter.favorites.where((favorite) =>
-    favorite.title!.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-        favorite.authorName!.toLowerCase().contains(_searchQuery.toLowerCase())
-    ).toList();
+    return presenter.favorites
+        .where(
+          (favorite) =>
+              favorite.title!.toLowerCase().contains(
+                _searchQuery.toLowerCase(),
+              ) ||
+              favorite.authorName!.toLowerCase().contains(
+                _searchQuery.toLowerCase(),
+              ),
+        )
+        .toList();
   }
 
   Widget _buildGridView(FavoritesNotifier presenter) {
@@ -278,18 +299,18 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     return filteredFavorites.isEmpty
         ? _buildSearchEmptyState()
         : GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 16,
-        crossAxisSpacing: 16,
-        childAspectRatio: 0.65,
-      ),
-      padding: EdgeInsets.only(top: 8, bottom: 16),
-      itemCount: filteredFavorites.length,
-      itemBuilder: (context, index) {
-        return _buildGridItem(filteredFavorites[index], index);
-      },
-    );
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 16,
+            childAspectRatio: 0.65,
+          ),
+          padding: EdgeInsets.only(top: 8, bottom: 16),
+          itemCount: filteredFavorites.length,
+          itemBuilder: (context, index) {
+            return _buildGridItem(filteredFavorites[index], index);
+          },
+        );
   }
 
   Widget _buildListView(FavoritesNotifier presenter) {
@@ -298,12 +319,12 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     return filteredFavorites.isEmpty
         ? _buildSearchEmptyState()
         : ListView.builder(
-      padding: EdgeInsets.only(top: 8, bottom: 16),
-      itemCount: filteredFavorites.length,
-      itemBuilder: (context, index) {
-        return _buildListItem(filteredFavorites[index], index);
-      },
-    );
+          padding: EdgeInsets.only(top: 8, bottom: 16),
+          itemCount: filteredFavorites.length,
+          itemBuilder: (context, index) {
+            return _buildListItem(filteredFavorites[index], index);
+          },
+        );
   }
 
   Widget _buildSearchEmptyState() {
@@ -311,11 +332,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.search_off,
-            size: 60,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.search_off, size: 60, color: Colors.grey[400]),
           SizedBox(height: 16),
           Text(
             "Không tìm thấy sách phù hợp",
@@ -328,10 +345,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           SizedBox(height: 8),
           Text(
             "Thử tìm kiếm với từ khóa khác",
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[500],
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
             textAlign: TextAlign.center,
           ),
         ],
@@ -340,12 +354,15 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   }
 
   Widget _buildGridItem(FavoritesResponse favorite, int index) {
-    final bool isReading = favorite.status == "reading"; 
+    final bool isReading = favorite.status == "reading";
 
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => PreviewScreen(bookId: favorite.bookId,)));
-
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PreviewScreen(bookId: favorite.bookId),
+          ),
+        );
       },
       child: Container(
         decoration: BoxDecoration(
@@ -366,29 +383,28 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             children: [
               Stack(
                 children: [
-                  
                   (favorite.imageUrl ?? '') != ''
                       ? Image.network(
-                    favorite.imageUrl ?? "",
-                    width: double.infinity,
-                    height: 160,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        ImageHelper.loadFromAsset(
-                          AssetHelper.defaultImage,
-                          width: double.infinity,
-                          height: 160,
-                          fit: BoxFit.cover,
-                        ),
-                  )
+                        favorite.imageUrl ?? "",
+                        width: double.infinity,
+                        height: 160,
+                        fit: BoxFit.cover,
+                        errorBuilder:
+                            (context, error, stackTrace) =>
+                                ImageHelper.loadFromAsset(
+                                  AssetHelper.defaultImage,
+                                  width: double.infinity,
+                                  height: 160,
+                                  fit: BoxFit.cover,
+                                ),
+                      )
                       : ImageHelper.loadFromAsset(
-                    AssetHelper.defaultImage,
-                    width: double.infinity,
-                    height: 160,
-                    fit: BoxFit.cover,
-                  ),
+                        AssetHelper.defaultImage,
+                        width: double.infinity,
+                        height: 160,
+                        fit: BoxFit.cover,
+                      ),
 
-                  
                   Positioned(
                     top: 8,
                     right: 8,
@@ -398,15 +414,10 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                         color: Colors.white.withOpacity(0.9),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(
-                        Icons.favorite,
-                        color: Colors.red,
-                        size: 16,
-                      ),
+                      child: Icon(Icons.favorite, color: Colors.red, size: 16),
                     ),
                   ),
 
-                  
                   if (isReading)
                     Positioned(
                       bottom: 0,
@@ -418,11 +429,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.bookmark,
-                              color: Colors.amber,
-                              size: 12,
-                            ),
+                            Icon(Icons.bookmark, color: Colors.amber, size: 12),
                             SizedBox(width: 4),
                             Text(
                               "Đang đọc",
@@ -441,7 +448,10 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               Expanded(
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -457,10 +467,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                       SizedBox(height: 2),
                       Text(
                         favorite.authorName ?? "",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[700],
-                        ),
+                        style: TextStyle(fontSize: 12, color: Colors.grey[700]),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -495,12 +502,15 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   }
 
   Widget _buildListItem(FavoritesResponse favorite, int index) {
-    final bool isReading = favorite.status == "reading"; 
+    final bool isReading = favorite.status == "reading";
 
     return GestureDetector(
-      onTap: (){
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => PreviewScreen(bookId: favorite.bookId,)));
-
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PreviewScreen(bookId: favorite.bookId),
+          ),
+        );
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 16),
@@ -524,35 +534,37 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               ),
               child: Stack(
                 children: [
-                  
                   (favorite.imageUrl ?? "") != ''
                       ? Image.network(
-                    favorite.imageUrl ?? "",
-                    width: 100,
-                    height: 140,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        ImageHelper.loadFromAsset(
-                          AssetHelper.defaultImage,
-                          width: 100,
-                          height: 140,
-                          fit: BoxFit.cover,
-                        ),
-                  )
+                        favorite.imageUrl ?? "",
+                        width: 100,
+                        height: 140,
+                        fit: BoxFit.cover,
+                        errorBuilder:
+                            (context, error, stackTrace) =>
+                                ImageHelper.loadFromAsset(
+                                  AssetHelper.defaultImage,
+                                  width: 100,
+                                  height: 140,
+                                  fit: BoxFit.cover,
+                                ),
+                      )
                       : ImageHelper.loadFromAsset(
-                    AssetHelper.defaultImage,
-                    width: 100,
-                    height: 140,
-                    fit: BoxFit.cover,
-                  ),
+                        AssetHelper.defaultImage,
+                        width: 100,
+                        height: 140,
+                        fit: BoxFit.cover,
+                      ),
 
-                  
                   if (isReading)
                     Positioned(
                       top: 0,
                       left: 0,
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.amber,
                           borderRadius: BorderRadius.only(
@@ -591,16 +603,12 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-
                       ],
                     ),
                     SizedBox(height: 4),
                     Text(
                       favorite.authorName ?? "",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[700],
-                      ),
+                      style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                     ),
                     SizedBox(height: 8),
                     Row(
@@ -631,7 +639,13 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                           "Đọc tiếp",
                           Color(0xFF6357CC),
                           onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => PreviewScreen(bookId: favorite.bookId,)));
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder:
+                                    (context) =>
+                                        PreviewScreen(bookId: favorite.bookId),
+                              ),
+                            );
                           },
                         ),
                         SizedBox(width: 8),
@@ -656,14 +670,18 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     );
   }
 
-  
-  void _confirmRemoveFavorite(BuildContext context, FavoritesResponse favorite) {
+  void _confirmRemoveFavorite(
+    BuildContext context,
+    FavoritesResponse favorite,
+  ) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Xóa khỏi Yêu thích"),
-          content: Text("Bạn có chắc muốn xóa \"${favorite.title}\" khỏi danh sách yêu thích không?"),
+          content: Text(
+            "Bạn có chắc muốn xóa \"${favorite.title}\" khỏi danh sách yêu thích không?",
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -671,7 +689,10 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             ),
             TextButton(
               onPressed: () {
-                Provider.of<FavoritesNotifier>(context, listen: false).deleteFavorites(bookId: favorite.bookId);
+                Provider.of<FavoritesNotifier>(
+                  context,
+                  listen: false,
+                ).deleteFavorites(bookId: favorite.bookId);
                 Navigator.of(context).pop();
               },
               child: Text("Xóa", style: TextStyle(color: Colors.red)),
@@ -682,8 +703,13 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     );
   }
 
-
-  Widget _buildActionButton(IconData icon, String label, Color color, {bool filled = false, required Function() onTap}) {
+  Widget _buildActionButton(
+    IconData icon,
+    String label,
+    Color color, {
+    bool filled = false,
+    required Function() onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -696,11 +722,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: 14,
-              color: color,
-            ),
+            Icon(icon, size: 14, color: color),
             SizedBox(width: 4),
             Text(
               label,

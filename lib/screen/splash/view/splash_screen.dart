@@ -1,9 +1,7 @@
-import 'package:book_brain/screen/login/view/login_screen.dart';
-import 'package:book_brain/screen/splash/view/intro_screen.dart';
+import 'package:book_brain/screen/main_app.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
-import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
-import 'package:book_brain/service/service_config/admob_service.dart';
+import 'package:book_brain/utils/core/helpers/auth_helper.dart';
 import 'package:flutter/cupertino.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -15,11 +13,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final AdMobService _adMobService = AdMobService();
-  bool _isAdLoaded = false;
-  static const String _appOpenCountKey = 'app_open_count';
-  static const int _showAdAfterCount = 3;
-
   @override
   void initState() {
     super.initState();
@@ -27,25 +20,23 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _initializeApp() async {
-    print('Initializing app...');
-
     // Đợi 2 giây rồi chuyển màn
     await Future.delayed(const Duration(seconds: 2));
 
     if (mounted) {
-      redirectIntroScreen();
+      _openApp();
     }
   }
 
-  void redirectIntroScreen() async {
-    final ignoreIntroScreen =
-        LocalStorageHelper.getValue('ignoreIntroScreen') as bool?;
-    if (ignoreIntroScreen != null && ignoreIntroScreen) {
-      Navigator.of(context).pushNamed(LoginScreen.routeName);
-    } else {
-      LocalStorageHelper.setValue('ignoreIntroScreen', true);
-      Navigator.of(context).pushNamed(IntroScreen.routeName);
+  Future<void> _openApp() async {
+    if (!AuthHelper.isLoggedIn) {
+      await AuthHelper.continueAsGuest();
     }
+
+    if (!mounted) return;
+    Navigator.of(
+      context,
+    ).pushNamedAndRemoveUntil(MainApp.routeName, (_) => false);
   }
 
   @override

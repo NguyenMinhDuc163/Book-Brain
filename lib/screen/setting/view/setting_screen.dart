@@ -2,12 +2,16 @@ import 'package:book_brain/screen/edit_profile/view/edit_profile_screen.dart';
 import 'package:book_brain/screen/edit_profile/provider/profile_notifier.dart';
 import 'package:book_brain/screen/home/provider/home_notifier.dart';
 import 'package:book_brain/screen/login/view/login_screen.dart';
+import 'package:book_brain/screen/login/view/sign_up_screen.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
+import 'package:book_brain/screen/main_app.dart';
+import 'package:book_brain/service/service_config/network_service.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart'
     show AssetHelper;
 import 'package:book_brain/utils/core/common/toast.dart';
 import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
+import 'package:book_brain/utils/core/helpers/auth_helper.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -38,6 +42,7 @@ class _SettingScreenState extends State<SettingScreen> {
   @override
   Widget build(BuildContext context) {
     final presenter = Provider.of<HomeNotifier>(context);
+    final isLoggedIn = AuthHelper.isLoggedIn;
 
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
@@ -54,15 +59,24 @@ class _SettingScreenState extends State<SettingScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildProfileSection(
-                  username: presenter.userName ?? "",
-                  email: presenter.email ?? "",
+                  username:
+                      isLoggedIn
+                          ? (presenter.userName ?? "")
+                          : 'guest.guest_name'.tr(),
+                  email:
+                      isLoggedIn
+                          ? (presenter.email ?? "")
+                          : 'guest.guest_status'.tr(),
+                  isLoggedIn: isLoggedIn,
                 ),
                 SizedBox(height: kDefaultPadding),
-                _buildAccountSection(),
+                isLoggedIn
+                    ? _buildAccountSection()
+                    : _buildGuestAccountSection(),
                 SizedBox(height: kDefaultPadding),
                 _buildAboutSection(),
                 SizedBox(height: kDefaultPadding * 2),
-                _buildLogoutButton(),
+                if (isLoggedIn) _buildLogoutButton(),
               ],
             ),
           ),
@@ -74,6 +88,7 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget _buildProfileSection({
     required String username,
     required String email,
+    required bool isLoggedIn,
   }) {
     return Container(
       padding: EdgeInsets.all(kMediumPadding),
@@ -98,7 +113,16 @@ class _SettingScreenState extends State<SettingScreen> {
             child: CircleAvatar(
               radius: 30,
               backgroundColor: Colors.grey[200],
-              backgroundImage: AssetImage(AssetHelper.avatar),
+              backgroundImage:
+                  isLoggedIn ? AssetImage(AssetHelper.avatar) : null,
+              child:
+                  isLoggedIn
+                      ? null
+                      : FaIcon(
+                        FontAwesomeIcons.user,
+                        size: 24,
+                        color: Color(0xFF6A5AE0),
+                      ),
             ),
           ),
           SizedBox(width: kDefaultPadding),
@@ -107,7 +131,7 @@ class _SettingScreenState extends State<SettingScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  username ?? '',
+                  username,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -122,27 +146,28 @@ class _SettingScreenState extends State<SettingScreen> {
               ],
             ),
           ),
-          InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => EditProfileScreen()),
-              );
-            },
-            borderRadius: BorderRadius.circular(30),
-            child: Container(
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Color(0xFF6A5AE0).withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: FaIcon(
-                FontAwesomeIcons.penToSquare,
-                size: 16,
-                color: Color(0xFF6A5AE0),
+          if (isLoggedIn)
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EditProfileScreen()),
+                );
+              },
+              borderRadius: BorderRadius.circular(30),
+              child: Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Color(0xFF6A5AE0).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: FaIcon(
+                  FontAwesomeIcons.penToSquare,
+                  size: 16,
+                  color: Color(0xFF6A5AE0),
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -213,6 +238,111 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
+  Widget _buildGuestAccountSection() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFFFFFFF), Color(0xFFF0EDFF)],
+        ),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFDCD7FA)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF6357CC).withValues(alpha: 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: const BoxDecoration(
+              color: Color(0xFFE8E4FF),
+              shape: BoxShape.circle,
+            ),
+            child: const Center(
+              child: FaIcon(
+                FontAwesomeIcons.bookBookmark,
+                size: 20,
+                color: Color(0xFF6357CC),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'guest.account_cta_title'.tr(),
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF323B4B),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'guest.account_cta_message'.tr(),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              height: 1.4,
+              color: Colors.grey[600],
+            ),
+          ),
+          const SizedBox(height: 18),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed:
+                      () => Navigator.of(
+                        context,
+                      ).pushNamed(LoginScreen.routeName),
+                  icon: const Icon(Icons.login_rounded, size: 18),
+                  label: Text('auth.login'.tr()),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6357CC),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed:
+                      () => Navigator.of(
+                        context,
+                      ).pushNamed(SignUpScreen.routeName),
+                  icon: const Icon(Icons.person_add_alt_1_rounded, size: 18),
+                  label: Text('guest.register'.tr()),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF6357CC),
+                    side: const BorderSide(color: Color(0xFFB9B4E4)),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildAboutSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -254,8 +384,16 @@ class _SettingScreenState extends State<SettingScreen> {
                 }
               }, subtitle: "Phiên bản 1.0.0"),
               _buildDivider(),
-              _buildSettingItem("Hỗ trợ", Color(0xFF6A5AE0), () {
-                launchEmail(context);
+              _buildSettingItem("Hỗ trợ", Color(0xFF6A5AE0), () async {
+                final Uri url = Uri.parse(
+                  'https://nguyenduc163.notion.site/Nguyen-Duc-Apps-Support-38303bc2971180bfa793f871713beba5',
+                );
+                if (!await launchUrl(
+                  url,
+                  mode: LaunchMode.externalApplication,
+                )) {
+                  throw 'Could not launch URL';
+                }
               }, subtitle: "Liên hệ hỗ trợ kỹ thuật"),
               _buildDivider(),
               _buildSettingItem(
@@ -263,7 +401,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 Color(0xFF38C9A7),
                 () async {
                   final Uri url = Uri.parse(
-                    'https://www.freeprivacypolicy.com/live/e98e0bef-5336-4269-8197-71cd770e1c24',
+                    'https://nguyenduc163.notion.site/Privacy-Policy-for-Book-Brain-38303bc29711809daae3e77cb0f1cae6',
                   );
                   if (!await launchUrl(
                     url,
@@ -297,15 +435,14 @@ class _SettingScreenState extends State<SettingScreen> {
                       child: Text("Hủy"),
                     ),
                     ElevatedButton(
-                      onPressed: () {
-                        LocalStorageHelper.setValue('ignoreIntroScreen', false);
+                      onPressed: () async {
+                        await _clearAccountLocalData();
+                        await AuthHelper.continueAsGuest();
+                        if (!context.mounted) return;
                         Navigator.pop(context);
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => LoginScreen(),
-                          ),
-                          (route) => false,
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          MainApp.routeName,
+                          (_) => false,
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -408,13 +545,14 @@ class _SettingScreenState extends State<SettingScreen> {
             content: Text("settings.delete_account_success_message".tr()),
             actions: [
               ElevatedButton(
-                onPressed: () {
-                  _clearAccountLocalData();
+                onPressed: () async {
+                  await _clearAccountLocalData();
+                  await AuthHelper.continueAsGuest();
+                  if (!context.mounted) return;
                   Navigator.of(context).pop();
-                  Navigator.of(this.context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
-                    (route) => false,
-                  );
+                  Navigator.of(
+                    this.context,
+                  ).pushNamedAndRemoveUntil(MainApp.routeName, (_) => false);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF6A5AE0),
@@ -429,15 +567,16 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  void _clearAccountLocalData() {
-    LocalStorageHelper.setValue("authToken", null);
-    LocalStorageHelper.setValue("userName", null);
-    LocalStorageHelper.setValue("email", null);
-    LocalStorageHelper.setValue("userId", null);
-    LocalStorageHelper.setValue("saved_email", null);
-    LocalStorageHelper.setValue("saved_password", null);
-    LocalStorageHelper.setValue("remember_me", null);
-    LocalStorageHelper.setValue('ignoreIntroScreen', false);
+  Future<void> _clearAccountLocalData() async {
+    await LocalStorageHelper.setValue("authToken", null);
+    await LocalStorageHelper.setValue("userName", null);
+    await LocalStorageHelper.setValue("email", null);
+    await LocalStorageHelper.setValue("userId", null);
+    await LocalStorageHelper.setValue("saved_email", null);
+    await LocalStorageHelper.setValue("saved_password", null);
+    await LocalStorageHelper.setValue("remember_me", null);
+    await LocalStorageHelper.setValue('ignoreIntroScreen', false);
+    NetworkService.instance.updateAuthToken('');
   }
 
   Widget _buildSettingItem(

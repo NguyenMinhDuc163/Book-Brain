@@ -18,11 +18,12 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
   DateTime? _bannerHiddenTime;
   static const Duration _bannerHideDuration = Duration(minutes: 4);
 
+  bool get _adsEnabled => LocalStorageHelper.getValue("isAds") != 'off';
+
   @override
   void initState() {
     super.initState();
-    String isAds = LocalStorageHelper.getValue("isAds");
-    if (isAds != 'off') {
+    if (_adsEnabled) {
       _loadBannerAd();
     }
     _checkBannerVisibility();
@@ -79,8 +80,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
 
   @override
   void dispose() {
-    String isAds = LocalStorageHelper.getValue("isAds");
-    if (isAds != 'off') {
+    if (_adsEnabled) {
       _bannerAd?.dispose();
     }
     super.dispose();
@@ -88,8 +88,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    String isAds = LocalStorageHelper.getValue("isAds");
-    if (isAds == 'off') {
+    if (!_adsEnabled) {
       return SizedBox.shrink();
     }
 
@@ -125,7 +124,10 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
           width: _bannerAd!.size.width.toDouble(),
           height: _bannerAd!.size.height.toDouble(),
           alignment: Alignment.center,
-          child: AdWidget(ad: _bannerAd!),
+          // Keep the platform-view state tied to this exact ad instance.
+          // This prevents Flutter from reusing an AdWidget state when the ad
+          // is replaced during a rebuild or hot reload.
+          child: AdWidget(key: ObjectKey(_bannerAd), ad: _bannerAd!),
         ),
         Positioned(
           top: 0,

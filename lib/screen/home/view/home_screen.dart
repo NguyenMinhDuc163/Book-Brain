@@ -8,11 +8,13 @@ import 'package:book_brain/screen/ranking/view/ranking_screen.dart';
 import 'package:book_brain/screen/search_screen/view/search_screen.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/constants/textstyle_ext.dart';
+import 'package:book_brain/utils/core/common/login_required_dialog.dart';
+import 'package:book_brain/utils/core/helpers/auth_helper.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:book_brain/widgets/ad_banner_widget.dart';
-import 'package:book_brain/widgets/native_ad_widget.dart';
 
 import '../../../utils/widget/loading_widget.dart';
 import '../../history_reading/view/history_reading_screen.dart';
@@ -75,17 +77,60 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(width: kMinPadding),
-                Container(
-                  height: 40,
-                  width: 40,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(kItemPadding),
+                Tooltip(
+                  message:
+                      AuthHelper.isLoggedIn
+                          ? presenter.userName ?? ''
+                          : 'guest.login_from_avatar'.tr(),
+                  child: Material(
                     color: Colors.white,
-                  ),
-                  child: Icon(
-                    FontAwesomeIcons.user,
-                    color: Colors.black,
-                    size: 30,
+                    borderRadius: BorderRadius.circular(kItemPadding),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(kItemPadding),
+                      onTap: () async {
+                        if (AuthHelper.isLoggedIn) return;
+                        await showLoginRequiredDialog(
+                          context,
+                          message: 'guest.profile_login_prompt'.tr(),
+                        );
+                      },
+                      child: SizedBox(
+                        height: 40,
+                        width: 40,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Icon(
+                              FontAwesomeIcons.user,
+                              color: Colors.black87,
+                              size: 25,
+                            ),
+                            if (!AuthHelper.isLoggedIn)
+                              Positioned(
+                                right: 3,
+                                bottom: 3,
+                                child: Container(
+                                  width: 13,
+                                  height: 13,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF6357CC),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  child: const Icon(
+                                    Icons.login_rounded,
+                                    size: 8,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(width: width_16),
@@ -95,7 +140,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      presenter.userName ?? "Nguyễn Minh Đức",
+                      AuthHelper.isLoggedIn
+                          ? (presenter.userName ?? '')
+                          : 'guest.guest_name'.tr(),
                       style:
                           TextStyles
                               .defaultStyle
@@ -121,6 +168,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   onPressed: () async {
+                    if (!AuthHelper.isLoggedIn) {
+                      await showLoginRequiredDialog(
+                        context,
+                        message: 'guest.notification_required'.tr(),
+                      );
+                      return;
+                    }
                     await Navigator.pushNamed(
                       context,
                       NotificationScreen.routeName,
@@ -254,7 +308,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       // Thêm Native Ad sau danh sách Top thịnh hành
                       SizedBox(height: kMediumPadding),
-                      AdBannerWidget(),
+                      const AdBannerWidget(
+                        key: ValueKey('home-trending-banner'),
+                      ),
 
                       HorizontalBookList(
                         title: 'Dành cho bạn',
@@ -274,7 +330,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       // Thêm Banner Ad ở cuối màn hình
                       SizedBox(height: kMediumPadding),
-                      AdBannerWidget(),
+                      const AdBannerWidget(key: ValueKey('home-footer-banner')),
                       SizedBox(height: kMediumPadding),
                     ],
                   ),

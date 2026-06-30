@@ -5,7 +5,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../core/constants/dimension_constants.dart';
 
-
 class EmptyDataWidget extends StatelessWidget {
   const EmptyDataWidget({
     super.key,
@@ -27,7 +26,8 @@ class EmptyDataWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: mainAxisAlignment == null ? Alignment.center : Alignment.topCenter,
+      alignment:
+          mainAxisAlignment == null ? Alignment.center : Alignment.topCenter,
       child: Column(
         mainAxisAlignment: mainAxisAlignment ?? MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -35,17 +35,23 @@ class EmptyDataWidget extends StatelessWidget {
         children: [
           SvgPicture.asset(
             AssetHelper.iconEmptyData,
-            height: height ?? height_300,
-            width: width ?? width_300,
+            height: height ?? height_64,
+            width: width ?? width_80,
+            fit: BoxFit.contain,
           ),
-          Text(
-            title ?? "account.no_data".tr(),
-            style: styleTitle  ?? TextStyle(fontSize: 14),
-            textAlign: TextAlign.center,
-          )
+          SizedBox(height: height_6),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: width_16),
+            child: Text(
+              title ?? "account.no_data".tr(),
+              style: styleTitle ?? const TextStyle(fontSize: 14),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
     );
   }
 }
-

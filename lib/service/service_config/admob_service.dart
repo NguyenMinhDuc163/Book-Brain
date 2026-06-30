@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdMobService {
@@ -30,8 +31,9 @@ class AdMobService {
     'app_open': 'ca-app-pub-4649011658078977/2465294465',
   };
 
-  // Chọn môi trường (true = production, false = test)
-  bool _isProduction = true; // chuyển về test để debug
+  // Never request real ads from debug/profile builds. This protects the
+  // AdMob account from accidental invalid traffic during development.
+  bool get _isProduction => kReleaseMode;
 
   // Lấy ID quảng cáo dựa trên môi trường
   String _getAdUnitId(String type) {
@@ -60,19 +62,6 @@ class AdMobService {
     try {
       // Khởi tạo MobileAds
       await MobileAds.instance.initialize();
-
-      // Cấu hình test device
-      MobileAds.instance.updateRequestConfiguration(
-        RequestConfiguration(testDeviceIds: ['EMULATOR']),
-      );
-
-      // Tải sẵn quảng cáo
-      await Future.wait([
-        loadInterstitialAd(),
-        loadRewardedAd(),
-        loadNativeAd(),
-        loadAppOpenAd(),
-      ]);
 
       _isInitialized = true;
       print('AdMob initialized successfully');

@@ -1,12 +1,15 @@
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/screen/reivew_book/widget/feedBack_widget.dart';
 import 'package:book_brain/utils/core/common/toast.dart';
+import 'package:book_brain/utils/core/common/login_required_dialog.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
+import 'package:book_brain/utils/core/helpers/auth_helper.dart';
 import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../utils/widget/loading_widget.dart';
 import '../provider/review_book_notifier.dart';
@@ -72,6 +75,11 @@ class _ReviewBookScreenState extends State<ReviewBookScreen> {
   }
 
   void _showReviewBottomSheet() {
+    if (!AuthHelper.isLoggedIn) {
+      showLoginRequiredDialog(context, message: 'guest.review_required'.tr());
+      return;
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -215,7 +223,12 @@ class _ReviewBookScreenState extends State<ReviewBookScreen> {
 
   // Hàm hiển thị menu xóa/sửa đánh giá
   void _showReviewOptions(AllReviewResponse review) {
-    final currentUserId = LocalStorageHelper.getValue("userId") ?? "1";
+    if (!AuthHelper.isLoggedIn) {
+      showLoginRequiredDialog(context);
+      return;
+    }
+
+    final currentUserId = LocalStorageHelper.getValue("userId");
 
     // Chỉ hiển thị menu nếu là bình luận của người dùng hiện tại
     if (review.userId != currentUserId) {
@@ -439,7 +452,12 @@ class _ReviewBookScreenState extends State<ReviewBookScreen> {
   void _checkUserReview(List<AllReviewResponse>? reviews) {
     if (reviews == null) return;
 
-    final currentUserId = LocalStorageHelper.getValue("userId") ?? "1";
+    if (!AuthHelper.isLoggedIn) {
+      _hasUserReviewed = false;
+      return;
+    }
+
+    final currentUserId = LocalStorageHelper.getValue("userId");
 
     _hasUserReviewed = reviews.any((review) => review.userId == currentUserId);
     setState(() {});
@@ -497,10 +515,11 @@ class _ReviewBookScreenState extends State<ReviewBookScreen> {
                                     int.tryParse(review.helpfulCount ?? '0') ??
                                     0,
                                 onMorePressed:
-                                    review.userId ==
-                                            LocalStorageHelper.getValue(
-                                              "userId",
-                                            )
+                                    AuthHelper.isLoggedIn &&
+                                            review.userId ==
+                                                LocalStorageHelper.getValue(
+                                                  "userId",
+                                                )
                                         ? () => _showReviewOptions(review)
                                         : null,
                               ),

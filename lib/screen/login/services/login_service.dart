@@ -5,6 +5,7 @@ import 'package:book_brain/service/api_service/response/base_response.dart';
 import 'package:book_brain/service/api_service/response/login_response.dart';
 import 'package:book_brain/service/service_config/network_service.dart';
 import 'package:book_brain/utils/core/common/toast.dart';
+import 'package:book_brain/utils/core/helpers/auth_helper.dart';
 import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
 
 class LoginService implements ILoginInterface {
@@ -49,6 +50,7 @@ class LoginService implements ILoginInterface {
           break; // Dừng vòng lặp khi tìm thấy user
         }
       }
+      await AuthHelper.markLoggedIn();
       return true;
     } else {
       showToastTop(

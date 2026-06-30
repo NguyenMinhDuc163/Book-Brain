@@ -3,10 +3,11 @@ import 'package:book_brain/utils/core/extentions/size_extension.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../service/api_service/response/author_ranking_response.dart';
 import '../../../utils/core/constants/avatar_colors.dart';
-import '../model/ranking_user.dart';
+import 'ranking_empty_state.dart';
 
 class RankingPodium extends StatelessWidget {
   final List<AuthorRankingResponse> topAuthor;
@@ -20,7 +21,14 @@ class RankingPodium extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (topAuthor.length < 3) {
-      return Center(child: Text('Không đủ dữ liệu để hiển thị bảng xếp hạng'));
+      return RankingEmptyState(
+        icon: Icons.emoji_events_outlined,
+        title:
+            topAuthor.isEmpty
+                ? 'ranking.empty_author_title'.tr()
+                : 'ranking.not_enough_author_title'.tr(),
+        message: 'ranking.empty_author_message'.tr(),
+      );
     }
 
     return SizedBox(
@@ -447,4 +455,3 @@ class RankingPodium extends StatelessWidget {
     );
   }
 }
-

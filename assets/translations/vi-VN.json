@@ -229,6 +229,40 @@
     "connection_timeout": "Kết nối đến máy chủ quá thời gian, vui lòng thử lại sau."
   },
 
+  "ranking": {
+    "empty_author_title": "Chưa có tác giả xếp hạng",
+    "not_enough_author_title": "Chưa đủ dữ liệu xếp hạng",
+    "empty_author_message": "Bảng xếp hạng tác giả sẽ xuất hiện khi hệ thống ghi nhận đủ dữ liệu.",
+    "empty_book_title": "Chưa có sách xếp hạng",
+    "empty_book_message": "Những cuốn sách nổi bật sẽ sớm được cập nhật tại đây."
+  },
+
+  "guest": {
+    "continue_without_account": "Tiếp tục đọc không cần tài khoản",
+    "login_required_title": "Cần đăng nhập",
+    "login_required_default": "Bạn cần đăng nhập để sử dụng tính năng này.",
+    "public_features_available": "Bạn vẫn có thể đọc và tìm kiếm sách mà không cần đăng nhập.",
+    "later": "Để sau",
+    "notification_required": "Bạn cần đăng nhập để xem thông báo.",
+    "favorite_action_required": "Bạn cần đăng nhập để thêm sách vào Yêu thích.",
+    "following_action_required": "Bạn cần đăng nhập để theo dõi sách.",
+    "note_required": "Bạn cần đăng nhập để tạo ghi chú.",
+    "review_required": "Bạn cần đăng nhập để gửi đánh giá.",
+    "favorites_required": "Bạn cần đăng nhập để lưu và xem sách yêu thích.",
+    "following_required": "Bạn cần đăng nhập để theo dõi sách.",
+    "history_required": "Bạn cần đăng nhập để đồng bộ lịch sử đọc.",
+    "guest_name": "Khách",
+    "guest_status": "Bạn đang dùng chế độ không đăng nhập",
+    "account_section": "Tài khoản",
+    "login_subtitle": "Đăng nhập để đồng bộ dữ liệu của bạn",
+    "register": "Đăng ký",
+    "register_subtitle": "Tạo tài khoản Book Brain",
+    "login_from_avatar": "Đăng nhập tài khoản",
+    "profile_login_prompt": "Đăng nhập để đồng bộ hồ sơ và trải nghiệm đọc của bạn.",
+    "account_cta_title": "Lưu trải nghiệm đọc của bạn",
+    "account_cta_message": "Đăng nhập để đồng bộ sách yêu thích, lịch sử đọc, ghi chú và nhận thông báo."
+  },
+
   "change_password": {
     "please_enter_all_info": "Vui lòng nhập đầy đủ thông tin!",
     "new_password_mismatch": "Mật khẩu mới không khớp!",

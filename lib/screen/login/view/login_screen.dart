@@ -6,9 +6,11 @@ import 'package:book_brain/screen/main_app.dart';
 import 'package:book_brain/screen/login/view/sign_up_screen.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
+import 'package:book_brain/utils/core/helpers/auth_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
 import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
 import 'package:book_brain/utils/widget/loading_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -157,6 +159,19 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderSide: BorderSide(color: Colors.white, width: 1),
                         ),
                       ),
+                    ),
+                    SizedBox(height: kDefaultPadding),
+                    ButtonWidget(
+                      title: 'guest.continue_without_account'.tr(),
+                      opacity: Colors.white,
+                      ontap: () async {
+                        await AuthHelper.continueAsGuest();
+                        if (!context.mounted) return;
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          MainApp.routeName,
+                          (_) => false,
+                        );
+                      },
                     ),
                     SizedBox(height: kDefaultPadding),
                     Row(

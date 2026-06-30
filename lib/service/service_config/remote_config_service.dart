@@ -19,23 +19,31 @@ mixin RemoteConfigService {
     print('Remote Config Updated: $updated');
 
     // Lấy baseUrl từ Remote Config hoặc fallback nếu không có giá trị
-    String currentBaseUrl = remoteConfig.getString('baseUrlServer').isNotEmpty
-        ? remoteConfig.getString('baseUrlServer')
-        : fallbackUrl;
+    String currentBaseUrl =
+        remoteConfig.getString('baseUrlServer').isNotEmpty
+            ? remoteConfig.getString('baseUrlServer')
+            : fallbackUrl;
 
     print('Current baseUrlServer: $currentBaseUrl');
-    NetworkService.instance.updateBaseUrl(currentBaseUrl); // Cập nhật URL khi khởi tạo
+    NetworkService.instance.updateBaseUrl(
+      currentBaseUrl,
+    ); // Cập nhật URL khi khởi tạo
 
     // Lắng nghe các sự kiện cập nhật từ Remote Config
     remoteConfig.onConfigUpdated.listen((event) async {
       await remoteConfig.activate();
-      final newBaseUrl = getBaseURLServer().isNotEmpty ? getBaseURLServer() : fallbackUrl;
+      final newBaseUrl =
+          getBaseURLServer().isNotEmpty ? getBaseURLServer() : fallbackUrl;
       print('--NEW BASE URL FROM LISTENER: $newBaseUrl--');
       NetworkService.instance.updateBaseUrl(newBaseUrl);
     });
   }
 
-  String getBaseURLServer() => remoteConfig.getString('baseUrlServer');
+  String getBaseURLServer() {
+    final configuredUrl = remoteConfig.getString('baseUrlServer');
+    return configuredUrl.isNotEmpty ? configuredUrl : fallbackUrl;
+  }
+
   String getBaseURLWeb() => remoteConfig.getString('base_url_web');
   String getOpenAISecretKey() => remoteConfig.getString('OpenAI_Secret_Key');
 }

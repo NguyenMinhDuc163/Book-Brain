@@ -1,15 +1,9 @@
 import 'package:book_brain/screen/edit_profile/provider/profile_notifier.dart';
 import 'package:book_brain/screen/home/provider/home_notifier.dart';
-import 'package:book_brain/screen/login/view/login_screen.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
-import 'package:book_brain/utils/core/common/toast.dart'
-    show showToast, showToastTop;
+import 'package:book_brain/utils/core/common/toast.dart' show showToastTop;
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
-import 'package:book_brain/utils/core/helpers/asset_helper.dart';
-import 'package:book_brain/utils/core/helpers/image_helper.dart';
 import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
-import 'package:book_brain/utils/router_names.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -26,22 +20,16 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _phoneNumberController = TextEditingController();
-  String? selectedValue = 'Việt Nam';
   bool isSign = false;
   @override
   void dispose() {
     _userNameController.dispose();
     _emailController.dispose();
-    // _passwordController.dispose();
-    _phoneNumberController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final presenter = Provider.of<ProfileNotifier>(context);
-
     return GestureDetector(
       behavior:
           HitTestBehavior
@@ -66,25 +54,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   prefixIcon: SizedBox(
                     width: 1,
                     child: Icon(FontAwesomeIcons.user),
-                  ),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white, width: 1),
-                    borderRadius: BorderRadius.all(Radius.circular(6)),
-                  ),
-                ),
-              ),
-              SizedBox(height: kDefaultPadding),
-              TextField(
-                controller: _phoneNumberController,
-                keyboardType: TextInputType.phone,
-                style: TextStyle(fontSize: 18, color: Colors.black),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  labelText: 'Số điện thoại',
-                  prefixIcon: SizedBox(
-                    width: 1,
-                    child: Icon(FontAwesomeIcons.phone),
                   ),
                   border: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.white, width: 1),
@@ -139,21 +108,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     });
     final String userName = _userNameController.text.trim();
     final String email = _emailController.text.trim();
-    final String phoneNumber = _phoneNumberController.text.trim();
-    final String? nationality = selectedValue;
-    print(
-      'userName: $userName, email: $email, phoneNumber: $phoneNumber, nationality: $nationality',
-    );
     bool success = await Provider.of<ProfileNotifier>(
       context,
       listen: false,
-    ).updateProfile(email: email, phoneNumber: phoneNumber, userName: userName);
+    ).updateProfile(email: email, userName: userName);
+
+    if (!mounted) return;
 
     if (success) {
       showToastTop(message: "Cập nhật thông tin thành công!");
       setState(() {
         isSign = false;
-        LocalStorageHelper.setValue("userName", userName ?? "");
+        LocalStorageHelper.setValue("userName", userName);
       });
       // Gọi getData() của HomeNotifier khi quay lại
       if (mounted) {

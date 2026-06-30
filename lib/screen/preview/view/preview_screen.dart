@@ -7,7 +7,9 @@ import 'package:book_brain/utils/core/constants/color_constants.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/constants/mock_data.dart';
 import 'package:book_brain/utils/core/constants/textstyle_ext.dart';
+import 'package:book_brain/utils/core/common/login_required_dialog.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
+import 'package:book_brain/utils/core/helpers/auth_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
 import 'package:book_brain/widgets/native_ad_widget.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,7 @@ import 'package:provider/provider.dart';
 import 'package:book_brain/service/service_config/admob_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../utils/widget/loading_widget.dart';
 
@@ -238,7 +241,14 @@ class _PreviewScreenState extends State<PreviewScreen> {
             top: kMediumPadding * 3,
             right: kMediumPadding,
             child: GestureDetector(
-              onTap: () {
+              onTap: () async {
+                if (!AuthHelper.isLoggedIn) {
+                  await showLoginRequiredDialog(
+                    context,
+                    message: 'guest.favorite_action_required'.tr(),
+                  );
+                  return;
+                }
                 presenter.setFavorites(!presenter.isFavorites);
               },
               child: Container(
@@ -315,7 +325,16 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                     ),
                                     SizedBox(width: width_16),
                                     GestureDetector(
-                                      onTap: () {
+                                      onTap: () async {
+                                        if (!AuthHelper.isLoggedIn) {
+                                          await showLoginRequiredDialog(
+                                            context,
+                                            message:
+                                                'guest.following_action_required'
+                                                    .tr(),
+                                          );
+                                          return;
+                                        }
                                         presenter.setFollowing(
                                           !presenter.isFollowing,
                                         );
