@@ -9,12 +9,11 @@ import 'package:book_brain/utils/routers.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_ce_flutter/adapters.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'firebase_options.dart';
 
@@ -25,14 +24,6 @@ void main() async {
   await LocalStorageHelper.initLocalStorageHelper();
   // await dotenv.load(fileName: ".env");
 
-  // Khởi tạo MobileAds
-  await MobileAds.instance.initialize();
-
-  // Cấu hình test device
-  MobileAds.instance.updateRequestConfiguration(
-    RequestConfiguration(testDeviceIds: ['EMULATOR']),
-  );
-
   // Khởi tạo AdMob
   await AdMobService().initialize();
 
@@ -41,11 +32,13 @@ void main() async {
 
   /// Firebase Service
   final firebaseService = FirebaseService();
+  await firebaseService.initialize();
   print(
     "Current base URL from Firebase Remote Config: ${firebaseService.getBaseURLServer()}",
   );
   await FirebaseAppCheck.instance.activate(
-    androidProvider: AndroidProvider.playIntegrity,
+    androidProvider:
+        kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
   );
 
   Locale defaultLocale = const Locale('en', 'US');

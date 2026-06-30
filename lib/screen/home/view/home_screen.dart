@@ -308,7 +308,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       // Thêm Native Ad sau danh sách Top thịnh hành
                       SizedBox(height: kMediumPadding),
-                      AdBannerWidget(),
+                      const AdBannerWidget(
+                        key: ValueKey('home-trending-banner'),
+                      ),
 
                       HorizontalBookList(
                         title: 'Dành cho bạn',
@@ -328,7 +330,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       // Thêm Banner Ad ở cuối màn hình
                       SizedBox(height: kMediumPadding),
-                      AdBannerWidget(),
+                      const AdBannerWidget(key: ValueKey('home-footer-banner')),
                       SizedBox(height: kMediumPadding),
                     ],
                   ),

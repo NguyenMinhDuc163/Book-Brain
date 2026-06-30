@@ -17,11 +17,12 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
   DateTime? _adHiddenTime;
   static const Duration _adHideDuration = Duration(minutes: 4);
 
+  bool get _adsEnabled => LocalStorageHelper.getValue("isAds") != 'off';
+
   @override
   void initState() {
     super.initState();
-    String isAds = LocalStorageHelper.getValue("isAds");
-    if(isAds == 'off'){
+    if (_adsEnabled) {
       _loadNativeAd();
     }
     _checkAdVisibility();
@@ -117,9 +118,7 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
 
   @override
   Widget build(BuildContext context) {
-
-    String isAds = LocalStorageHelper.getValue("isAds");
-    if(isAds == 'off'){
+    if (!_adsEnabled) {
       return SizedBox.shrink();
     }
 
