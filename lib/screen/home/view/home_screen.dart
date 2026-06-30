@@ -8,6 +8,9 @@ import 'package:book_brain/screen/ranking/view/ranking_screen.dart';
 import 'package:book_brain/screen/search_screen/view/search_screen.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/constants/textstyle_ext.dart';
+import 'package:book_brain/utils/core/common/login_required_dialog.dart';
+import 'package:book_brain/utils/core/helpers/auth_helper.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -95,7 +98,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      presenter.userName ?? "Nguyễn Minh Đức",
+                      AuthHelper.isLoggedIn
+                          ? (presenter.userName ?? '')
+                          : 'guest.guest_name'.tr(),
                       style:
                           TextStyles
                               .defaultStyle
@@ -121,6 +126,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   onPressed: () async {
+                    if (!AuthHelper.isLoggedIn) {
+                      await showLoginRequiredDialog(
+                        context,
+                        message: 'guest.notification_required'.tr(),
+                      );
+                      return;
+                    }
                     await Navigator.pushNamed(
                       context,
                       NotificationScreen.routeName,

@@ -223,6 +223,36 @@
     "connection_error": "Connection error",
     "connection_timeout": "Connection to the server timed out, please try again later."
   },
+  "ranking": {
+    "empty_author_title": "No ranked authors yet",
+    "not_enough_author_title": "Not enough ranking data",
+    "empty_author_message": "The author ranking will appear once enough data has been collected.",
+    "empty_book_title": "No ranked books yet",
+    "empty_book_message": "Featured books will be updated here soon."
+  },
+
+  "guest": {
+    "continue_without_account": "Continue reading without an account",
+    "login_required_title": "Login required",
+    "login_required_default": "You need to log in to use this feature.",
+    "public_features_available": "You can still read and search for books without logging in.",
+    "later": "Later",
+    "notification_required": "You need to log in to view notifications.",
+    "favorite_action_required": "You need to log in to add books to Favorites.",
+    "following_action_required": "You need to log in to follow books.",
+    "note_required": "You need to log in to create notes.",
+    "review_required": "You need to log in to submit a review.",
+    "favorites_required": "You need to log in to save and view favorite books.",
+    "following_required": "You need to log in to follow books.",
+    "history_required": "You need to log in to sync reading history.",
+    "guest_name": "Guest",
+    "guest_status": "You are using the app without an account",
+    "account_section": "Account",
+    "login_subtitle": "Log in to sync your data",
+    "register": "Sign up",
+    "register_subtitle": "Create a Book Brain account"
+  },
+
   "change_password": {
     "please_enter_all_info": "Please enter all required information!",
     "new_password_mismatch": "New password does not match!",

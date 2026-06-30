@@ -1,12 +1,8 @@
 import 'package:book_brain/screen/login/provider/register_notifier.dart';
 import 'package:book_brain/screen/login/view/login_screen.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
-import 'package:book_brain/utils/core/common/toast.dart'
-    show showToast, showToastTop;
+import 'package:book_brain/utils/core/common/toast.dart' show showToastTop;
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
-import 'package:book_brain/utils/core/helpers/asset_helper.dart';
-import 'package:book_brain/utils/core/helpers/image_helper.dart';
-import 'package:book_brain/utils/router_names.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -27,22 +23,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _phoneNumberController = TextEditingController();
-  String? selectedValue = 'Vietnamese';
   bool isSign = false;
   @override
   void dispose() {
     _userNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _phoneNumberController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final presenter = Provider.of<RegisterNotifier>(context);
-    final model = presenter.userModel;
     return GestureDetector(
       behavior:
           HitTestBehavior
@@ -69,25 +61,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       prefixIcon: SizedBox(
                         width: 1,
                         child: Icon(FontAwesomeIcons.user),
-                      ),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white, width: 1),
-                        borderRadius: BorderRadius.all(Radius.circular(6)),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: kDefaultPadding),
-                  TextField(
-                    controller: _phoneNumberController,
-                    keyboardType: TextInputType.phone,
-                    style: TextStyle(fontSize: 18, color: Colors.black),
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      labelText: 'Số điện thoại',
-                      prefixIcon: SizedBox(
-                        width: 1,
-                        child: Icon(FontAwesomeIcons.phone),
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.white, width: 1),
@@ -231,9 +204,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         username: _userNameController.text.trim(),
                         password: _passwordController.text.trim(),
                         email: _emailController.text.trim(),
-                        phoneNumber: _phoneNumberController.text.trim(),
                       );
                       if (isRegister) {
+                        if (!context.mounted) return;
                         Navigator.pushNamed(context, LoginScreen.routeName);
                       }
                     },
@@ -248,17 +221,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  bool isValidPhoneNumber(String phoneNumber) {
-    // Kiểm tra số điện thoại Việt Nam
-    // Format: 0 + 9 số hoặc +84 + 9 số
-    final RegExp phoneRegex = RegExp(r'^(0|\+84)([0-9]{9})$');
-
-    // Loại bỏ khoảng trắng và dấu gạch ngang
-    String cleanPhone = phoneNumber.replaceAll(RegExp(r'[\s-]'), '');
-
-    return phoneRegex.hasMatch(cleanPhone);
-  }
-
   bool isValidEmail(String email) {
     if (email.isEmpty) return false;
 
@@ -269,7 +231,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (email.length > 254) return false;
 
     // Biểu thức chính quy kiểm tra cú pháp email chặt chẽ hơn
-    final RegExp emailRegExp = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",);
+    final RegExp emailRegExp = RegExp(
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
+    );
 
     // Kiểm tra các trường hợp đặc biệt
     if (email.contains('..')) return false;
@@ -305,19 +269,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     if (!isValidEmail(_emailController.text)) {
       showToastTop(message: 'Email không hợp lệ, vui lòng kiểm tra lại');
-      return false;
-    }
-
-    if (_phoneNumberController.text.trim().isEmpty) {
-      showToastTop(message: 'Vui lòng nhập số điện thoại');
-      return false;
-    }
-
-    if (!isValidPhoneNumber(_phoneNumberController.text)) {
-      showToastTop(
-        message:
-            'Số điện thoại không hợp lệ. Vui lòng nhập theo định dạng: 0xxxxxxxxx hoặc +84xxxxxxxxx',
-      );
       return false;
     }
 

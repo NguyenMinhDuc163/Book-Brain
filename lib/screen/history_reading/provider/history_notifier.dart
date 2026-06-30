@@ -1,6 +1,7 @@
 import 'package:book_brain/screen/history_reading/service/history_service.dart';
 import 'package:book_brain/service/api_service/response/history_response.dart';
 import 'package:book_brain/utils/core/base/base_notifier.dart';
+import 'package:book_brain/utils/core/helpers/auth_helper.dart';
 
 class HistoryNotifier extends BaseNotifier {
   HistoryService historyService = HistoryService();
@@ -8,12 +9,14 @@ class HistoryNotifier extends BaseNotifier {
   late List<HistoryResponse> currentHistory = [];
   late List<HistoryResponse> completedHistory = [];
   Future<void> getData() async {
+    if (!AuthHelper.isLoggedIn) return;
     await getAllHistory();
     await getCurrentHistory();
     await getCompletedHistory();
   }
 
   Future<bool> getAllHistory() async {
+    if (!AuthHelper.isLoggedIn) return false;
     return await execute(() async {
       allHistory = (await historyService.getHistory(limit: 10, page: 1))!;
       notifyListeners();
@@ -22,6 +25,7 @@ class HistoryNotifier extends BaseNotifier {
   }
 
   Future<bool> getCurrentHistory() async {
+    if (!AuthHelper.isLoggedIn) return false;
     return await execute(() async {
       currentHistory =
           (await historyService.getHistory(
@@ -36,6 +40,7 @@ class HistoryNotifier extends BaseNotifier {
   }
 
   Future<bool> getCompletedHistory() async {
+    if (!AuthHelper.isLoggedIn) return false;
     return await execute(() async {
       completedHistory =
           (await historyService.getHistory(

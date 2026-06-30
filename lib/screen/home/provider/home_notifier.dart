@@ -2,11 +2,9 @@ import 'package:book_brain/screen/home/service/home_service.dart';
 import 'package:book_brain/screen/notification/service/notification_service.dart';
 import 'package:book_brain/service/api_service/response/book_info_response.dart';
 import 'package:book_brain/service/api_service/response/notification_response.dart';
-import 'package:book_brain/service/api_service/response/recoment_response.dart';
 import 'package:book_brain/utils/core/base/base_notifier.dart';
+import 'package:book_brain/utils/core/helpers/auth_helper.dart';
 import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
-import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class HomeNotifier extends BaseNotifier {
   HomeService homeService = HomeService();
@@ -32,10 +30,17 @@ class HomeNotifier extends BaseNotifier {
       await Future.wait([
         getInfoBook(),
         getTrendingBook(limit: 10),
-        getUnreadNotificationCount(),
-        getRecommentBook(),
         loadUserInfo(),
       ]);
+
+      if (AuthHelper.isLoggedIn) {
+        await Future.wait([getUnreadNotificationCount(), getRecommentBook()]);
+      } else {
+        unreadNotificationCount = 0;
+        recommenlist = List<BookInfoResponse>.from(trendingBook);
+        hasMoreRecommend = false;
+        notifyListeners();
+      }
     });
   }
 
@@ -58,6 +63,12 @@ class HomeNotifier extends BaseNotifier {
   }
 
   Future<void> getUnreadNotificationCount() async {
+    if (!AuthHelper.isLoggedIn) {
+      unreadNotificationCount = 0;
+      notifyListeners();
+      return;
+    }
+
     try {
       final notifications = await notificationService.getListNotification(
         page: 1,
@@ -91,6 +102,13 @@ class HomeNotifier extends BaseNotifier {
   }
 
   Future<bool> getRecommentBook() async {
+    if (!AuthHelper.isLoggedIn) {
+      recommenlist = List<BookInfoResponse>.from(trendingBook);
+      hasMoreRecommend = false;
+      notifyListeners();
+      return false;
+    }
+
     return await execute(() async {
       int userID = LocalStorageHelper.getValue("userId");
       recommenlist = await homeService.getRecommendation(
@@ -137,6 +155,12 @@ class HomeNotifier extends BaseNotifier {
 
   // Sửa lại hàm loadmore cho recommend books
   Future<void> loadMoreRecommendBooks() async {
+    if (!AuthHelper.isLoggedIn) {
+      hasMoreRecommend = false;
+      notifyListeners();
+      return;
+    }
+
     if (isLoadingMoreRecommend || !hasMoreRecommend) return;
 
     isLoadingMoreRecommend = true;

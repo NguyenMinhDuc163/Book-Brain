@@ -5,12 +5,13 @@ import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/network_image_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../service/api_service/response/book_ranking_response.dart';
 import '../../../utils/core/constants/color_constants.dart';
-import '../../../utils/core/helpers/image_helper.dart';
 import '../provider/ranking_notifier.dart';
 import '../widget/rating_stars_widget.dart';
+import '../widget/ranking_empty_state.dart';
 
 class BookRankingScreen extends StatefulWidget {
   const BookRankingScreen({super.key});
@@ -41,10 +42,14 @@ class _BookRankingScreenState extends State<BookRankingScreen> {
       ),
       padding: EdgeInsets.all(kDefaultPadding),
       child:
-          presenter.bookRanking == null || presenter.bookRanking!.isEmpty
-              ? Center(
-                child: CircularProgressIndicator(),
-              ) // Hiển thị loading khi chưa có dữ liệu
+          presenter.bookRanking == null
+              ? Center(child: CircularProgressIndicator())
+              : presenter.bookRanking!.isEmpty
+              ? RankingEmptyState(
+                icon: Icons.auto_stories_outlined,
+                title: 'ranking.empty_book_title'.tr(),
+                message: 'ranking.empty_book_message'.tr(),
+              )
               : ListView.builder(
                 itemCount: presenter.bookRanking!.length,
                 itemBuilder: (context, index) {

@@ -1,6 +1,7 @@
 import 'package:book_brain/screen/edit_profile/service/profile_service.dart';
 import 'package:book_brain/screen/home/provider/home_notifier.dart';
 import 'package:book_brain/utils/core/base/base_notifier.dart';
+import 'package:book_brain/utils/core/helpers/auth_helper.dart';
 import 'package:provider/provider.dart';
 
 import '../../../utils/core/common/toast.dart';
@@ -10,17 +11,13 @@ import '../../../utils/core/helpers/local_storage_helper.dart';
 class ProfileNotifier extends BaseNotifier {
   ProfileService profileService = ProfileService();
 
-  Future<bool> updateProfile({
-    String? email,
-    String? userName,
-    String? phoneNumber,
-  }) async {
+  Future<bool> updateProfile({String? email, String? userName}) async {
+    if (!AuthHelper.isLoggedIn) return false;
     return await execute(() async {
       int id = LocalStorageHelper.getValue("userId") ?? 1;
       bool? isSucc = await profileService.updateProfile(
         id: id,
         email: email?.isNotEmpty == true ? email : null,
-        phoneNumber: phoneNumber,
         userName: userName,
       );
 
@@ -44,6 +41,7 @@ class ProfileNotifier extends BaseNotifier {
     String? oldPassword,
     String? newPassword,
   }) async {
+    if (!AuthHelper.isLoggedIn) return false;
     return await execute(() async {
       int id = LocalStorageHelper.getValue("userId") ?? 1;
       bool? isSucc = await profileService.changePassword(
@@ -63,6 +61,7 @@ class ProfileNotifier extends BaseNotifier {
   }
 
   Future<bool> deleteAccount() async {
+    if (!AuthHelper.isLoggedIn) return false;
     return await execute(() async {
       bool? isSucc = await profileService.deleteAccount();
       notifyListeners();

@@ -572,16 +572,16 @@ class _AllBookScreenState extends State<AllBookScreen> {
           child: EmptyDataWidget(
             title: "Không tìm thấy sách phù hợp",
             styleTitle: TextStyle(fontSize: 14, color: Colors.grey[600]),
-            height: height_200,
-            width: width_200,
+            height: height_64,
+            width: width_80,
           ),
         )
         : Center(
           child: EmptyDataWidget(
             title: "Bạn chưa theo dõi sách nào",
             styleTitle: TextStyle(fontSize: 14, color: Colors.grey[600]),
-            height: height_200,
-            width: width_200,
+            height: height_64,
+            width: width_80,
           ),
         );
   }

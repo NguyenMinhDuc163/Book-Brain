@@ -4,12 +4,15 @@ import 'package:book_brain/service/api_service/response/subscriptions_response.d
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
+import 'package:book_brain/utils/core/helpers/auth_helper.dart';
+import 'package:book_brain/utils/core/common/login_required_dialog.dart';
 import 'package:book_brain/utils/utils.dart';
 import 'package:book_brain/utils/widget/empty_data.dart';
 import 'package:flutter/material.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:provider/provider.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../utils/widget/loading_widget.dart';
 
@@ -29,7 +32,7 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      if (mounted) {
+      if (mounted && AuthHelper.isLoggedIn) {
         Provider.of<SubscriptionNotifier>(context, listen: false).getData();
       }
     });
@@ -43,6 +46,15 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (!AuthHelper.isLoggedIn) {
+      return Scaffold(
+        body: AppBarContainerWidget(
+          titleString: "Sách theo dõi",
+          child: LoginRequiredView(message: 'guest.following_required'.tr()),
+        ),
+      );
+    }
+
     final presenter = Provider.of<SubscriptionNotifier>(context);
 
     return KeyboardDismisser(
@@ -522,16 +534,16 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
           child: EmptyDataWidget(
             title: "Không tìm thấy sách phù hợp",
             styleTitle: TextStyle(fontSize: 14, color: Colors.grey[600]),
-            height: height_200,
-            width: width_200,
+            height: height_64,
+            width: width_80,
           ),
         )
         : Center(
           child: EmptyDataWidget(
             title: "Bạn chưa theo dõi sách nào",
             styleTitle: TextStyle(fontSize: 14, color: Colors.grey[600]),
-            height: height_200,
-            width: width_200,
+            height: height_64,
+            width: width_80,
           ),
         );
   }
