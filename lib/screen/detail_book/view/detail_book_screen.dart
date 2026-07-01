@@ -7,6 +7,7 @@ import 'package:book_brain/utils/core/constants/color_constants.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
 import 'package:book_brain/utils/core/helpers/auth_helper.dart';
+import 'package:book_brain/utils/utils.dart';
 import 'package:book_brain/utils/widget/base_appbar.dart';
 import 'package:book_brain/widgets/ad_banner_widget.dart';
 import 'package:book_brain/widgets/native_ad_widget.dart';
@@ -403,17 +404,20 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  selectedText,
-                  style: TextStyle(
-                    fontStyle: FontStyle.italic,
-                    color: Colors.grey[700],
+              Visibility(
+                visible: Utils.isCheckString(selectedText),
+                child: Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    selectedText,
+                    style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      color: Colors.grey[700],
+                    ),
                   ),
                 ),
               ),
@@ -1136,7 +1140,7 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF6357CC),
               ),
-              child: Text("Áp dụng"),
+              child: Text("Áp dụng", style: TextStyle(color: Colors.white),),
               onPressed: () {
                 setState(() {
                   _fontSize = tempFontSize;

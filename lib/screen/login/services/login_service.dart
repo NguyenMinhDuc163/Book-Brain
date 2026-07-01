@@ -7,6 +7,7 @@ import 'package:book_brain/service/service_config/network_service.dart';
 import 'package:book_brain/utils/core/common/toast.dart';
 import 'package:book_brain/utils/core/helpers/auth_helper.dart';
 import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
+import 'package:flutter/foundation.dart';
 
 class LoginService implements ILoginInterface {
   final ApiServices apiServices = ApiServices();
@@ -39,7 +40,10 @@ class LoginService implements ILoginInterface {
           Map<String, dynamic> userMap = item.value as Map<String, dynamic>;
           String username = userMap['username'] ?? 'Nguyễn Minh Đức';
           String email = userMap['email'] ?? 'ngminhduc1603@gmail.com';
-          String isAds = userMap['isAds'] ?? 'on';
+          String isAds =
+              defaultTargetPlatform == TargetPlatform.iOS
+                  ? 'off'
+                  : userMap['isAds'] ?? 'on';
 
           int id = userMap['id'] ?? 1;
           LocalStorageHelper.setValue("userName", username);

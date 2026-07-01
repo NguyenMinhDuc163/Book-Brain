@@ -22,6 +22,12 @@ void main() async {
   await EasyLocalization.ensureInitialized();
   await Hive.initFlutter();
   await LocalStorageHelper.initLocalStorageHelper();
+
+  // Temporarily disable ads for the current iOS release submitted to Apple.
+  // Remove this override when ads are ready to be enabled on iOS.
+  if (defaultTargetPlatform == TargetPlatform.iOS) {
+    LocalStorageHelper.setValue('isAds', 'off');
+  }
   // await dotenv.load(fileName: ".env");
 
   // Khởi tạo AdMob

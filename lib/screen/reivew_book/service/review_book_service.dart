@@ -38,7 +38,7 @@ class ReviewBookService implements IReviewBookInterface {
     final BaseResponse<CreateReviewResponse> response = await apiServices
         .sendCreateReview(request);
     if (response.code != null) {
-       return true;
+      return true;
     }
     return false;
   }
@@ -59,21 +59,22 @@ class ReviewBookService implements IReviewBookInterface {
   }
 
   @override
-  Future<ReviewStatsResponse?> getStatsReview({required int bookId}) async{
+  Future<ReviewStatsResponse?> getStatsReview({required int bookId}) async {
     final BaseResponse<ReviewStatsResponse> response = await apiServices
         .getStatsReview(bookId: bookId);
-    if (response.code != null) {
-      List<ReviewStatsResponse> data = response.data!;
-      return data[0];
+
+    final data = response.data;
+    final isSuccess = response.code == 200 || response.code == 201;
+    if (isSuccess && data != null && data.isNotEmpty) {
+      return data.first;
     }
+
     return null;
   }
 
   @override
-  Future<bool> deleteReview({required int reviewId}) async{
-    final DeleteReview request = DeleteReview(
-      reviewId: reviewId,
-    );
+  Future<bool> deleteReview({required int reviewId}) async {
+    final DeleteReview request = DeleteReview(reviewId: reviewId);
     final BaseResponse<CreateReviewResponse> response = await apiServices
         .sendDeleteReview(request);
     if (response.code != null) {

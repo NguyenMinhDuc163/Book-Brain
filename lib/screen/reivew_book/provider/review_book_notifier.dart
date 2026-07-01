@@ -32,11 +32,11 @@ class ReviewBookNotifier extends BaseNotifier {
 
   Future<bool> getStatsReview(int bookId) async {
     return await execute(() async {
-      statsReview = (await reviewBookService.getStatsReview(bookId: bookId))!;
+      statsReview = await reviewBookService.getStatsReview(bookId: bookId);
 
       notifyListeners();
       print("statsReview $statsReview");
-      return true;
+      return statsReview != null;
     });
   }
 
