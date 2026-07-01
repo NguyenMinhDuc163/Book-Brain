@@ -2,6 +2,7 @@ import 'package:expandable/expandable.dart';
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
+import 'package:book_brain/utils/core/helpers/network_image_config.dart';
 import 'package:book_brain/utils/widget/dash_line_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -117,7 +118,11 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
                         : getColorFromName(widget.name),
                 backgroundImage:
                     widget.avatar.contains('http')
-                        ? NetworkImage(widget.avatar) as ImageProvider
+                        ? NetworkImage(
+                              widget.avatar,
+                              headers: NetworkImageConfig.headers,
+                            )
+                            as ImageProvider
                         : AssetImage(widget.avatar),
                 onBackgroundImageError: (_, __) {
                   // Fallback khi lỗi load ảnh
@@ -161,6 +166,7 @@ class _FeedBackWidgetState extends State<FeedBackWidget> {
                                 e.startsWith('http')
                                     ? Image.network(
                                       e,
+                                      headers: NetworkImageConfig.headers,
                                       fit: BoxFit.cover,
                                       errorBuilder:
                                           (context, error, stackTrace) =>

@@ -1,6 +1,7 @@
 import 'package:book_brain/screen/home/provider/home_notifier.dart';
 import 'package:book_brain/service/api_service/response/book_info_response.dart';
 import 'package:flutter/material.dart';
+import 'package:book_brain/utils/core/helpers/network_image_config.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:provider/provider.dart';
 
@@ -349,6 +350,7 @@ class _AllBookScreenState extends State<AllBookScreen> {
               (book.imageUrl ?? '') != ''
                   ? Image.network(
                     book.imageUrl ?? "",
+                    headers: NetworkImageConfig.headers,
                     width: double.infinity,
                     height: height_110,
                     fit: BoxFit.cover,
@@ -453,6 +455,7 @@ class _AllBookScreenState extends State<AllBookScreen> {
                   (book.imageUrl ?? '') != ''
                       ? Image.network(
                         book.imageUrl ?? "",
+                        headers: NetworkImageConfig.headers,
                         width: width_90,
                         height: height_100,
                         fit: BoxFit.cover,

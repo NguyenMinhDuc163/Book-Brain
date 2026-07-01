@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CLIENT_ID</key>
+	<string>639597782806-4hbmejvkrhqpto68f6snoa9r8m41nemq.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.639597782806-4hbmejvkrhqpto68f6snoa9r8m41nemq</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>639597782806-9l0hgkpvet57d5pbaa1pfh6n2isk4kiq.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyDb-nSzdy30K3BJiNVYin0nrWISfNMXMzE</string>
 	<key>GCM_SENDER_ID</key>
@@ -9,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.nguyenduc.click</string>
+	<string>com.nguyenduc.bookBrain</string>
 	<key>PROJECT_ID</key>
 	<string>book-brain-cc654</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:639597782806:ios:5ddac5239d24c0df015237</string>
+	<string>1:639597782806:ios:00465c72e700351f015237</string>
 </dict>
 </plist>

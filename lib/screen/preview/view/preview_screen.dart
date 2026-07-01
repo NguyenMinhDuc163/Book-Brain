@@ -11,6 +11,7 @@ import 'package:book_brain/utils/core/common/login_required_dialog.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/auth_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
+import 'package:book_brain/utils/core/helpers/network_image_config.dart';
 import 'package:book_brain/widgets/native_ad_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -210,7 +211,10 @@ class _PreviewScreenState extends State<PreviewScreen> {
               image:
                   presenter.bookDetail?.imageUrl != null &&
                           presenter.bookDetail!.imageUrl.isNotEmpty
-                      ? NetworkImage(presenter.bookDetail!.imageUrl)
+                      ? NetworkImage(
+                            presenter.bookDetail!.imageUrl,
+                            headers: NetworkImageConfig.headers,
+                          )
                           as ImageProvider
                       : AssetImage(AssetHelper.defaultImage) as ImageProvider,
               fit: BoxFit.fill,

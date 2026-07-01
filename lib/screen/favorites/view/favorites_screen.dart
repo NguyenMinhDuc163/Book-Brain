@@ -4,6 +4,7 @@ import 'package:book_brain/screen/preview/view/preview_screen.dart';
 import 'package:book_brain/service/api_service/response/favorites_response.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
+import 'package:book_brain/utils/core/helpers/network_image_config.dart';
 import 'package:book_brain/utils/core/helpers/auth_helper.dart';
 import 'package:book_brain/utils/core/common/login_required_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -386,6 +387,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                   (favorite.imageUrl ?? '') != ''
                       ? Image.network(
                         favorite.imageUrl ?? "",
+                        headers: NetworkImageConfig.headers,
                         width: double.infinity,
                         height: 160,
                         fit: BoxFit.cover,
@@ -537,6 +539,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                   (favorite.imageUrl ?? "") != ''
                       ? Image.network(
                         favorite.imageUrl ?? "",
+                        headers: NetworkImageConfig.headers,
                         width: 100,
                         height: 140,
                         fit: BoxFit.cover,

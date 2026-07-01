@@ -1,5 +1,6 @@
 import 'package:book_brain/service/api_service/response/search_book_response.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
+import 'package:book_brain/utils/core/helpers/network_image_config.dart';
 import 'package:book_brain/widgets/native_ad_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:book_brain/screen/search_screen/provider/search_notifier.dart';
@@ -317,6 +318,7 @@ Widget _buildBookImage({
   return (imageUrl != null && imageUrl.isNotEmpty)
       ? Image.network(
         imageUrl,
+        headers: NetworkImageConfig.headers,
         width: width,
         height: height,
         fit: BoxFit.cover,

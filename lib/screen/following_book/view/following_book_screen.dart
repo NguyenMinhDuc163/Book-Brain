@@ -4,6 +4,7 @@ import 'package:book_brain/service/api_service/response/subscriptions_response.d
 import 'package:book_brain/utils/core/constants/dimension_constants.dart';
 import 'package:book_brain/utils/core/helpers/asset_helper.dart';
 import 'package:book_brain/utils/core/helpers/image_helper.dart';
+import 'package:book_brain/utils/core/helpers/network_image_config.dart';
 import 'package:book_brain/utils/core/helpers/auth_helper.dart';
 import 'package:book_brain/utils/core/common/login_required_dialog.dart';
 import 'package:book_brain/utils/utils.dart';
@@ -334,6 +335,7 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
               (book.imageUrl ?? '') != ''
                   ? Image.network(
                     book.imageUrl ?? "",
+                    headers: NetworkImageConfig.headers,
                     width: double.infinity,
                     height: 160,
                     fit: BoxFit.cover,
@@ -442,6 +444,7 @@ class _FollowingBookScreenState extends State<FollowingBookScreen> {
                   (book.imageUrl ?? '') != ''
                       ? Image.network(
                         book.imageUrl ?? "",
+                        headers: NetworkImageConfig.headers,
                         width: 100,
                         height: 140,
                         fit: BoxFit.cover,
