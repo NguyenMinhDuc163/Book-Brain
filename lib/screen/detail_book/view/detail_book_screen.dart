@@ -1,3 +1,4 @@
+import 'package:book_brain/config/app_feature_flags.dart';
 import 'package:book_brain/screen/detail_book/provider/detail_book_notifier.dart';
 import 'package:book_brain/screen/detail_book/widget/bottom_sheet_selector.dart';
 import 'package:book_brain/screen/reivew_book/service/review_book_service.dart';
@@ -905,27 +906,29 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
               ),
               SizedBox(height: 10),
 
-              FloatingActionButton(
-                heroTag: "rating",
-                mini: true,
-                backgroundColor: Colors.white,
-                onPressed: () async {
-                  if (!AuthHelper.isLoggedIn) {
-                    await showLoginRequiredDialog(
-                      context,
-                      message: 'guest.review_required'.tr(),
+              if (AppFeatureFlags.publicReviewsEnabled) ...[
+                FloatingActionButton(
+                  heroTag: "rating",
+                  mini: true,
+                  backgroundColor: Colors.white,
+                  onPressed: () async {
+                    if (!AuthHelper.isLoggedIn) {
+                      await showLoginRequiredDialog(
+                        context,
+                        message: 'guest.review_required'.tr(),
+                      );
+                      return;
+                    }
+                    _showRatingDialog(
+                      context: context,
+                      title: presenter.bookDetail?.title ?? "",
+                      bookId: presenter.bookDetail?.bookId ?? 1,
                     );
-                    return;
-                  }
-                  _showRatingDialog(
-                    context: context,
-                    title: presenter.bookDetail?.title ?? "",
-                    bookId: presenter.bookDetail?.bookId ?? 1,
-                  );
-                },
-                child: Icon(Icons.star_border, color: Colors.amber),
-              ),
-              SizedBox(height: 10),
+                  },
+                  child: Icon(Icons.star_border, color: Colors.amber),
+                ),
+                SizedBox(height: 10),
+              ],
               FloatingActionButton(
                 heroTag: "background",
                 mini: true,
@@ -1140,7 +1143,7 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF6357CC),
               ),
-              child: Text("Áp dụng", style: TextStyle(color: Colors.white),),
+              child: Text("Áp dụng", style: TextStyle(color: Colors.white)),
               onPressed: () {
                 setState(() {
                   _fontSize = tempFontSize;
@@ -1160,6 +1163,8 @@ class _DetailBookScreenState extends State<DetailBookScreen> {
     required String title,
     required int bookId,
   }) {
+    if (!AppFeatureFlags.publicReviewsEnabled) return;
+
     double rating = 0;
     final TextEditingController commentController = TextEditingController();
 

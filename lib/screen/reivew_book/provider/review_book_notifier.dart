@@ -1,3 +1,4 @@
+import 'package:book_brain/config/app_feature_flags.dart';
 import 'package:book_brain/screen/reivew_book/service/review_book_service.dart';
 import 'package:book_brain/service/api_service/request/create_reivew_request.dart';
 import 'package:book_brain/service/api_service/response/all_review_response.dart';
@@ -11,11 +12,22 @@ class ReviewBookNotifier extends BaseNotifier {
   late List<AllReviewResponse> reviews = [];
   ReviewStatsResponse? statsReview;
   Future<void> getData(int bookId) async {
+    if (!AppFeatureFlags.publicReviewsEnabled) {
+      reviews = [];
+      statsReview = null;
+      notifyListeners();
+      return;
+    }
     await getAllReview(bookId);
     await getStatsReview(bookId);
   }
 
   Future<bool> getAllReview(int bookId) async {
+    if (!AppFeatureFlags.publicReviewsEnabled) {
+      reviews = [];
+      notifyListeners();
+      return true;
+    }
     return await execute(() async {
       reviews =
           (await reviewBookService.getAllReview(
@@ -31,6 +43,11 @@ class ReviewBookNotifier extends BaseNotifier {
   }
 
   Future<bool> getStatsReview(int bookId) async {
+    if (!AppFeatureFlags.publicReviewsEnabled) {
+      statsReview = null;
+      notifyListeners();
+      return true;
+    }
     return await execute(() async {
       statsReview = await reviewBookService.getStatsReview(bookId: bookId);
 
@@ -45,6 +62,7 @@ class ReviewBookNotifier extends BaseNotifier {
     required int rating,
     required String comment,
   }) async {
+    if (!AppFeatureFlags.publicReviewsEnabled) return false;
     if (!AuthHelper.isLoggedIn) return false;
     return await execute(() async {
       bool isSubmit = await reviewBookService.createReview(
@@ -59,6 +77,7 @@ class ReviewBookNotifier extends BaseNotifier {
   }
 
   Future<bool> deleteReview({required int reviewId}) async {
+    if (!AppFeatureFlags.publicReviewsEnabled) return false;
     if (!AuthHelper.isLoggedIn) return false;
     return await execute(() async {
       bool isSubmit = await reviewBookService.deleteReview(reviewId: reviewId);

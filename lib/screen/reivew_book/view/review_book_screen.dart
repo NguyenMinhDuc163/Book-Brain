@@ -1,3 +1,4 @@
+import 'package:book_brain/config/app_feature_flags.dart';
 import 'package:book_brain/screen/login/widget/app_bar_continer_widget.dart';
 import 'package:book_brain/screen/reivew_book/widget/feedBack_widget.dart';
 import 'package:book_brain/utils/core/common/toast.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:book_brain/widgets/community_feature_disabled_widget.dart';
 
 import '../../../utils/widget/loading_widget.dart';
 import '../provider/review_book_notifier.dart';
@@ -33,6 +35,9 @@ class _ReviewBookScreenState extends State<ReviewBookScreen> {
   @override
   void initState() {
     super.initState();
+    if (!AppFeatureFlags.publicReviewsEnabled) {
+      return;
+    }
     Future.microtask(
       () => Provider.of<ReviewBookNotifier>(
         context,
@@ -465,6 +470,10 @@ class _ReviewBookScreenState extends State<ReviewBookScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (!AppFeatureFlags.publicReviewsEnabled) {
+      return const CommunityFeatureDisabledScreen();
+    }
+
     final presenter = Provider.of<ReviewBookNotifier>(context);
 
     // Kiểm tra đánh giá của người dùng khi danh sách thay đổi

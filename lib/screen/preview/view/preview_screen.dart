@@ -1,3 +1,4 @@
+import 'package:book_brain/config/app_feature_flags.dart';
 import 'package:book_brain/screen/detail_book/view/detail_book_screen.dart';
 import 'package:book_brain/screen/detail_book/widget/bottom_sheet_selector.dart';
 import 'package:book_brain/screen/login/widget/button_widget.dart';
@@ -412,33 +413,47 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                       '${presenter.bookDetail?.rating.toString().split('.')[0]}/5' ??
                                           "4/5",
                                     ),
-                                    SizedBox(width: kMinPadding),
-                                    Text(
-                                      ' ${presenter.bookDetail?.totalReviews ?? 0} ',
-                                      style: TextStyle(
-                                        color: ColorPalette.subTitleColor,
+                                    if (AppFeatureFlags
+                                        .publicReviewsEnabled) ...[
+                                      SizedBox(width: kMinPadding),
+                                      Text(
+                                        ' ${presenter.bookDetail?.totalReviews ?? 0} ',
+                                        style: TextStyle(
+                                          color: ColorPalette.subTitleColor,
+                                        ),
                                       ),
-                                    ),
-                                    Spacer(),
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder:
-                                                (context) => ReviewBookScreen(
-                                                  bookId:
-                                                      presenter
-                                                          .bookDetail
-                                                          ?.bookId ??
-                                                      1,
-                                                ),
-                                          ),
-                                        );
-                                      },
-                                      child: Text("Xem thêm"),
-                                    ),
+                                      Spacer(),
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (context) => ReviewBookScreen(
+                                                    bookId:
+                                                        presenter
+                                                            .bookDetail
+                                                            ?.bookId ??
+                                                        1,
+                                                  ),
+                                            ),
+                                          );
+                                        },
+                                        child: Text("Xem thêm"),
+                                      ),
+                                    ],
                                   ],
                                 ),
+                                if (!AppFeatureFlags.publicReviewsEnabled) ...[
+                                  SizedBox(height: kMinPadding),
+                                  Text(
+                                    'Tính năng đánh giá cộng đồng tạm thời '
+                                    'chưa khả dụng trên iOS.',
+                                    style: TextStyle(
+                                      color: ColorPalette.subTitleColor,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ],
                                 SizedBox(height: kDefaultPadding),
                                 Text(
                                   'Thể loại',

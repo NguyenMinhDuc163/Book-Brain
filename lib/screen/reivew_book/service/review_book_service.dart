@@ -1,3 +1,4 @@
+import 'package:book_brain/config/app_feature_flags.dart';
 import 'package:book_brain/screen/preview/service/preview_interface.dart';
 import 'package:book_brain/screen/reivew_book/service/review_book_interface.dart';
 import 'package:book_brain/service/api_service/api_service.dart';
@@ -30,6 +31,8 @@ class ReviewBookService implements IReviewBookInterface {
     required int rating,
     required String comment,
   }) async {
+    if (!AppFeatureFlags.publicReviewsEnabled) return false;
+
     final CreateReviewRequest request = CreateReviewRequest(
       bookId: bookId,
       rating: rating,
@@ -49,6 +52,8 @@ class ReviewBookService implements IReviewBookInterface {
     required int page,
     required int limit,
   }) async {
+    if (!AppFeatureFlags.publicReviewsEnabled) return [];
+
     final BaseResponse<AllReviewResponse> response = await apiServices
         .getAllReview(bookId: bookId, page: page, limit: limit);
     if (response.code != null) {
@@ -60,6 +65,8 @@ class ReviewBookService implements IReviewBookInterface {
 
   @override
   Future<ReviewStatsResponse?> getStatsReview({required int bookId}) async {
+    if (!AppFeatureFlags.publicReviewsEnabled) return null;
+
     final BaseResponse<ReviewStatsResponse> response = await apiServices
         .getStatsReview(bookId: bookId);
 
@@ -74,6 +81,8 @@ class ReviewBookService implements IReviewBookInterface {
 
   @override
   Future<bool> deleteReview({required int reviewId}) async {
+    if (!AppFeatureFlags.publicReviewsEnabled) return false;
+
     final DeleteReview request = DeleteReview(reviewId: reviewId);
     final BaseResponse<CreateReviewResponse> response = await apiServices
         .sendDeleteReview(request);

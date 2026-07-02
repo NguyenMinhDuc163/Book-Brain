@@ -1,1087 +1,580 @@
-# SPEC Flutter-only: Add Minimal Guest Mode for Apple Guideline 5.1.1(v)
+# SPEC: Temporarily disable public UGC / community features on iOS only
 
-## 1. Context
+## Goal
 
-Apple rejected the app because users are required to register/login before browsing and reading books.
+Temporarily disable public user-generated content and messaging/chat related features on iOS only for App Store review.
 
-Current Flutter behavior:
+Android must keep the current behavior.
 
-* App starts from `SplashScreen`.
-* User is routed to `LoginScreen`.
-* User can enter `MainApp` only after successful login.
-* This blocks non-account-based features such as browsing/searching/reading books.
+The implementation must use a single global feature flag so the feature can be re-enabled later by changing one value.
 
-This task is Flutter client only.
+This change is intended for the current iOS App Store build. It must prevent Apple reviewers from accessing public comments/reviews/chat/messaging features from any visible UI path or direct route.
 
-Do not modify backend in this task.
+## Background
 
-## 2. Goal
+Apple rejected the app because it includes user-generated content and messaging/chat functionality but does not currently provide all required moderation features.
 
-Implement minimal guest access on Flutter client so users can access core reading features without login.
+For this release, we will temporarily disable public community features on iOS instead of implementing full UGC moderation.
 
-Guest users must be able to:
+The app should still allow the core reading experience:
 
-```text id="0fj65d"
-- Enter the app without logging in
-- Browse Home
-- View book list/trending books
-- Search books
-- Open book preview/detail
-- Read chapters
-- View rankings
-- View existing reviews/stats if the API works without login
+* Browse books
+* Search books
+* View book details
+* Read chapters
+* Add favorites
+* Follow books
+* Reading history
+* Private personal notes, if notes are not public to other users
+
+Disable only public/community content:
+
+* Public book reviews
+* Public comments
+* Public review list
+* Create/edit/delete public review
+* Messaging/chat if any exists
+* Any screen or API call that exposes user-generated public content
+
+## Required behavior
+
+### Android
+
+Android behavior must remain unchanged.
+
+Users on Android can still:
+
+* View book reviews
+* Open review screen
+* Submit review/comment
+* Edit/delete own review
+* Use any existing chat/messaging features if present
+
+### iOS
+
+iOS behavior must change:
+
+Users on iOS must NOT be able to:
+
+* Open the public review list
+* See other users’ review comments
+* Create a public review/comment
+* Edit/delete public reviews
+* Open chat/messaging screens
+* Send messages/chat
+* Reach disabled public community screens through routes/deep links
+
+If a UI area would become empty after hiding reviews/chat, replace it with a friendly placeholder, not blank space.
+
+Recommended placeholder text:
+
+```text
+Community features are temporarily unavailable in this iOS version.
+You can still read books, save favorites, follow books, view reading history, and use private notes.
 ```
 
-Guest users must not use account-based actions:
+Vietnamese version:
 
-```text id="1q3hua"
-- Favorite
-- Follow/subscription
-- Notification
-- Server reading history
-- Notes
-- Submit/edit/delete review
-- Profile update
-- Change password
-- Delete account
-- Personalized recommendation by userId
+```text
+Tính năng cộng đồng hiện tạm thời chưa khả dụng trong phiên bản iOS này.
+Bạn vẫn có thể đọc sách, lưu yêu thích, theo dõi sách, xem lịch sử đọc và sử dụng ghi chú cá nhân.
 ```
 
-## 3. Non-goals
+## Global feature flag
 
-Do not refactor the whole routing system.
+Create a new file:
 
-Do not rewrite app architecture.
-
-Do not change backend.
-
-Do not change API models.
-
-Do not implement local guest history.
-
-Do not remove login/register.
-
-Do not redesign UI.
-
-Do not fix every existing `bookId ?? 1` fallback unless required for a local guest guard.
-
-## 4. Guest definition
-
-A user is logged in only if `authToken` exists and is not empty.
-
-A user is guest if there is no valid token.
-
-Create helper:
-
-```text id="0xs5y2"
-lib/utils/core/helpers/auth_helper.dart
+```text
+lib/config/app_feature_flags.dart
 ```
 
-Implementation:
+Add this class:
 
-```dart id="zzp2y3"
-import 'package:book_brain/utils/core/helpers/local_storage_helper.dart';
+```dart
+import 'package:flutter/foundation.dart';
 
-class AuthHelper {
-  static bool get isLoggedIn {
-    final token = LocalStorageHelper.getValue("authToken");
-    return token != null && token.toString().isNotEmpty;
+class AppFeatureFlags {
+  AppFeatureFlags._();
+
+  /// Set this to true later when iOS has full UGC moderation:
+  /// - EULA / Terms before login/register
+  /// - objectionable content filter
+  /// - report content
+  /// - block user
+  /// - developer notification / moderation flow
+  static const bool enablePublicCommunityFeaturesOnIOS = false;
+
+  static bool get isIOS {
+    return !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
   }
 
-  static bool get isGuest {
-    return !isLoggedIn || LocalStorageHelper.getValue("isGuest") == true;
-  }
-
-  static Future<void> continueAsGuest() async {
-    await LocalStorageHelper.setValue("isGuest", true);
-  }
-
-  static Future<void> markLoggedIn() async {
-    await LocalStorageHelper.setValue("isGuest", false);
-  }
-}
-```
-
-Important:
-
-* Use `AuthHelper.isLoggedIn` before calling account-based APIs.
-* Do not depend only on `isGuest`, because old installs may not have this key.
-* `authToken` is the source of truth.
-
-## 5. Add reusable login-required dialog
-
-Create:
-
-```text id="mqxqss"
-lib/utils/core/common/login_required_dialog.dart
-```
-
-Implementation:
-
-```dart id="i47jfc"
-import 'package:flutter/material.dart';
-import 'package:book_brain/screen/login/view/login_screen.dart';
-
-Future<void> showLoginRequiredDialog(
-  BuildContext context, {
-  String message = "Bạn cần đăng nhập để sử dụng tính năng này.",
-}) async {
-  return showDialog<void>(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text("Cần đăng nhập"),
-        content: Text(
-          "$message\n\nBạn vẫn có thể đọc và tìm kiếm sách mà không cần đăng nhập.",
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text("Để sau"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pushNamed(LoginScreen.routeName);
-            },
-            child: const Text("Đăng nhập"),
-          ),
-        ],
-      );
-    },
-  );
-}
-```
-
-Use this for all guest-restricted actions.
-
-## 6. LoginScreen changes
-
-File:
-
-```text id="ka6835"
-lib/screen/login/view/login_screen.dart
-```
-
-Add a visible button on login screen:
-
-```text id="tzmjqr"
-Tiếp tục đọc không cần tài khoản
-```
-
-Button behavior:
-
-```dart id="igbi26"
-await AuthHelper.continueAsGuest();
-
-Navigator.of(context).pushNamedAndRemoveUntil(
-  MainApp.routeName,
-  (_) => false,
-);
-```
-
-Requirements:
-
-* Button must be visible without scrolling too much.
-* Do not remove existing login button.
-* Do not remove sign up button.
-* Do not require email/password for this button.
-* This is the main Apple review fix.
-
-## 7. Login success changes
-
-When login succeeds, mark guest false.
-
-Preferred location:
-
-```text id="h36jpd"
-lib/screen/login/services/login_service.dart
-```
-
-After token/user data is saved:
-
-```dart id="y3g5jl"
-await LocalStorageHelper.setValue("isGuest", false);
-```
-
-Do not change existing token/user save behavior.
-
-## 8. SplashScreen changes
-
-Minimal safe option:
-
-* Keep current Splash -> Login behavior.
-* Since Login now has guest button, Apple reviewer can continue without login.
-
-Optional small improvement:
-
-If token exists, go directly to `MainApp`.
-
-Pseudo:
-
-```dart id="rfcdr6"
-final token = LocalStorageHelper.getValue("authToken");
-
-if (token != null && token.toString().isNotEmpty) {
-  Navigator.of(context).pushNamedAndRemoveUntil(
-    MainApp.routeName,
-    (_) => false,
-  );
-} else {
-  Navigator.of(context).pushNamed(LoginScreen.routeName);
-}
-```
-
-Do not force guest directly from Splash in this task unless it is already easy and tested.
-
-## 9. HomeNotifier guest changes
-
-File:
-
-```text id="c6tbhe"
-lib/screen/home/provider/home_notifier.dart
-```
-
-Current problem:
-
-`getData()` calls both public and private/user-based APIs:
-
-```dart id="gti5r6"
-getInfoBook();
-getTrendingBook(limit: 10);
-getUnreadNotificationCount();
-getRecommentBook();
-loadUserInfo();
-```
-
-Guest must not call:
-
-```text id="6rt3l1"
-getUnreadNotificationCount()
-getRecommentBook()
-```
-
-because these rely on notification/auth/userId.
-
-Update `getData()`:
-
-```dart id="5j32me"
-Future<void> getData() async {
-  await execute(() async {
-    await Future.wait([
-      getInfoBook(),
-      getTrendingBook(limit: 10),
-      loadUserInfo(),
-    ]);
-
-    if (AuthHelper.isLoggedIn) {
-      await Future.wait([
-        getUnreadNotificationCount(),
-        getRecommentBook(),
-      ]);
-    } else {
-      unreadNotificationCount = 0;
-      recommenlist = trendingBook;
-      notifyListeners();
+  /// Public UGC includes public reviews, comments, public feedback,
+  /// messaging/chat, or any content created by users and visible to others.
+  static bool get publicCommunityFeaturesEnabled {
+    if (isIOS) {
+      return enablePublicCommunityFeaturesOnIOS;
     }
-  });
+    return true;
+  }
+
+  static bool get publicReviewsEnabled => publicCommunityFeaturesEnabled;
+
+  static bool get messagingAndChatEnabled => publicCommunityFeaturesEnabled;
 }
 ```
 
-Add import:
+Later, when iOS moderation is implemented, re-enable with:
 
-```dart id="fg19s7"
-import 'package:book_brain/utils/core/helpers/auth_helper.dart';
+```dart
+static const bool enablePublicCommunityFeaturesOnIOS = true;
 ```
 
-Expected result:
+Do not scatter platform checks directly across the codebase. Always use `AppFeatureFlags`.
 
-* Guest Home loads public content.
-* “Dành cho bạn” uses trending fallback.
-* No userId read for guest.
-* No notification API for guest.
+## Files to inspect and modify
 
-## 10. Home recommendation load-more guest guard
+At minimum, inspect and update these files:
+
+```text
+lib/config/app_feature_flags.dart
+lib/screen/preview/view/preview_screen.dart
+lib/screen/reivew_book/view/review_book_screen.dart
+lib/screen/reivew_book/provider/review_book_notifier.dart
+lib/screen/reivew_book/service/review_book_service.dart
+lib/utils/routers.dart
+```
+
+Also search the whole project for:
+
+```text
+ReviewBookScreen
+review
+reivew
+comment
+chat
+message
+messaging
+conversation
+sendMessage
+createReview
+getAllReview
+sendCreateReview
+sendDeleteReview
+API_ALL_REVIEW
+API_CREATE_REVIEW
+API_DELETE_REVIEW
+```
+
+If any other public UGC/chat/messaging screen exists, disable it with the same global flag.
+
+## Preview screen changes
 
 File:
 
-```text id="0m5bc6"
-lib/screen/home/provider/home_notifier.dart
-```
-
-Update `loadMoreRecommendBooks()`.
-
-At start:
-
-```dart id="dq481q"
-if (!AuthHelper.isLoggedIn) {
-  hasMoreRecommend = false;
-  notifyListeners();
-  return;
-}
-```
-
-This avoids reading `userId` for guest.
-
-## 11. Home notification icon guard
-
-File likely:
-
-```text id="7mfisf"
-lib/screen/home/view/home_screen.dart
-```
-
-When tapping notification icon:
-
-```dart id="buky26"
-if (!AuthHelper.isLoggedIn) {
-  showLoginRequiredDialog(
-    context,
-    message: "Bạn cần đăng nhập để xem thông báo.",
-  );
-  return;
-}
-```
-
-Only navigate to `NotificationScreen` when logged in.
-
-Imports:
-
-```dart id="ihsw0g"
-import 'package:book_brain/utils/core/helpers/auth_helper.dart';
-import 'package:book_brain/utils/core/common/login_required_dialog.dart';
-```
-
-## 12. PreviewScreen favorite/follow guards
-
-File:
-
-```text id="2y6j46"
+```text
 lib/screen/preview/view/preview_screen.dart
 ```
 
-Preview itself must remain accessible for guest.
+Current behavior:
 
-Guard only the account-based actions.
+* The book detail screen shows rating/total reviews.
+* The “Xem thêm” button opens `ReviewBookScreen`.
+* This creates a path to public reviews/comments.
 
-### Favorite action
+Required iOS behavior:
 
-Before calling `presenter.setFavorites(...)`:
+When `AppFeatureFlags.publicReviewsEnabled == false`:
 
-```dart id="b4hbau"
-if (!AuthHelper.isLoggedIn) {
-  showLoginRequiredDialog(
-    context,
-    message: "Bạn cần đăng nhập để thêm sách vào Yêu thích.",
-  );
-  return;
+1. Do not show the “Xem thêm” button for reviews.
+2. Do not navigate to `ReviewBookScreen`.
+3. Do not show a UI that suggests users can open public reviews.
+4. Replace the review action area with a small friendly message.
+
+Suggested UI behavior:
+
+* Keep book rating only if it is a static book-level rating and does not expose user comments.
+* Hide `totalReviews` if it is based on public reviews.
+* Hide the “Xem thêm” button.
+* Show a small grey text:
+
+```text
+Tính năng đánh giá cộng đồng tạm thời chưa khả dụng trên iOS.
+```
+
+Example direction:
+
+```dart
+final publicReviewsEnabled = AppFeatureFlags.publicReviewsEnabled;
+```
+
+In the rating/review row:
+
+```dart
+if (publicReviewsEnabled) {
+  // Existing total reviews + "Xem thêm" button
+} else {
+  // No navigation to ReviewBookScreen
+  // Show a small placeholder text instead
 }
 ```
 
-### Follow action
+Do not leave an empty `Spacer()` or blank UI.
 
-Before calling `presenter.setFollowing(...)`:
-
-```dart id="d1cn03"
-if (!AuthHelper.isLoggedIn) {
-  showLoginRequiredDialog(
-    context,
-    message: "Bạn cần đăng nhập để theo dõi sách.",
-  );
-  return;
-}
-```
-
-Do not block opening Preview.
-
-Do not block reading button.
-
-## 13. DetailBookScreen / Reader guest guards
+## Review screen changes
 
 File:
 
-```text id="6b4ehj"
-lib/screen/detail_book/view/detail_book_screen.dart
-```
-
-Reader must remain accessible for guest.
-
-Guest can call detail book API.
-
-Guest must not call:
-
-```text id="uo8ojw"
-getNoteBook()
-saveNoteBook()
-deleteNoteBook()
-setHistoryBook()
-createReview/rating submit
-```
-
-### On init/load
-
-Current flow likely loads detail and note.
-
-Keep:
-
-```dart id="kuybwf"
-presenter.getData(bookId: ..., chapterId: ...);
-```
-
-Guard note loading:
-
-```dart id="88f7xp"
-if (AuthHelper.isLoggedIn) {
-  presenter.getNoteBook(bookId: bookId, chapterId: chapterId);
-}
-```
-
-If guest, skip `getNoteBook`.
-
-### On back/home save history
-
-Before calling server history:
-
-```dart id="1mozrk"
-if (AuthHelper.isLoggedIn) {
-  presenter.setHistoryBook(...);
-}
-```
-
-If guest, just navigate back/home without saving server history.
-
-### On add note
-
-Before opening note save flow or before calling `saveNoteBook`:
-
-```dart id="kc3jtu"
-if (!AuthHelper.isLoggedIn) {
-  showLoginRequiredDialog(
-    context,
-    message: "Bạn cần đăng nhập để tạo ghi chú.",
-  );
-  return;
-}
-```
-
-### On delete note
-
-Guest should not see notes because note loading is skipped. Still guard delete action if needed.
-
-### On rating submit from reader
-
-Before submitting review/rating:
-
-```dart id="oo63r1"
-if (!AuthHelper.isLoggedIn) {
-  showLoginRequiredDialog(
-    context,
-    message: "Bạn cần đăng nhập để gửi đánh giá.",
-  );
-  return;
-}
-```
-
-## 14. ReviewBookScreen guest behavior
-
-File:
-
-```text id="ierjbv"
+```text
 lib/screen/reivew_book/view/review_book_screen.dart
 ```
 
-Guest should be able to view review list and stats if API allows.
+Current behavior:
 
-Keep public load:
+* Calls `ReviewBookNotifier.getData()` in `initState`.
+* Shows review statistics.
+* Shows public review list.
+* Allows users to create review/comment through floating action button.
+* Allows owner to edit/delete review.
 
-```text id="f871nc"
-getAllReview()
-getStatsReview()
-```
+Required iOS behavior:
 
-Guard only write actions.
+When `AppFeatureFlags.publicReviewsEnabled == false`:
 
-### Add review FAB/button
+1. Do not call `getData()`.
+2. Do not fetch reviews from API.
+3. Do not show review list.
+4. Do not show create/edit/delete review UI.
+5. Do not show floating action button.
+6. Return a safe placeholder screen.
 
-Before opening submit review bottom sheet or before submitting:
+Implementation direction:
 
-```dart id="0wa4ie"
-if (!AuthHelper.isLoggedIn) {
-  showLoginRequiredDialog(
-    context,
-    message: "Bạn cần đăng nhập để gửi đánh giá.",
+In `initState`:
+
+```dart
+@override
+void initState() {
+  super.initState();
+
+  if (!AppFeatureFlags.publicReviewsEnabled) {
+    return;
+  }
+
+  Future.microtask(
+    () => Provider.of<ReviewBookNotifier>(
+      context,
+      listen: false,
+    ).getData(widget.bookId ?? 1),
   );
-  return;
 }
 ```
 
-### Edit/delete review
+At the start of `build`:
 
-Only show edit/delete when logged in.
-
-If simpler, keep UI but guard action:
-
-```dart id="ejpxyn"
-if (!AuthHelper.isLoggedIn) {
-  showLoginRequiredDialog(context);
-  return;
+```dart
+if (!AppFeatureFlags.publicReviewsEnabled) {
+  return const CommunityFeatureDisabledScreen();
 }
 ```
 
-## 15. FavoritesScreen guest behavior
+If creating a new screen is too much, create a private widget inside this file. But a shared widget is better.
+
+Suggested new shared widget:
+
+```text
+lib/widgets/community_feature_disabled_widget.dart
+```
+
+Suggested UI:
+
+* Use `Scaffold`
+* Use existing app bar style if easy
+* Show an icon such as `Icons.forum_outlined`
+* Title: `Tính năng cộng đồng tạm thời chưa khả dụng`
+* Body: `Bạn vẫn có thể đọc sách, lưu yêu thích, theo dõi sách, xem lịch sử đọc và sử dụng ghi chú cá nhân.`
+* Button: `Quay lại`
+
+## Review notifier changes
 
 File:
 
-```text id="y6a5dl"
-lib/screen/favorites/view/favorites_screen.dart
+```text
+lib/screen/reivew_book/provider/review_book_notifier.dart
 ```
 
-Guest must not call favorites API.
+Add guard clauses so no review API is called on iOS when disabled.
 
-At init:
+Required behavior:
 
-```dart id="uafyzi"
-if (AuthHelper.isLoggedIn) {
-  presenter.getData();
+```dart
+Future<void> getData(int bookId) async {
+  if (!AppFeatureFlags.publicReviewsEnabled) {
+    reviews = [];
+    statsReview = null;
+    notifyListeners();
+    return;
+  }
+
+  await getAllReview(bookId);
+  await getStatsReview(bookId);
 }
 ```
 
-In build, if not logged in, show login required view:
+For `getAllReview`:
 
-```dart id="rm1g9y"
-Scaffold(
-  appBar: BaseAppbar(title: "Yêu thích"),
-  body: Center(
-    child: Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text(
-            "Bạn cần đăng nhập để lưu và xem sách yêu thích.",
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pushNamed(LoginScreen.routeName);
-            },
-            child: const Text("Đăng nhập"),
-          ),
-        ],
-      ),
-    ),
-  ),
-);
-```
-
-Keep existing UI unchanged for logged-in users.
-
-## 16. FollowingBookScreen guest behavior
-
-File:
-
-```text id="x3peu8"
-lib/screen/following_book/view/following_book_screen.dart
-```
-
-Guest must not call subscription API.
-
-At init:
-
-```dart id="468vgr"
-if (AuthHelper.isLoggedIn) {
-  presenter.getData();
+```dart
+if (!AppFeatureFlags.publicReviewsEnabled) {
+  reviews = [];
+  notifyListeners();
+  return true;
 }
 ```
 
-If guest, show login-required view:
+For `getStatsReview`:
 
-```text id="3y6bc0"
-Bạn cần đăng nhập để theo dõi sách.
-```
-
-## 17. HistoryReadingScreen guest behavior
-
-File:
-
-```text id="1j6mrd"
-lib/screen/history_reading/view/history_reading_screen.dart
-```
-
-Guest must not call reading history API.
-
-At init:
-
-```dart id="2mp7i6"
-if (AuthHelper.isLoggedIn) {
-  presenter.getData();
+```dart
+if (!AppFeatureFlags.publicReviewsEnabled) {
+  statsReview = null;
+  notifyListeners();
+  return true;
 }
 ```
 
-If guest, show login-required view:
+For `createReview`:
 
-```text id="tx466v"
-Bạn cần đăng nhập để đồng bộ lịch sử đọc.
+```dart
+if (!AppFeatureFlags.publicReviewsEnabled) return false;
 ```
 
-No local history implementation in this task.
+For `deleteReview`:
 
-## 18. NotificationScreen guest behavior
+```dart
+if (!AppFeatureFlags.publicReviewsEnabled) return false;
+```
+
+This is important because UI hiding alone is not enough. The app must also stop calling public UGC APIs on iOS.
+
+## Review service changes
 
 File:
 
-```text id="6cz6ey"
-lib/screen/notification/view/notification_screen.dart
+```text
+lib/screen/reivew_book/service/review_book_service.dart
 ```
 
-Ideally guest should be blocked before reaching this screen.
+Add defensive guards if useful.
 
-Still add safety guard:
+The provider guard is required. Service guard is optional but recommended.
 
-* If guest, do not call notification API.
-* Show login-required view.
+If `AppFeatureFlags.publicReviewsEnabled == false`, service methods should not call:
 
-Message:
+* `apiServices.getAllReview`
+* `apiServices.getStatsReview`
+* `apiServices.sendCreateReview`
+* `apiServices.sendDeleteReview`
 
-```text id="sgv5ye"
-Bạn cần đăng nhập để xem thông báo.
+Return safe values:
+
+```dart
+getAllReview -> []
+getStatsReview -> null
+createReview -> false
+deleteReview -> false
 ```
 
-## 19. SettingScreen guest behavior
+## Router protection
 
 File:
 
-```text id="acsk64"
-lib/screen/setting/view/setting_screen.dart
+```text
+lib/utils/routers.dart
 ```
 
-If guest:
+Current routes include `ReviewBookScreen.routeName`.
 
-Show:
+Do not remove the route if that causes navigation errors. Instead, keep the route but make it safe:
 
-```text id="axmff0"
-- Đăng nhập
-- Đăng ký
-- Về Book Brain
-- Hỗ trợ
-- Điều khoản sử dụng
+Option A, preferred:
+
+* Keep the route unchanged.
+* `ReviewBookScreen` itself returns disabled placeholder on iOS.
+
+Option B:
+
+* Route directly to `CommunityFeatureDisabledScreen` when disabled.
+
+Example:
+
+```dart
+ReviewBookScreen.routeName: (context) =>
+  AppFeatureFlags.publicReviewsEnabled
+    ? ReviewBookScreen()
+    : const CommunityFeatureDisabledScreen(),
 ```
 
-Hide or disable:
+If Option B is used, add the import for `AppFeatureFlags` and `CommunityFeatureDisabledScreen`.
 
-```text id="3w6u9h"
-- Chỉnh sửa thông tin
-- Đổi mật khẩu
-- Xóa tài khoản
-- Đăng xuất tài khoản
+Still keep the in-screen guard inside `ReviewBookScreen` to protect direct `MaterialPageRoute` usage.
+
+## Messaging/chat audit
+
+Search the whole repo for chat/messaging features.
+
+Search terms:
+
+```text
+chat
+message
+messaging
+conversation
+inbox
+room
+sendMessage
+receiveMessage
 ```
 
-Minimal alternative:
+If any chat/messaging feature exists:
 
-Keep screen mostly unchanged but for profile actions show login-required dialog.
-
-Preferred safer UX:
-
-* Do not display fake username/email for guest.
-* Show “Khách” or “Bạn đang dùng chế độ không đăng nhập”.
-
-## 20. MainApp bottom navigation
-
-File:
-
-```text id="3e5iam"
-lib/screen/main_app.dart
-```
-
-Do not heavily refactor.
-
-Acceptable minimal behavior:
-
-* Keep all tabs visible.
-* Guest can open Favorites tab but sees login-required view.
-* Guest can open Ranking tab normally.
-* Guest can open Setting tab and sees login/register options.
-
-Do not hide tabs unless very easy and tested.
-
-## 21. API calls that guest must avoid on Flutter client
-
-Guest must not trigger these service methods:
-
-```text id="fr4v4w"
-notificationService.getListNotification()
-homeService.getRecommendation()
-favoritesService.getListFavorites()
-favoritesService.createFavorites()
-favoritesService.deleteFavorites()
-subscriptionService.getListSubscription()
-subscriptionService.createSubscription()
-subscriptionService.deleteSubscription()
-historyService.getHistory()
-historyService.updateHistory()
-detailBookService.getNoteBook()
-detailBookService.saveNoteBook()
-detailBookService.deleteNoteBook()
-reviewBookService.createReview()
-reviewBookService.deleteReview()
-profileService.updateProfile()
-profileService.changePassword()
-profileService.deleteAccount()
-```
-
-Guest can trigger:
-
-```text id="q9kagi"
-homeService.getInfoBook()
-homeService.getBookTrending()
-searchService.searchBook()
-previewService.getDetailBook()
-previewService.getChapters()
-rankingService.getBookRanking()
-rankingService.getAuthRanking()
-reviewBookService.getAllReview()
-reviewBookService.getStatsReview()
-```
-
-If backend returns auth error for any public call, do not handle in this task except by showing existing error/empty state.
-
-## 22. ID behavior on Flutter client
-
-Guest has no `userId`.
-
-Therefore:
-
-```text id="35gqwl"
-Do not read userId for guest.
-Do not call APIs that require userId for guest.
-```
-
-Guest can still use `bookId` and `chapterId`.
-
-Why:
-
-* `bookId` comes from public book list/search/ranking.
-* `chapterId` comes from selected book/chapter.
-* These are content IDs, not user IDs.
-
-For this task:
-
-* Do not pass fake `userId`.
-* Do not fallback to `userId = 1`.
-* Do not call recommendation API for guest.
-
-Optional safe improvement:
-
-Before private mutation actions, avoid `bookDetail?.bookId ?? 1`.
+1. Hide its tab/menu/card/button on iOS.
+2. Prevent route access on iOS.
+3. Prevent API calls on iOS.
+4. Show the same placeholder instead of blank screen.
 
 Use:
 
-```dart id="smc2fb"
-final bookId = bookDetail?.bookId;
-if (bookId == null) {
-  showToastTop(message: "Không tìm thấy sách");
-  return;
-}
+```dart
+AppFeatureFlags.messagingAndChatEnabled
 ```
 
-Apply this only to private actions if easy.
+Do not create a separate iOS flag unless there is a strong reason. The goal is one global switch for all public community features.
 
-## 23. Acceptance criteria
+## Keep private notes enabled
 
-## 23.1 Guest clean install
+Do not disable private personal notes unless they are visible to other users.
 
-With no token:
+Private notes are account-based personal data, not public UGC.
 
-```text id="v93tcb"
-[ ] App opens Login screen.
-[ ] Login screen has "Tiếp tục đọc không cần tài khoản".
-[ ] Tapping it opens MainApp/Home.
-[ ] Home loads books/trending.
-[ ] Home does not call notification API.
-[ ] Home does not call recommendation API with userId.
-[ ] Search works.
-[ ] Preview opens from Home/Search/Ranking.
-[ ] Reader opens and displays book chapter.
-[ ] Reader does not call notes API.
-[ ] Reader does not call history update API.
-[ ] Ranking opens.
-[ ] Review screen opens and shows existing reviews/stats if API allows.
-[ ] Favorite action shows login-required dialog.
-[ ] Follow action shows login-required dialog.
-[ ] Notification action shows login-required dialog.
-[ ] Favorites tab shows login-required view.
-[ ] Following screen shows login-required view.
-[ ] History screen shows login-required view.
-[ ] Add note shows login-required dialog.
-[ ] Submit review shows login-required dialog.
-[ ] No crash.
-```
+If notes are private:
 
-## 23.2 Logged-in user
+* Keep note creation
+* Keep note editing
+* Keep note deletion
+* Keep note list
 
-With valid token:
+If notes are visible to other users, treat them as public UGC and disable them on iOS.
 
-```text id="hkqhp1"
-[ ] Login works as before.
-[ ] isGuest is set to false after login.
-[ ] Home loads notification count.
-[ ] Home loads recommendations.
-[ ] Favorite works.
-[ ] Follow works.
-[ ] Notifications work.
-[ ] Reading history works.
-[ ] Notes work.
-[ ] Submit/delete review works.
-[ ] Profile/change password/delete account work.
-```
+## UI replacement rules
 
-## 24. App Review note after Flutter change
+When hiding a feature on iOS, never leave:
 
-Use this note when resubmitting:
+* empty white screen
+* empty card
+* broken spacing
+* button that does nothing
+* navigation to blank screen
+* disabled icon without explanation
 
-Hello App Review Team,
+Use a clear placeholder.
 
-Thank you for your feedback.
-
-We have updated the app so users can continue without logging in and access the core reading experience as a guest. Guest users can browse books, search books, view book details, read chapters, view rankings, and view existing reviews.
-
-Sign-in is now only required for account-based features, such as saving favorites, following books, syncing reading history, creating notes, submitting reviews, receiving notifications, and managing profile settings.
-
-Thank you for reviewing the updated build.
-
-## 25. Implementation order
-
-Follow this order to reduce risk:
-
-```text id="lgq1c9"
-1. Add AuthHelper.
-2. Add login-required dialog.
-3. Add "Continue without login" button on LoginScreen.
-4. Set isGuest=false on successful login.
-5. Update HomeNotifier to skip notification/recommendation for guest.
-6. Guard notification icon.
-7. Guard favorite/follow in Preview.
-8. Guard notes/history/review submit in Reader.
-9. Guard Favorites/Following/History/Notification screens.
-10. Adjust SettingScreen for guest.
-11. Test guest clean install.
-12. Test logged-in user.
-```
-
-## 26. Do not do
-
-```text id="ee65iz"
-- Do not modify backend.
-- Do not change route names.
-- Do not remove Login/Register.
-- Do not change response models.
-- Do not implement new APIs.
-- Do not pass fake userId for guest.
-- Do not call recommendations for guest.
-- Do not call private APIs for guest.
-- Do not rewrite the entire app navigation.
-```
-
-## 27. Implementation handoff (updated 2026-06-30)
-
-This section records the final Flutter behavior after implementation and the
-important lessons discovered while working in the existing codebase. Treat it
-as the current source of truth when it differs from the earlier proposed flow.
-
-### 27.1 Final startup and authentication UX
-
-The app no longer presents Login as the first screen.
-
-Current startup flow:
+Recommended short labels:
 
 ```text
-SplashScreen
-  -> authToken exists and is not empty: MainApp as logged-in user
-  -> no authToken: set isGuest=true, then open MainApp as guest
+Tính năng cộng đồng tạm thời chưa khả dụng trên iOS.
 ```
 
-`SplashScreen` currently bypasses both `IntroScreen` and `LoginScreen`. Login
-and registration remain available later from guest entry points.
-
-Reasons for this change:
-
-* A visible "Continue without an account" button can technically provide guest
-  access, but showing Login before public content can still look like a login
-  wall to App Review.
-* Opening Home directly makes it unambiguous that browsing and reading do not
-  require an account.
-* Account authentication is requested only at the moment an account-based
-  feature is selected.
-
-The Login screen still keeps the "Continue reading without an account" button
-as a safe fallback. Successful login calls `AuthHelper.markLoggedIn()`.
-
-After logout or account deletion, clear the token and account data, clear the
-in-memory `NetworkService` authorization header, mark the session as guest, and
-return to `MainApp` instead of showing Login again.
-
-### 27.2 Authentication source of truth
-
-Implemented files:
+or:
 
 ```text
-lib/utils/core/helpers/auth_helper.dart
-lib/utils/core/common/login_required_dialog.dart
+Community features are temporarily unavailable in this iOS version.
 ```
 
-Rules that must not regress:
+For book detail screen, use a compact message rather than a full empty section.
 
-* `authToken != null && authToken.toString().isNotEmpty` is the only source of
-  truth for whether private APIs may be called.
-* `isGuest` is a UX/session marker. Never use it as the only API authorization
-  check because old installations may not have the key.
-* Never read `userId` before checking `AuthHelper.isLoggedIn`.
-* Never substitute a fake `userId` for guests.
-* Keep guards in both the view and notifier/provider where possible. The view
-  shows the login dialog; the notifier is the defensive boundary that prevents
-  an accidental private request from a future caller.
+For a full disabled screen, use the shared `CommunityFeatureDisabledScreen`.
 
-Important architecture detail: providers are registered above `MainApp` and
-can retain data across navigation. When a guest opens the reader,
-`DetailBookNotifier.getData()` clears its cached note list so notes from a
-previous authenticated session cannot be displayed.
+## Do not break guest access
 
-`MainApp` uses an `IndexedStack`, so account tabs can be instantiated even when
-they are not selected. Private screens must keep their `initState`
-authentication guards; guarding only button navigation is not sufficient.
+Apple previously rejected the app for requiring login before reading. Do not reintroduce that issue.
 
-### 27.3 Implemented guest boundaries
+Guest users must still be able to:
 
-Guest-accessible functionality:
+* Open app
+* Browse books
+* Search books
+* View book detail
+* Read book chapters
 
-* Home, public books, trending books, and trending fallback for recommendations
-* Search
-* Book preview/detail and chapter reading
-* Rankings
-* Existing review list and statistics when the public API permits it
+Do not route guests to login for reading.
 
-Account-only functionality guarded in the UI and/or notifier:
+Only account-based features should require login:
 
-* Notification count, notification list, mark/delete notification
-* Personalized recommendations and recommendation pagination
-* Favorite list and favorite mutations
-* Subscription/follow list and mutations
-* Server reading history
-* Note load/save/delete
-* Review create/edit/delete
-* Profile update, password change, and account deletion
+* Favorites
+* Following
+* History sync
+* Private notes
+* Profile
 
-Guest-only screen behavior:
+## App Store metadata after this change
 
-* Favorites, Following, History, and Notification screens do not call their
-  APIs and show a reusable login-required view.
-* Home notification tap shows the reusable login-required dialog.
-* Favorite/follow/note/review actions show the same dialog with a
-  feature-specific localized message.
-* Home displays `Guest` instead of a fake username.
+After this code change is applied for iOS:
 
-### 27.4 Home avatar and Settings entry points
-
-On Home, the avatar is interactive for guests:
-
-* It displays a small login indicator.
-* Tapping it shows the localized login-required dialog.
-* Choosing Login navigates to `LoginScreen`.
-
-In Settings, guests see:
-
-* A guest profile state with a generic icon, not a fake user avatar or email.
-* A dedicated card explaining the benefit of an account.
-* Visible Login and Sign Up actions.
-* About, Support, and Terms/Privacy items.
-
-Guests do not see profile editing, password change, account deletion, or
-logout controls. Logged-in Settings behavior remains unchanged.
-
-### 27.5 Privacy decision: do not collect phone numbers
-
-Apple-facing registration and profile forms no longer display, validate, read,
-or store a phone-number field.
-
-The existing backend currently expects `phone_number`. Until that backend
-contract is changed, both registration and profile update services send this
-non-personal compatibility value:
+In App Store Connect Age Rating, set:
 
 ```text
-0987654321
+User-Generated Content: No
+Messaging and Chat: No
 ```
 
-The shared value is defined in:
+Only do this if all public reviews/comments/chat/messaging are truly disabled on iOS.
 
-```text
-lib/utils/core/constants/privacy_constants.dart
-```
+If any public UGC/chat is still accessible, these answers must be `Yes` and the app must implement moderation/report/block/EULA.
 
-It is injected only in `RegisterService` and `ProfileService`. Do not add a
-phone controller or phone parameter back to the view/notifier layers. Request
-models are intentionally unchanged because changing backend models was outside
-this migration. If the backend makes `phone_number` optional, remove the
-placeholder instead of collecting a real number.
+## Testing checklist
 
-### 27.6 UI refinements made during the migration
+### iOS physical device / simulator
 
-These changes are not authentication requirements, but are part of the current
-implemented UI and should be preserved:
+Run the iOS build and verify:
 
-* Ranking empty states use a reusable light card instead of showing text or a
-  spinner on the solid purple background:
-  `lib/screen/ranking/widget/ranking_empty_state.dart`.
-* `EmptyDataWidget` uses a compact default illustration (`64 x 80` design
-  units). Search uses an even smaller `56 x 56` illustration. Avoid restoring
-  the former `200-300` sizes.
-* All new guest and ranking text exists in both translation files:
-  `assets/translations/vi-VN.json` and `assets/translations/en-US.json`.
+1. App opens without login.
+2. User can browse books.
+3. User can search books.
+4. User can open book detail.
+5. User can read a chapter.
+6. Book detail does not show an accessible public reviews page.
+7. There is no “Xem thêm” button that opens public reviews.
+8. Direct route to `ReviewBookScreen` shows placeholder, not review list.
+9. There is no floating action button for creating review on iOS.
+10. No public review/comment list is visible on iOS.
+11. No create/edit/delete review API is called on iOS.
+12. No chat/messaging screen is accessible on iOS.
+13. If UI area would be empty, a friendly placeholder is shown.
+14. Private notes still work if they are private.
+15. Favorites/following/history still work.
 
-### 27.7 Current external Settings links
+### Android
 
-Support:
+Run Android and verify existing behavior remains unchanged:
 
-```text
-https://nguyenduc163.notion.site/Nguyen-Duc-Apps-Support-38303bc2971180bfa793f871713beba5
-```
+1. Review list still opens.
+2. User can submit a review.
+3. User can edit/delete own review.
+4. Any existing chat/messaging feature still works.
+5. Book detail UI is unchanged.
 
-Terms/Privacy Policy:
+## Acceptance criteria
 
-```text
-https://nguyenduc163.notion.site/Privacy-Policy-for-Book-Brain-38303bc29711809daae3e77cb0f1cae6
-```
+The task is complete only when:
 
-Both links open with `LaunchMode.externalApplication`.
+1. A global flag exists in `lib/config/app_feature_flags.dart`.
+2. Changing `enablePublicCommunityFeaturesOnIOS` from `false` to `true` re-enables iOS community features without large refactoring.
+3. Android behavior is unchanged.
+4. iOS no longer exposes public reviews/comments/chat/messaging.
+5. iOS does not call public UGC APIs.
+6. No blank UI appears where reviews/chat were removed.
+7. Direct route access is protected.
+8. Guest reading still works.
+9. App Store Connect can safely set:
 
-### 27.8 Updated acceptance criteria
-
-For a clean install with no token:
-
-```text
-[ ] Splash opens MainApp/Home directly; Login is not shown first.
-[ ] isGuest is persisted as true.
-[ ] Public Home/trending/search/preview/reader/ranking/reviews work.
-[ ] No private API reads userId or sends a request.
-[ ] Home avatar and Settings provide obvious Login entry points.
-[ ] Restricted actions show a login-required dialog.
-[ ] Login and Sign Up remain reachable and functional.
-```
-
-For an authenticated installation, keep all criteria in section 23.2.
-
-### 27.9 Verification and known repository condition
-
-Verification used after this migration:
-
-```text
-fvm flutter test
-fvm flutter build ios --debug --no-codesign
-```
-
-The automated suite currently contains authentication, placeholder-phone, and
-ranking empty-state coverage. The iOS device build completed successfully.
-
-The repository has many pre-existing analyzer warnings and informational lints.
-Do not treat those as regressions from this migration; still require no new
-error-level analyzer findings in touched files.
+   * `User-Generated Content = No`
+   * `Messaging and Chat = No`
+10. The code builds successfully for both iOS and Android.
