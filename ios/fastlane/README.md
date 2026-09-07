@@ -82,10 +82,10 @@ APP_STORE_CONNECT_API_KEY_KEY_FILEPATH=/absolute/path/AuthKey_XXXXXXXXXX.p8
 
 ## GitHub Actions Secrets
 
-Workflow đang dùng:
+Workflow release đang dùng:
 
 ```text
-.github/workflows/ios-testflight.yml
+.github/workflows/reusable-ios-testflight.yml
 ```
 
 Thêm secrets tại:
@@ -118,71 +118,18 @@ Copy nội dung `.p8` vào clipboard:
 pbcopy < /path/to/AuthKey_XXXXXXXXXX.p8
 ```
 
-### iOS Signing/Export
+### Fastlane Match Signing
 
-Cần 3 secrets:
-
-```text
-IOS_DISTRIBUTION_CERTIFICATE_P12_BASE64
-IOS_DISTRIBUTION_CERTIFICATE_PASSWORD
-IOS_APPSTORE_PROVISIONING_PROFILE_BASE64
-```
-
-Các secrets này cần vì GitHub macOS runner là máy sạch, không có sẵn certificate, keychain, hoặc provisioning profile như máy local.
-
-#### `IOS_DISTRIBUTION_CERTIFICATE_P12_BASE64`
-
-Đây là nội dung base64 của certificate Apple Distribution dạng `.p12`.
-
-Cách export `.p12` trên máy Mac đang build local được:
-
-1. Mở `Keychain Access`.
-2. Vào `My Certificates`.
-3. Tìm certificate dạng `Apple Distribution: ...`.
-4. Chuột phải -> `Export`.
-5. Lưu dạng `.p12`.
-6. Đặt password.
-
-Copy base64 vào clipboard:
-
-```sh
-base64 -i /path/to/Certificates.p12 | pbcopy
-```
-
-Lệnh trên không in gì ra terminal vì output đã được đưa vào clipboard. Kiểm tra:
-
-```sh
-pbpaste | head -c 80
-pbpaste | wc -c
-```
-
-#### `IOS_DISTRIBUTION_CERTIFICATE_PASSWORD`
-
-Password đã đặt khi export file `.p12`.
-
-#### `IOS_APPSTORE_PROVISIONING_PROFILE_BASE64`
-
-Đây là nội dung base64 của App Store provisioning profile cho bundle id:
+Cần 4 secrets:
 
 ```text
-com.nguyenduc.bookBrain
+IOS_TEAM_ID
+MATCH_GIT_URL
+MATCH_PASSWORD
+MATCH_GIT_BASIC_AUTHORIZATION
 ```
 
-Cách tạo/download:
-
-`Apple Developer` -> `Certificates, Identifiers & Profiles` -> `Profiles`.
-
-Chọn:
-
-- Type: `App Store`
-- App ID: `com.nguyenduc.bookBrain`
-- Certificate: đúng Apple Distribution certificate đã export ra `.p12`
-
-Copy base64 vào clipboard:
-
-```sh
-base64 -i /path/to/BookBrain_AppStore.mobileprovision | pbcopy
-```
+GitHub Actions dùng Fastlane Match ở chế độ read-only để tải certificate Apple Distribution và App Store provisioning profile hiện có từ signing repository. Không tạo, thay mới hoặc revoke signing asset.
 
 ## Luồng GitHub Actions
 
@@ -192,7 +139,7 @@ Khi push vào `main`, workflow sẽ:
 2. Commit lại version bump với `[skip ci]` để tránh vòng lặp CI vô hạn.
 3. Checkout lại `main` sau khi đã bump version.
 4. Ghi secret `.p8` ra file tạm trên runner.
-5. Cài Apple Distribution certificate và App Store provisioning profile vào runner.
+5. Fastlane Match read-only cài Apple Distribution certificate và App Store provisioning profile vào runner.
 6. Chạy `bundle exec fastlane ios beta`.
 
 Nếu repo bật branch protection cho `main`, cần cho phép GitHub Actions push commit bump version, nếu không job đầu tiên sẽ fail.
@@ -229,9 +176,7 @@ Trên GitHub Actions, lỗi này thường nghĩa là runner chưa có đúng Ap
 
 Kiểm tra:
 
-- `IOS_DISTRIBUTION_CERTIFICATE_P12_BASE64`
-- `IOS_DISTRIBUTION_CERTIFICATE_PASSWORD`
-- `IOS_APPSTORE_PROVISIONING_PROFILE_BASE64`
+- `IOS_TEAM_ID`, `MATCH_GIT_URL`, `MATCH_PASSWORD`, `MATCH_GIT_BASIC_AUTHORIZATION`
 - artifact `fastlane-gym-logs`
 
 ### `xcodebuild -exportArchive` exit status `64`
